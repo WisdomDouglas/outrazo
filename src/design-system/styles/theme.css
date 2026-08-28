@@ -1,0 +1,211 @@
+/**
+ * Outrazo — Forest Tech theme.
+ * Single entry point: import this file to receive the full design system theme.
+ * Dark is the default; add class="light" to <html> for light mode.
+ */
+
+:root {
+  /* Surfaces */
+  --outrazo-bg-canvas: #07140e;
+  --outrazo-bg-card: #0e2219;
+  --outrazo-bg-elevated: #143024;
+  --outrazo-border: rgba(226, 236, 233, 0.1);
+  --outrazo-border-strong: rgba(226, 236, 233, 0.2);
+
+  /* Text */
+  --outrazo-text-primary: #e2ece9;
+  --outrazo-text-muted: rgba(226, 236, 233, 0.62);
+  --outrazo-text-subtle: rgba(226, 236, 233, 0.42);
+
+  /* Accents */
+  --outrazo-accent-primary: #10b981;
+  --outrazo-accent-primary-hover: #34d399;
+  --outrazo-on-accent-primary: #07140e;
+  --outrazo-accent-secondary: #fb7185;
+  --outrazo-accent-secondary-hover: #fda4af;
+  --outrazo-on-accent-secondary: #07140e;
+
+  /* Elevation */
+  --outrazo-shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.4);
+  --outrazo-shadow-floating: 0px 12px 32px rgba(0, 0, 0, 0.55);
+  --outrazo-shadow-glow: 0px 0px 24px rgba(16, 185, 129, 0.25);
+
+  /* Fonts */
+  --outrazo-font-display: "Plus Jakarta Sans", "Syne", system-ui, sans-serif;
+  --outrazo-font-body: "Inter", "DM Sans", system-ui, sans-serif;
+
+  /* Radius */
+  --outrazo-radius-sm: 8px;
+  --outrazo-radius-md: 12px;
+  --outrazo-radius-lg: 20px;
+  --outrazo-radius-full: 9999px;
+
+  color-scheme: dark;
+}
+
+.light {
+  --outrazo-bg-canvas: #f4f7f5;
+  --outrazo-bg-card: #ffffff;
+  --outrazo-bg-elevated: #ffffff;
+  --outrazo-border: rgba(11, 30, 22, 0.1);
+  --outrazo-border-strong: rgba(11, 30, 22, 0.22);
+
+  --outrazo-text-primary: #0b1e16;
+  --outrazo-text-muted: rgba(11, 30, 22, 0.66);
+  --outrazo-text-subtle: rgba(11, 30, 22, 0.46);
+
+  --outrazo-accent-primary: #059669;
+  --outrazo-accent-primary-hover: #047857;
+  --outrazo-on-accent-primary: #ffffff;
+  --outrazo-accent-secondary: #e11d48;
+  --outrazo-accent-secondary-hover: #be123c;
+  --outrazo-on-accent-secondary: #ffffff;
+
+  --outrazo-shadow-card: 0px 4px 16px rgba(11, 30, 22, 0.06);
+  --outrazo-shadow-floating: 0px 12px 32px rgba(11, 30, 22, 0.12);
+  --outrazo-shadow-glow: 0px 0px 24px rgba(5, 150, 105, 0.18);
+
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-canvas: var(--outrazo-bg-canvas);
+  --color-card: var(--outrazo-bg-card);
+  --color-elevated: var(--outrazo-bg-elevated);
+  --color-line: var(--outrazo-border);
+  --color-line-strong: var(--outrazo-border-strong);
+
+  --color-primary-text: var(--outrazo-text-primary);
+  --color-muted-text: var(--outrazo-text-muted);
+  --color-subtle-text: var(--outrazo-text-subtle);
+
+  --color-accent: var(--outrazo-accent-primary);
+  --color-accent-hover: var(--outrazo-accent-primary-hover);
+  --color-on-accent: var(--outrazo-on-accent-primary);
+  --color-transactional: var(--outrazo-accent-secondary);
+  --color-transactional-hover: var(--outrazo-accent-secondary-hover);
+  --color-on-transactional: var(--outrazo-on-accent-secondary);
+
+  --font-display: var(--outrazo-font-display);
+  --font-body: var(--outrazo-font-body);
+
+  --radius-sm: var(--outrazo-radius-sm);
+  --radius-md: var(--outrazo-radius-md);
+  --radius-lg: var(--outrazo-radius-lg);
+  --radius-full: var(--outrazo-radius-full);
+
+  --shadow-card: var(--outrazo-shadow-card);
+  --shadow-floating: var(--outrazo-shadow-floating);
+  --shadow-glow: var(--outrazo-shadow-glow);
+
+  /* 8pt spacing system with a 4px micro unit */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-section: 96px;
+
+  /* Type scale (mobile baseline; desktop steps applied by the type utilities) */
+  --text-hero: 48px;
+  --text-h1: 32px;
+  --text-h2: 24px;
+  --text-h3: 18px;
+  --text-body-lg: 16px;
+  --text-body: 14px;
+  --text-caption: 12px;
+}
+
+@utility type-hero {
+  font-family: var(--outrazo-font-display);
+  font-weight: 800;
+  font-size: 48px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  @media (width >= 1024px) {
+    font-size: 72px;
+  }
+}
+
+@utility type-h1 {
+  font-family: var(--outrazo-font-display);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  @media (width >= 1024px) {
+    font-size: 48px;
+  }
+}
+
+@utility type-h2 {
+  font-family: var(--outrazo-font-display);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  @media (width >= 1024px) {
+    font-size: 32px;
+  }
+}
+
+@utility type-h3 {
+  font-family: var(--outrazo-font-display);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  @media (width >= 1024px) {
+    font-size: 24px;
+  }
+}
+
+@utility type-body-lg {
+  font-family: var(--outrazo-font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+@utility type-body {
+  font-family: var(--outrazo-font-body);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+@utility type-caption {
+  font-family: var(--outrazo-font-body);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--outrazo-accent-primary);
+    outline-offset: 2px;
+  }
+}
+
+body {
+  background-color: var(--outrazo-bg-canvas);
+  color: var(--outrazo-text-primary);
+  font-family: var(--outrazo-font-body);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
