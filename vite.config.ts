@@ -29,6 +29,7 @@ export default defineConfig(({ command, mode }) => {
       ...(useCloudflare ? [cloudflare({ viteEnvironment: { name: "ssr" } })] : []),
       tanstackStart(),
       viteReact(),
+      tailwindcss(),
       ...(mode === "development" ? [componentTagger()] : []),
     ],
   };
