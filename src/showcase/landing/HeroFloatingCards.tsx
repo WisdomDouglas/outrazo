@@ -150,7 +150,7 @@ export function HeroFloatingCards() {
       </div>
 
       {/* Pulsing music sticker */}
-      <span className="absolute right-[26%] top-[30%] grid size-12 place-items-center">
+      <span className="absolute right-[22%] top-[24%] grid size-12 place-items-center">
         <span className="outrazo-pulse-ring absolute inset-0 rounded-full bg-transactional/50" />
         <span className="relative grid size-10 place-items-center rounded-full bg-transactional text-on-transactional shadow-floating">
           <Music className="size-4" strokeWidth={2.5} />
