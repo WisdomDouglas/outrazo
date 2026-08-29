@@ -1,0 +1,498 @@
+{
+  "meta": {
+    "name": "My Little Library",
+    "package": "@ws-4hutpagaanrcygcldpya/49851e5c-65c1-40ce-a6d3-b9bd74ef975f",
+    "version": "1.0.0",
+    "framework": "react",
+    "css_framework": "tailwind",
+    "starter_template": "custom_design_system",
+    "theme_files": [
+      "src/design-system/styles/theme.css"
+    ],
+    "source_type": "local",
+    "source_manifest": {
+      "#enrichment": "15ef99cd19c0a7dfdcfcfbe152f281f7a0d9df71daa5c446cc539485ca7d5d4c",
+      ".dsignore": "2c7d76468c15bc0f1499420154f01ae3",
+      ".gitignore": "6059213806e442947666752f3db6bfdc",
+      ".lovable/meta.yaml": "8794970d6049858cc148d2b86f7a2b22",
+      ".lovable/plan/outrazo-design-system-starter-tokens-components-2026-08-28.md": "f92a47a616dd92b17d1c3587715d17ea",
+      ".lovable/sources.yaml": "1b62005cb01c2413aacc02b0f9500c65",
+      ".lovable/system.md": "fd1507b066603f74d44a19952e55eacb",
+      "README.md": "d19675c449605f23c7cfa133c69b398b",
+      "bunfig.toml": "25f4c8696b22b0943db7191e0cdf7942",
+      "eslint.config.js": "07a67437fb1a45ab36d6de0145ff09de",
+      "lovable.toml": "9636c1bf32f9901bfba4eabb92981217",
+      "mockupPreviewPlugin.ts": "08be2d15337c9b4145cc506cdf63a04e",
+      "package.json": "67c73a2d9a6e04fc4b222eaa048a2fa0",
+      "public/favicon.ico": "9f504444f85a5af2eef9264b02ae40be",
+      "src/design-system/components/Avatar.tsx": "df22d03d11cf6e3eba54398f65e4be7c",
+      "src/design-system/components/AvatarStack.tsx": "428215c60d8234bf2638deb8be858bf4",
+      "src/design-system/components/Badge.tsx": "5f87eef8f53ecf6063f8cead20e37152",
+      "src/design-system/components/Button.tsx": "16baf8553e1c1981e1233c6b109cf616",
+      "src/design-system/components/CategoryChip.tsx": "c9ba7e17e9c9a7f063e7fbf5ca3d338e",
+      "src/design-system/components/EventCard.tsx": "632e37e70a3acf7107841ee6e7a202b6",
+      "src/design-system/components/Input.tsx": "5d12263a4a17da646f2383cd97fcf0c2",
+      "src/design-system/components/SearchField.tsx": "05aca26877151aed3ca27dfe19ee79a9",
+      "src/design-system/components/Skeleton.tsx": "0a74eb467b341292795d3beef2c71dba",
+      "src/design-system/index.ts": "f111c81ea94af7e98ff4e652e070e0ad",
+      "src/design-system/lib/use-theme.ts": "1bbea86e5cf84c4d6535f3fc3b22eed6",
+      "src/design-system/lib/utils.ts": "53176bde4b744ac6c1fff0b8db2ae9b8",
+      "src/design-system/styles/theme.css": "188d0c2a8d5fb10e5aae006daf89c455",
+      "src/index.ts": "ab35d8f1c11e0b18cc3bb7f06af3d665",
+      "src/mockup-preview.d.ts": "38969839f35ce2966e32a9f01a5c09ea",
+      "src/routeTree.gen.ts": "4fd75eb72aeb2d60f12add8cac402a7e",
+      "src/router.tsx": "8f905e713b0eba7fa8148b7995a708c9",
+      "src/routes/[__component].preview.$.tsx": "3a40af1fe37daff2e891175a6e6d4f99",
+      "src/routes/[__mockup].preview.$.tsx": "5d9f42470848aa60148f20f9580e240e",
+      "src/routes/__root.tsx": "fb359cfb6776e7383dc1b5c0e9117ed3",
+      "src/routes/index.tsx": "c0cfa8493446e04dadc639969f8f4d1a",
+      "src/showcase/landing.css": "7667bf7dc0b60ac9f72d48b3468687ca",
+      "src/showcase/landing/HeroCollage.tsx": "9da3178b9195099e1c9690e534e1786f",
+      "src/showcase/sample-data.ts": "1816276aed7f6851e8d6488a74eec1a8",
+      "src/styles.css": "77fbbd692908328dc4e56e2c1f75d8ba",
+      "tsconfig.json": "994abf64c2b9f78b568879f80ed0170e",
+      "vite.config.ts": "7c640e4b2b5a19f5894c64cd9e0e86e3",
+      "wrangler.jsonc": "680b897d48e44bcc65fe437c29b38f3b"
+    },
+    "pipeline_version": 8
+  },
+  "tokens": {
+    "color": [
+      {
+        "name": "--outrazo-bg-canvas",
+        "raw": "#07140e",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-bg-card",
+        "raw": "#0e2219",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-bg-elevated",
+        "raw": "#143024",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-border",
+        "raw": "rgba(226, 236, 233, 0.1)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-border-strong",
+        "raw": "rgba(226, 236, 233, 0.2)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-accent-primary",
+        "raw": "#10b981",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-accent-primary-hover",
+        "raw": "#34d399",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-on-accent-primary",
+        "raw": "#07140e",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-accent-secondary",
+        "raw": "#fb7185",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-accent-secondary-hover",
+        "raw": "#fda4af",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-on-accent-secondary",
+        "raw": "#07140e",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ],
+    "spacing": [
+      {
+        "name": "--spacing-xs",
+        "raw": "4px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-sm",
+        "raw": "8px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-md",
+        "raw": "16px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-lg",
+        "raw": "24px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-xl",
+        "raw": "32px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-2xl",
+        "raw": "48px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-3xl",
+        "raw": "64px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-section",
+        "raw": "96px",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ],
+    "typography": [
+      {
+        "name": "--outrazo-text-primary",
+        "raw": "#e2ece9",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-text-muted",
+        "raw": "rgba(226, 236, 233, 0.62)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-text-subtle",
+        "raw": "rgba(226, 236, 233, 0.42)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-font-display",
+        "raw": "\"Plus Jakarta Sans\", \"Syne\", system-ui, sans-serif",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-font-body",
+        "raw": "\"Inter\", \"DM Sans\", system-ui, sans-serif",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-hero",
+        "raw": "48px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-h1",
+        "raw": "32px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-h2",
+        "raw": "24px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-h3",
+        "raw": "18px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-body-lg",
+        "raw": "16px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-body",
+        "raw": "14px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-caption",
+        "raw": "12px",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ],
+    "radius": [
+      {
+        "name": "--outrazo-radius-sm",
+        "raw": "8px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-radius-md",
+        "raw": "12px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-radius-lg",
+        "raw": "20px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-radius-full",
+        "raw": "9999px",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ],
+    "shadow": [
+      {
+        "name": "--outrazo-shadow-card",
+        "raw": "0px 4px 20px rgba(0, 0, 0, 0.4)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-shadow-floating",
+        "raw": "0px 12px 32px rgba(0, 0, 0, 0.55)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-shadow-glow",
+        "raw": "0px 0px 24px rgba(16, 185, 129, 0.25)",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Button",
+      "file": "src/design-system/components/Button",
+      "import_path": "",
+      "props": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "primary",
+            "transactional",
+            "outline",
+            "ghost"
+          ],
+          "default": "primary"
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ],
+          "default": "md"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "leadingIcon",
+          "type": "any"
+        }
+      ]
+    },
+    {
+      "name": "Input",
+      "file": "src/design-system/components/Input",
+      "import_path": "",
+      "props": [
+        {
+          "name": "label",
+          "type": "string"
+        },
+        {
+          "name": "hint",
+          "type": "string"
+        },
+        {
+          "name": "error",
+          "type": "string"
+        },
+        {
+          "name": "leadingIcon",
+          "type": "any"
+        }
+      ]
+    },
+    {
+      "name": "SearchField",
+      "file": "src/design-system/components/SearchField",
+      "import_path": "",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "default": "Search events"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "onClear",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "name": "Badge",
+      "file": "src/design-system/components/Badge",
+      "import_path": "",
+      "props": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "neutral",
+            "accent",
+            "transactional",
+            "outline"
+          ],
+          "default": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "CategoryChip",
+      "file": "src/design-system/components/CategoryChip",
+      "import_path": "",
+      "props": [
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "icon",
+          "type": "any"
+        }
+      ]
+    },
+    {
+      "name": "Avatar",
+      "file": "src/design-system/components/Avatar",
+      "import_path": "",
+      "props": [
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ],
+          "default": "md"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "src",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AvatarStack",
+      "file": "src/design-system/components/AvatarStack",
+      "import_path": "",
+      "props": [
+        {
+          "name": "people",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "default": "4"
+        },
+        {
+          "name": "size",
+          "type": "any",
+          "default": "sm"
+        }
+      ]
+    },
+    {
+      "name": "Skeleton",
+      "file": "src/design-system/components/Skeleton",
+      "import_path": ""
+    },
+    {
+      "name": "EventCard",
+      "file": "src/design-system/components/EventCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "imageSrc",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "time",
+          "type": "string"
+        },
+        {
+          "name": "location",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "price",
+          "type": "string"
+        },
+        {
+          "name": "host",
+          "type": "object",
+          "required": true
+        },
+        {
+          "name": "attendees",
+          "type": "any"
+        },
+        {
+          "name": "aspect",
+          "type": "enum",
+          "values": [
+            "16/9",
+            "1/1"
+          ],
+          "default": "16/9"
+        },
+        {
+          "name": "saved",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "onToggleSave",
+          "type": "function"
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "default": "#"
+        }
+      ]
+    }
+  ]
+}
