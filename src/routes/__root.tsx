@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+import { useTheme } from "@/design-system/lib/use-theme";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -62,6 +63,8 @@ function RootShell({ children }: { children: ReactNode }) {
 // /__component) render inside it, so any chrome leaks into every frame.
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // Applies the dark-default / light theme class to <html> on every route.
+  useTheme();
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,3 +1,5 @@
+import "./styles/theme.css";
+
 export { Button, buttonVariants, type ButtonProps } from "./components/Button";
 export { Input, type InputProps } from "./components/Input";
 export { SearchField, type SearchFieldProps } from "./components/SearchField";

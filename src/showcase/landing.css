@@ -1,0 +1,74 @@
+/* Preview-only landing page motion. Not part of the shipped design system. */
+
+@keyframes outrazo-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translate3d(0, -14px, 0) rotate(calc(var(--tilt, 0deg) * -0.6));
+  }
+}
+
+@keyframes outrazo-orbit {
+  0% {
+    transform: rotate(0deg) translateX(var(--orbit, 10px)) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(var(--orbit, 10px)) rotate(-360deg);
+  }
+}
+
+@keyframes outrazo-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes outrazo-pop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.04);
+  }
+}
+
+@keyframes outrazo-pulse-ring {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
+
+.outrazo-float {
+  animation: outrazo-float 7s ease-in-out infinite;
+}
+
+.outrazo-orbit {
+  animation: outrazo-orbit 22s linear infinite;
+}
+
+.outrazo-marquee {
+  animation: outrazo-marquee 38s linear infinite;
+}
+
+.outrazo-pop {
+  animation: outrazo-pop 4.5s ease-in-out infinite;
+}
+
+.outrazo-pulse-ring {
+  animation: outrazo-pulse-ring 3s ease-out infinite;
+}
