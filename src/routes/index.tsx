@@ -14,6 +14,7 @@ import {
   Plus,
   Palette,
   ShieldCheck,
+  Sparkles,
   Sun,
   Ticket,
   Trophy,
