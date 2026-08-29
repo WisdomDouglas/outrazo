@@ -3,11 +3,10 @@
 @keyframes outrazo-float {
   0%,
   100% {
-    transform: translate3d(0, 0, 0) rotate(var(--tilt, 0deg)) scale(var(--depth, 1));
+    transform: translate3d(0, 0, 0) rotate(var(--tilt, 0deg));
   }
   50% {
-    transform: translate3d(var(--driftX, 0px), calc(var(--driftY, -14px)), 0)
-      rotate(calc(var(--tilt, 0deg) * -0.5)) scale(var(--depth, 1));
+    transform: translate3d(0, -14px, 0) rotate(calc(var(--tilt, 0deg) * -0.6));
   }
 }
 
@@ -54,42 +53,8 @@
   }
 }
 
-@keyframes outrazo-rise {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 26px, 0) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-@keyframes outrazo-sheen {
-  0% {
-    transform: translateX(-120%) skewX(-18deg);
-  }
-  55%,
-  100% {
-    transform: translateX(240%) skewX(-18deg);
-  }
-}
-
-@keyframes outrazo-aurora {
-  0%,
-  100% {
-    transform: translate3d(-4%, 0, 0) scale(1);
-    opacity: 0.75;
-  }
-  50% {
-    transform: translate3d(6%, -6%, 0) scale(1.12);
-    opacity: 1;
-  }
-}
-
 .outrazo-float {
-  animation: outrazo-float var(--dur, 7s) ease-in-out infinite;
-  will-change: transform;
+  animation: outrazo-float 7s ease-in-out infinite;
 }
 
 .outrazo-orbit {
@@ -106,70 +71,4 @@
 
 .outrazo-pulse-ring {
   animation: outrazo-pulse-ring 3s ease-out infinite;
-}
-
-.outrazo-aurora {
-  animation: outrazo-aurora 16s ease-in-out infinite;
-}
-
-/* Staggered entrance for hero layers. */
-.outrazo-reveal {
-  animation: outrazo-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--reveal-delay, 0s);
-}
-
-/* Light sweep across a card face. */
-.outrazo-sheen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    transparent 20%,
-    rgba(255, 255, 255, 0.16) 45%,
-    transparent 70%
-  );
-  animation: outrazo-sheen 7s ease-in-out infinite;
-  animation-delay: var(--sheen-delay, 0s);
-  pointer-events: none;
-}
-
-/* Depth tiers for the layered hero collage. */
-.outrazo-depth-back {
-  filter: blur(1.5px) saturate(0.9);
-  opacity: 0.72;
-}
-
-.outrazo-depth-mid {
-  opacity: 0.94;
-}
-
-/* Edge-to-edge snapping rail used for mobile carousels. */
-.outrazo-rail {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.outrazo-rail::-webkit-scrollbar {
-  display: none;
-}
-
-.outrazo-rail > * {
-  scroll-snap-align: start;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .outrazo-float,
-  .outrazo-orbit,
-  .outrazo-marquee,
-  .outrazo-pop,
-  .outrazo-pulse-ring,
-  .outrazo-aurora,
-  .outrazo-reveal,
-  .outrazo-sheen::after {
-    animation: none !important;
-  }
 }
