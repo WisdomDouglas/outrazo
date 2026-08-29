@@ -32,7 +32,9 @@ import { useTheme } from "@/design-system/lib/use-theme";
 import {
   HeroCardStrip,
   HeroFloatingCards,
+  HeroVectorArt,
 } from "@/showcase/landing/HeroFloatingCards";
+
 import { ATTENDEES, EVENTS } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/")({
@@ -58,15 +60,16 @@ export const Route = createFileRoute("/")({
 });
 
 const CATEGORIES = [
-  { label: "Parties", icon: PartyPopper },
-  { label: "Music", icon: Music },
-  { label: "Tech", icon: Laptop },
-  { label: "Business", icon: Briefcase },
-  { label: "Culture", icon: Palette },
-  { label: "Food", icon: UtensilsCrossed },
-  { label: "Sports", icon: Trophy },
-  { label: "More", icon: MoreHorizontal },
+  { label: "Parties", icon: PartyPopper, count: "412 events" },
+  { label: "Music", icon: Music, count: "268 events" },
+  { label: "Tech", icon: Laptop, count: "154 events" },
+  { label: "Business", icon: Briefcase, count: "97 events" },
+  { label: "Culture", icon: Palette, count: "132 events" },
+  { label: "Food", icon: UtensilsCrossed, count: "88 events" },
+  { label: "Sports", icon: Trophy, count: "76 events" },
+  { label: "More", icon: MoreHorizontal, count: "All categories" },
 ];
+
 
 const TONIGHT = [
   { title: "Girls Night Out", city: "Lagos", src: "photo-1516450360452-9312f5e86fc7" },
@@ -160,6 +163,8 @@ function Landing() {
 
           <div className="relative mx-auto min-h-[560px] max-w-[1200px] px-md py-2xl lg:min-h-[760px] lg:px-xl lg:py-section">
             <HeroFloatingCards />
+            <HeroVectorArt />
+
 
             <div className="relative z-10 mx-auto flex max-w-[640px] flex-col items-center gap-lg text-center">
               <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-sm font-semibold text-accent backdrop-blur-md">
@@ -210,21 +215,47 @@ function Landing() {
 
         {/* Categories */}
         <section className="mx-auto max-w-[1200px] px-md lg:px-xl">
-          <h2 className="type-h2 mb-lg">Discover your kind of experience</h2>
-          <ul className="grid grid-cols-4 gap-md rounded-lg bg-card p-lg shadow-card md:grid-cols-8">
-            {CATEGORIES.map(({ label, icon: Icon }) => (
+          <div className="mb-lg flex flex-wrap items-end justify-between gap-md">
+            <div className="flex flex-col gap-xs">
+              <h2 className="type-h2">Discover your kind of experience</h2>
+              <p className="type-body text-muted-text">
+                Browse by scene — every category updates as new events go live.
+              </p>
+            </div>
+            <a href="#" className="focus-ring type-body rounded-sm text-accent hover:underline">
+              Browse all
+            </a>
+          </div>
+          <ul className="grid grid-cols-1 gap-md sm:grid-cols-2 lg:grid-cols-4">
+            {CATEGORIES.map(({ label, icon: Icon, count }) => (
               <li key={label}>
                 <button
                   type="button"
-                  className="focus-ring flex w-full flex-col items-center gap-sm rounded-md px-sm py-md text-muted-text transition-transform duration-150 hover:-translate-y-[2px] hover:text-accent"
+                  className="focus-ring group relative flex w-full items-center gap-md overflow-hidden rounded-lg border border-line bg-card p-md text-left shadow-card transition-all duration-200 hover:-translate-y-[3px] hover:border-accent/50 hover:shadow-glow"
                 >
-                  <Icon aria-hidden className="size-6" strokeWidth={2} />
-                  <span className="type-caption">{label}</span>
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -right-6 -top-8 size-20 rounded-full bg-accent/10 opacity-0 blur-xl transition-opacity duration-200 group-hover:opacity-100"
+                  />
+                  <span className="grid size-11 shrink-0 place-items-center rounded-md border border-line bg-elevated text-accent transition-colors group-hover:border-accent/40">
+                    <Icon aria-hidden className="size-5" strokeWidth={2} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="type-body block truncate font-semibold text-primary-text">
+                      {label}
+                    </span>
+                    <span className="type-caption block truncate text-subtle-text">{count}</span>
+                  </span>
+                  <ArrowRight
+                    aria-hidden
+                    className="ml-auto size-4 shrink-0 text-subtle-text transition-transform duration-200 group-hover:translate-x-1 group-hover:text-accent"
+                  />
                 </button>
               </li>
             ))}
           </ul>
         </section>
+
 
         {/* Trending */}
         <section className="mx-auto max-w-[1200px] px-md py-section lg:px-xl">
