@@ -79,7 +79,7 @@ const TONIGHT = [
 ];
 
 const CITIES = [
-  { name: "Lagos", count: "1,234 events", src: "photo-1618828665011-0abd973f7bb4" },
+  { name: "Lagos", count: "1,234 events", src: "photo-1519501025264-65ba15a82390" },
   { name: "Abuja", count: "842 events", src: "photo-1590846406792-0adc7f938f1d" },
   { name: "Port Harcourt", count: "612 events", src: "photo-1449824913935-59a10b8d2000" },
   { name: "Ibadan", count: "423 events", src: "photo-1477959858617-67f85cf4f1df" },
