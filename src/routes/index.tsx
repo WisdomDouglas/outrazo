@@ -58,15 +58,16 @@ export const Route = createFileRoute("/")({
 });
 
 const CATEGORIES = [
-  { label: "Parties", icon: PartyPopper },
-  { label: "Music", icon: Music },
-  { label: "Tech", icon: Laptop },
-  { label: "Business", icon: Briefcase },
-  { label: "Culture", icon: Palette },
-  { label: "Food", icon: UtensilsCrossed },
-  { label: "Sports", icon: Trophy },
-  { label: "More", icon: MoreHorizontal },
+  { label: "Parties", icon: PartyPopper, count: "412 events" },
+  { label: "Music", icon: Music, count: "268 events" },
+  { label: "Tech", icon: Laptop, count: "154 events" },
+  { label: "Business", icon: Briefcase, count: "97 events" },
+  { label: "Culture", icon: Palette, count: "132 events" },
+  { label: "Food", icon: UtensilsCrossed, count: "88 events" },
+  { label: "Sports", icon: Trophy, count: "76 events" },
+  { label: "More", icon: MoreHorizontal, count: "All categories" },
 ];
+
 
 const TONIGHT = [
   { title: "Girls Night Out", city: "Lagos", src: "photo-1516450360452-9312f5e86fc7" },
