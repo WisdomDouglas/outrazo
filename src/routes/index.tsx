@@ -163,6 +163,8 @@ function Landing() {
 
           <div className="relative mx-auto min-h-[560px] max-w-[1200px] px-md py-2xl lg:min-h-[760px] lg:px-xl lg:py-section">
             <HeroFloatingCards />
+            <HeroVectorArt />
+
 
             <div className="relative z-10 mx-auto flex max-w-[640px] flex-col items-center gap-lg text-center">
               <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-sm font-semibold text-accent backdrop-blur-md">
