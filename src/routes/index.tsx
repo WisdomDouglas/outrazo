@@ -91,6 +91,31 @@ const TRUST = [
   { icon: CalendarCheck, title: "Easy", copy: "Check-in" },
 ];
 
+const STATS = [
+  { icon: CalendarCheck, value: "3,100+", label: "Live events" },
+  { icon: MapPin, value: "24", label: "Cities covered" },
+  { icon: Users, value: "180k", label: "People going out" },
+  { icon: Sparkles, value: "4.9", label: "Average rating" },
+];
+
+const STEPS = [
+  {
+    icon: Compass,
+    title: "Discover",
+    copy: "Browse what's on tonight, this weekend, or near you.",
+  },
+  {
+    icon: Ticket,
+    title: "Reserve",
+    copy: "Grab a ticket or RSVP in seconds — no queue, no stress.",
+  },
+  {
+    icon: PartyPopper,
+    title: "Show up",
+    copy: "Scan in, meet your people, and share the moment after.",
+  },
+];
+
 const unsplash = (id: string, w = 800) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
 
