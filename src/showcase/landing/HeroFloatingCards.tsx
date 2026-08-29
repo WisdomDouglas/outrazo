@@ -215,22 +215,8 @@ export function HeroFloatingCards() {
       {/* Soft aurora wash behind the collage to give the layers atmosphere. */}
       <div className="outrazo-aurora pointer-events-none absolute left-[12%] top-[18%] size-[420px] rounded-full bg-accent/12 blur-[110px]" />
 
-      {CARDS.map((card) => (
-        <div
-          key={card.id}
-          className={cn("absolute outrazo-reveal", DEPTH_CLASS[card.depth])}
-          style={{ ["--reveal-delay" as string]: card.style["--reveal-delay" as never] }}
-        >
-          <div
-            className={cn(card.id.length ? "" : "", card.className.replace(/^|\s/g, " "), "")}
-            style={{ display: "none" }}
-          />
-          <div className={cn("absolute", card.className)} style={card.style} />
-        </div>
-      ))}
-
-      {/* Cards are rendered in a second pass so reveal + float animations can be
-          composed on separate elements without fighting over `transform`. */}
+      {/* Reveal and float animate on separate elements so they never fight
+          over the same `transform`. */}
       {CARDS.map((card) => (
         <div
           key={`${card.id}-layer`}
