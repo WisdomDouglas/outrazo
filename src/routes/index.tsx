@@ -29,7 +29,10 @@ import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { EventCard } from "@/design-system/components/EventCard";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
-import { HeroCollage } from "@/showcase/landing/HeroCollage";
+import {
+  HeroCardStrip,
+  HeroFloatingCards,
+} from "@/showcase/landing/HeroFloatingCards";
 import { ATTENDEES, EVENTS } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/")({
