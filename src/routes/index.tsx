@@ -29,7 +29,10 @@ import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { EventCard } from "@/design-system/components/EventCard";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
-import { HeroCollage } from "@/showcase/landing/HeroCollage";
+import {
+  HeroCardStrip,
+  HeroFloatingCards,
+} from "@/showcase/landing/HeroFloatingCards";
 import { ATTENDEES, EVENTS } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/")({
@@ -96,35 +99,37 @@ function Landing() {
 
   return (
     <div className="min-h-screen bg-canvas text-primary-text">
-      <header className="sticky top-0 z-30 border-b border-line bg-canvas/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1200px] items-center gap-lg px-md py-md lg:px-xl">
-          <a href="#" className="focus-ring type-h3 rounded-sm tracking-tight">
+      <header className="sticky top-0 z-40 px-md pt-md lg:pt-lg">
+        <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-line bg-card/80 px-md py-sm shadow-floating backdrop-blur-xl lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
+          <a href="#" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
             OUTRAZO<span className="text-accent">.</span>
           </a>
-          <nav aria-label="Primary" className="hidden items-center gap-xs lg:flex">
+          <nav
+            aria-label="Primary"
+            className="hidden items-center justify-center gap-xs lg:flex"
+          >
             {["Explore", "Categories", "Discover"].map((item) => (
               <a
                 key={item}
                 href="#"
-                className="focus-ring type-body rounded-full px-md py-sm text-muted-text hover:text-primary-text"
+                className="focus-ring type-body rounded-full px-md py-sm text-muted-text transition-colors hover:bg-primary-text/8 hover:text-primary-text"
               >
                 {item}
               </a>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-sm">
+          <div className="flex items-center justify-end gap-sm">
             <button
               type="button"
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-              className="focus-ring inline-flex h-11 items-center gap-sm rounded-full border border-line px-md type-caption text-muted-text transition-colors hover:text-primary-text"
+              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-line text-muted-text transition-colors hover:text-primary-text"
             >
               {theme === "dark" ? (
                 <Sun aria-hidden className="size-4" />
               ) : (
                 <Moon aria-hidden className="size-4" />
               )}
-              <span className="hidden sm:inline">{theme === "dark" ? "Light" : "Dark"}</span>
             </button>
             <Button size="sm" className="hidden sm:inline-flex">
               Post Your Event
@@ -132,7 +137,7 @@ function Landing() {
             <button
               type="button"
               aria-label="Open menu"
-              className="focus-ring grid size-11 place-items-center rounded-full border border-line text-muted-text lg:hidden"
+              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-line text-muted-text lg:hidden"
             >
               <Menu aria-hidden className="size-4" />
             </button>
@@ -143,13 +148,25 @@ function Landing() {
       <main>
         {/* Hero */}
         <section className="relative overflow-hidden">
-          <div className="mx-auto grid max-w-[1200px] items-center gap-2xl px-md py-2xl lg:grid-cols-[1fr_1fr] lg:px-xl lg:py-section">
-            <div className="flex flex-col gap-lg">
-              <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full bg-accent/15 px-md py-sm font-semibold text-accent">
+          {/* ambient glows */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-[-10%] size-[520px] -translate-x-1/2 rounded-full bg-accent/20 blur-[120px]"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute bottom-[-20%] right-[10%] size-[320px] rounded-full bg-transactional/10 blur-[120px]"
+          />
+
+          <div className="relative mx-auto min-h-[560px] max-w-[1200px] px-md py-2xl lg:min-h-[760px] lg:px-xl lg:py-section">
+            <HeroFloatingCards />
+
+            <div className="relative z-10 mx-auto flex max-w-[640px] flex-col items-center gap-lg text-center">
+              <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-sm font-semibold text-accent backdrop-blur-md">
                 <Flame aria-hidden className="size-4" strokeWidth={2.5} />
                 Trending around you
               </span>
-              <h1 className="type-hero max-w-[16ch]">
+              <h1 className="type-hero text-balance">
                 Your city. Your people.{" "}
                 <span className="text-accent">Your experiences.</span>
               </h1>
@@ -158,9 +175,11 @@ function Landing() {
                 rooftop parties to tech meetups, all happening around you.
               </p>
 
-              <div className="flex flex-col gap-md sm:max-w-[520px]">
-                <SearchField placeholder="Search events, places, or communities..." />
-                <div className="flex flex-wrap gap-sm">
+              <div className="flex w-full flex-col items-center gap-md">
+                <div className="w-full max-w-[520px]">
+                  <SearchField placeholder="Search events, places, or communities..." />
+                </div>
+                <div className="flex flex-wrap justify-center gap-sm">
                   <CategoryChip icon={<Clock className="size-4" />} active>
                     Tonight
                   </CategoryChip>
@@ -172,7 +191,7 @@ function Landing() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-md">
+              <div className="flex w-full flex-col gap-md sm:w-auto sm:flex-row sm:justify-center">
                 <Button size="lg">
                   Explore Events
                   <ArrowRight aria-hidden className="size-4" />
@@ -182,13 +201,12 @@ function Landing() {
                   <Plus aria-hidden className="size-4" />
                 </Button>
               </div>
-            </div>
 
-            <div className="flex justify-center lg:justify-end">
-              <HeroCollage />
+              <HeroCardStrip />
             </div>
           </div>
         </section>
+
 
         {/* Categories */}
         <section className="mx-auto max-w-[1200px] px-md lg:px-xl">
