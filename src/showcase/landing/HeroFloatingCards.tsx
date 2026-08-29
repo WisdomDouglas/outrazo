@@ -140,8 +140,8 @@ export function HeroFloatingCards() {
 
       {/* Orbiting sticker */}
       <div
-        className="outrazo-orbit absolute left-1/2 top-[18%] -ml-[60px]"
-        style={{ ["--orbit" as string]: "120px" }}
+        className="outrazo-orbit absolute left-[24%] top-[62%] -ml-[60px]"
+        style={{ ["--orbit" as string]: "34px" }}
       >
         <span className="type-caption inline-flex items-center gap-xs rounded-full bg-accent px-md py-sm font-semibold text-on-accent shadow-glow">
           <Sparkles className="size-4" strokeWidth={2.5} />
@@ -150,7 +150,7 @@ export function HeroFloatingCards() {
       </div>
 
       {/* Pulsing music sticker */}
-      <span className="absolute bottom-[22%] left-1/2 ml-[150px] grid size-12 place-items-center">
+      <span className="absolute right-[26%] top-[30%] grid size-12 place-items-center">
         <span className="outrazo-pulse-ring absolute inset-0 rounded-full bg-transactional/50" />
         <span className="relative grid size-10 place-items-center rounded-full bg-transactional text-on-transactional shadow-floating">
           <Music className="size-4" strokeWidth={2.5} />
