@@ -153,7 +153,7 @@ const CARDS: FloatCard[] = [
   {
     id: "festival",
     depth: "front",
-    className: "right-[2%] bottom-[8%] w-[206px] xl:w-[232px]",
+    className: "right-[3%] bottom-[3%] w-[206px] xl:w-[232px]",
     style: {
       ["--tilt" as string]: "-9deg",
       ["--driftY" as string]: "-18px",
@@ -175,7 +175,7 @@ const CARDS: FloatCard[] = [
   {
     id: "proof",
     depth: "front",
-    className: "left-[10%] top-[52%] w-[196px] outrazo-pop",
+    className: "left-[9%] top-[46%] w-[196px] outrazo-pop",
     style: { ["--reveal-delay" as string]: "0.42s", animationDelay: "-1.8s" },
     node: (
       <div className="flex items-center gap-md rounded-lg border border-line bg-card/95 p-md shadow-floating backdrop-blur-md">
@@ -190,7 +190,7 @@ const CARDS: FloatCard[] = [
   {
     id: "ticket",
     depth: "front",
-    className: "right-[8%] top-[50%] w-[186px] outrazo-pop",
+    className: "right-[9%] top-[42%] w-[186px] outrazo-pop",
     style: { ["--reveal-delay" as string]: "0.5s", animationDelay: "-3s" },
     node: (
       <StatPill
