@@ -1,4 +1,4 @@
-import { Music, Sparkles, Ticket, Users } from "lucide-react";
+import { Music, Sparkles, Ticket } from "lucide-react";
 
 import { AvatarStack } from "@/design-system/components/AvatarStack";
 import { Badge } from "@/design-system/components/Badge";
@@ -63,7 +63,7 @@ const CARDS: FloatCard[] = [
     style: { ["--tilt" as string]: "8deg", animationDelay: "-2.4s" },
     node: (
       <PhotoCard
-        src={photo("photo-1533174072545-7a46d19cd819")}
+        src={photo("photo-1533174072545-7a4b6ad7a6c3")}
         alt="Friends laughing together outdoors"
         label="Rooftop Sundown"
         meta="Sat · Lekki"
@@ -186,9 +186,6 @@ export function HeroCardStrip() {
           label="Build Week"
           meta="Sun · Ikeja"
         />
-      </div>
-      <div className="sr-only">
-        <Users aria-hidden />
       </div>
     </div>
   );
