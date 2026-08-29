@@ -140,7 +140,7 @@ export function HeroFloatingCards() {
 
       {/* Orbiting sticker */}
       <div
-        className="outrazo-orbit absolute left-[24%] top-[62%] -ml-[60px]"
+        className="outrazo-orbit absolute left-[27%] top-[6%] -ml-[60px]"
         style={{ ["--orbit" as string]: "34px" }}
       >
         <span className="type-caption inline-flex items-center gap-xs rounded-full bg-accent px-md py-sm font-semibold text-on-accent shadow-glow">
