@@ -14,6 +14,7 @@ import {
   Plus,
   Palette,
   ShieldCheck,
+  Sparkles,
   Sun,
   Ticket,
   Trophy,
@@ -78,7 +79,7 @@ const TONIGHT = [
 ];
 
 const CITIES = [
-  { name: "Lagos", count: "1,234 events", src: "photo-1618828665011-0abd973f7bb4" },
+  { name: "Lagos", count: "1,234 events", src: "photo-1519501025264-65ba15a82390" },
   { name: "Abuja", count: "842 events", src: "photo-1590846406792-0adc7f938f1d" },
   { name: "Port Harcourt", count: "612 events", src: "photo-1449824913935-59a10b8d2000" },
   { name: "Ibadan", count: "423 events", src: "photo-1477959858617-67f85cf4f1df" },
@@ -89,6 +90,31 @@ const TRUST = [
   { icon: ShieldCheck, title: "Trusted", copy: "Organizers" },
   { icon: Ticket, title: "Secure", copy: "Ticketing" },
   { icon: CalendarCheck, title: "Easy", copy: "Check-in" },
+];
+
+const STATS = [
+  { icon: CalendarCheck, value: "3,100+", label: "Live events" },
+  { icon: MapPin, value: "24", label: "Cities covered" },
+  { icon: Users, value: "180k", label: "People going out" },
+  { icon: Sparkles, value: "4.9", label: "Average rating" },
+];
+
+const STEPS = [
+  {
+    icon: Compass,
+    title: "Discover",
+    copy: "Browse what's on tonight, this weekend, or near you.",
+  },
+  {
+    icon: Ticket,
+    title: "Reserve",
+    copy: "Grab a ticket or RSVP in seconds — no queue, no stress.",
+  },
+  {
+    icon: PartyPopper,
+    title: "Show up",
+    copy: "Scan in, meet your people, and share the moment after.",
+  },
 ];
 
 const unsplash = (id: string, w = 800) =>
@@ -208,18 +234,40 @@ function Landing() {
         </section>
 
 
+        {/* Live stats band */}
+        <section className="mx-auto max-w-[1200px] px-md pt-lg lg:px-xl">
+          <ul className="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-line shadow-card lg:grid-cols-4">
+            {STATS.map(({ icon: Icon, value, label }) => (
+              <li
+                key={label}
+                className="flex items-center gap-md bg-card px-md py-lg lg:justify-center"
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent/12 text-accent">
+                  <Icon aria-hidden className="size-[18px]" strokeWidth={2} />
+                </span>
+                <span>
+                  <span className="type-h3 block text-primary-text">{value}</span>
+                  <span className="type-caption text-muted-text">{label}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         {/* Categories */}
-        <section className="mx-auto max-w-[1200px] px-md lg:px-xl">
+        <section className="mx-auto max-w-[1200px] px-md pt-section lg:px-xl">
           <h2 className="type-h2 mb-lg">Discover your kind of experience</h2>
-          <ul className="grid grid-cols-4 gap-md rounded-lg bg-card p-lg shadow-card md:grid-cols-8">
+          <ul className="grid grid-cols-2 gap-sm sm:grid-cols-4 lg:grid-cols-8 lg:gap-md lg:rounded-lg lg:bg-card lg:p-lg lg:shadow-card">
             {CATEGORIES.map(({ label, icon: Icon }) => (
               <li key={label}>
                 <button
                   type="button"
-                  className="focus-ring flex w-full flex-col items-center gap-sm rounded-md px-sm py-md text-muted-text transition-transform duration-150 hover:-translate-y-[2px] hover:text-accent"
+                  className="focus-ring flex w-full items-center gap-sm rounded-md border border-line bg-card px-md py-md text-muted-text transition-all duration-150 hover:-translate-y-[2px] hover:border-accent/40 hover:text-accent lg:flex-col lg:justify-center lg:border-0 lg:bg-transparent lg:px-sm"
                 >
-                  <Icon aria-hidden className="size-6" strokeWidth={2} />
-                  <span className="type-caption">{label}</span>
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent/10 text-accent lg:size-11">
+                    <Icon aria-hidden className="size-[18px] lg:size-5" strokeWidth={2} />
+                  </span>
+                  <span className="type-caption truncate">{label}</span>
                 </button>
               </li>
             ))}
@@ -227,57 +275,65 @@ function Landing() {
         </section>
 
         {/* Trending */}
-        <section className="mx-auto max-w-[1200px] px-md py-section lg:px-xl">
-          <div className="mb-lg flex items-end justify-between gap-md">
+        <section className="py-section">
+          <div className="mx-auto mb-lg flex max-w-[1200px] items-end justify-between gap-md px-md lg:px-xl">
             <h2 className="type-h2">Recommended for you</h2>
-            <a href="#" className="focus-ring type-body rounded-sm text-accent hover:underline">
+            <a
+              href="#"
+              className="focus-ring type-body inline-flex shrink-0 items-center gap-xs rounded-sm text-accent hover:underline"
+            >
               See all
+              <ArrowRight aria-hidden className="size-4" />
             </a>
           </div>
-          <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
+          {/* Snapping rail on mobile, grid from sm up. */}
+          <div className="outrazo-rail gap-md px-md pb-sm sm:mx-auto sm:grid sm:max-w-[1200px] sm:grid-cols-2 sm:gap-lg sm:overflow-visible lg:grid-cols-3 lg:px-xl">
             {EVENTS.map((event) => (
-              <EventCard key={event.title} {...event} attendees={ATTENDEES.slice(0, 3)} />
+              <EventCard
+                key={event.title}
+                {...event}
+                attendees={ATTENDEES.slice(0, 3)}
+                className="w-[82vw] max-w-[340px] shrink-0 sm:w-auto sm:max-w-none"
+              />
             ))}
           </div>
         </section>
 
-        {/* Happening tonight — looping marquee */}
-        <section className="overflow-hidden pb-section">
-          <div className="mx-auto mb-lg flex max-w-[1200px] items-center gap-sm px-md lg:px-xl">
-            <h2 className="type-h2">Happening tonight</h2>
-            <Badge variant="transactional">Live</Badge>
-          </div>
-          <div className="relative">
-            <div className="outrazo-marquee flex w-max gap-md">
-              {[...TONIGHT, ...TONIGHT].map((item, index) => (
-                <article
-                  key={`${item.title}-${index}`}
-                  className="relative w-[220px] shrink-0 overflow-hidden rounded-lg shadow-card"
+        {/* How it works */}
+        <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
+          <h2 className="type-h2 mb-lg">Three taps to your next night out</h2>
+          <ol className="grid gap-md lg:grid-cols-3">
+            {STEPS.map(({ icon: Icon, title, copy }, index) => (
+              <li
+                key={title}
+                className="relative flex gap-md overflow-hidden rounded-lg border border-line bg-card p-lg shadow-card"
+              >
+                <span
+                  aria-hidden
+                  className="type-hero absolute -right-2 -top-6 select-none text-primary-text/5"
                 >
-                  <img
-                    src={unsplash(item.src, 500)}
-                    alt={item.title}
-                    loading="lazy"
-                    className="aspect-[4/3] w-full object-cover"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-canvas/75 p-md backdrop-blur-md">
-                    <h3 className="type-h3 text-primary-text">{item.title}</h3>
-                    <p className="type-caption text-muted-text">{item.city}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
+                  {index + 1}
+                </span>
+                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent/12 text-accent">
+                  <Icon aria-hidden className="size-5" strokeWidth={2} />
+                </span>
+                <span className="relative">
+                  <span className="type-h3 block">{title}</span>
+                  <span className="type-body text-muted-text">{copy}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
         </section>
 
         {/* Near you */}
-        <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
-          <h2 className="type-h2 mb-lg">Near you</h2>
-          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+        <section className="pb-section">
+          <h2 className="type-h2 mx-auto mb-lg max-w-[1200px] px-md lg:px-xl">Near you</h2>
+          <div className="outrazo-rail gap-md px-md pb-sm sm:mx-auto sm:grid sm:max-w-[1200px] sm:grid-cols-2 sm:overflow-visible lg:grid-cols-4 lg:px-xl">
             {CITIES.map((city) => (
               <article
                 key={city.name}
-                className="relative overflow-hidden rounded-lg transition-transform duration-200 hover:-translate-y-[2px]"
+                className="relative w-[68vw] max-w-[300px] shrink-0 overflow-hidden rounded-lg transition-transform duration-200 hover:-translate-y-[2px] sm:w-auto sm:max-w-none"
               >
                 <img
                   src={unsplash(city.src, 600)}
@@ -286,9 +342,14 @@ function Landing() {
                   className="aspect-[16/10] w-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-canvas/90 to-transparent" />
-                <div className="absolute bottom-md left-md">
-                  <h3 className="type-h3 text-primary-text">{city.name}</h3>
-                  <p className="type-caption text-muted-text">{city.count}</p>
+                <div className="absolute bottom-md left-md flex items-center gap-sm">
+                  <span className="grid size-9 place-items-center rounded-full bg-canvas/70 text-accent backdrop-blur-md">
+                    <MapPin aria-hidden className="size-4" strokeWidth={2} />
+                  </span>
+                  <span>
+                    <h3 className="type-h3 text-primary-text">{city.name}</h3>
+                    <p className="type-caption text-muted-text">{city.count}</p>
+                  </span>
                 </div>
               </article>
             ))}
