@@ -88,7 +88,7 @@ export function HeroFloatingCards() {
           />
         </div>
         <div
-          className="outrazo-pop absolute left-[6%] top-[52%] w-[88%]"
+          className="outrazo-pop absolute left-[6%] top-[45%] w-[88%]"
           style={{ ["--tilt" as string]: "-3deg", animationDelay: "-1.8s" }}
         >
           <StatCard
@@ -98,7 +98,7 @@ export function HeroFloatingCards() {
           />
         </div>
         <div
-          className="outrazo-float absolute left-0 bottom-[8%] w-[92%]"
+          className="outrazo-float absolute left-0 bottom-[3%] w-[92%]"
           style={{ ["--tilt" as string]: "4deg", animationDelay: "-2.6s" }}
         >
           <PhotoCard
@@ -124,7 +124,7 @@ export function HeroFloatingCards() {
           />
         </div>
         <div
-          className="outrazo-pop absolute right-[6%] top-[50%] w-[88%]"
+          className="outrazo-pop absolute right-[6%] top-[45%] w-[88%]"
           style={{ ["--tilt" as string]: "3deg", animationDelay: "-3s" }}
         >
           <StatCard
@@ -135,7 +135,7 @@ export function HeroFloatingCards() {
           />
         </div>
         <div
-          className="outrazo-float absolute right-0 bottom-[6%] w-[92%]"
+          className="outrazo-float absolute right-0 bottom-[3%] w-[92%]"
           style={{ ["--tilt" as string]: "-6deg", animationDelay: "-3.6s" }}
         >
           <PhotoCard
