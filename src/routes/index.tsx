@@ -32,7 +32,9 @@ import { useTheme } from "@/design-system/lib/use-theme";
 import {
   HeroCardStrip,
   HeroFloatingCards,
+  HeroVectorArt,
 } from "@/showcase/landing/HeroFloatingCards";
+
 import { ATTENDEES, EVENTS } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/")({
