@@ -226,7 +226,7 @@ function Landing() {
               Browse all
             </a>
           </div>
-          <ul className="grid grid-cols-2 gap-md sm:grid-cols-3 lg:grid-cols-4">
+          <ul className="grid grid-cols-1 gap-md sm:grid-cols-2 lg:grid-cols-4">
             {CATEGORIES.map(({ label, icon: Icon, count }) => (
               <li key={label}>
                 <button
