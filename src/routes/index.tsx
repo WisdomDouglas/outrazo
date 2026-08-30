@@ -29,6 +29,7 @@ import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { EventCard } from "@/design-system/components/EventCard";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
+import { HeroBackdrop } from "@/showcase/landing/HeroBackdrop";
 import {
   HeroCardStrip,
   HeroFloatingCards,
