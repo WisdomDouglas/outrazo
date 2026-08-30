@@ -16,14 +16,14 @@ export function HeroBackdrop() {
           alt=""
           loading="lazy"
           decoding="async"
-          className="outrazo-drift absolute inset-0 size-full object-cover object-center opacity-100 mix-blend-screen brightness-150 saturate-125"
+          className="outrazo-drift absolute inset-0 size-full object-cover object-center opacity-100 brightness-125 saturate-125"
         />
         <img
           src={heroLines.url}
           alt=""
           loading="lazy"
           decoding="async"
-          className="outrazo-drift absolute inset-0 hidden size-full scale-x-[-1] object-cover opacity-70 mix-blend-screen brightness-125 lg:block"
+          className="outrazo-drift absolute inset-0 hidden size-full scale-x-[-1] object-cover opacity-60 brightness-110 lg:block"
           style={{ animationDelay: "-9s" }}
         />
         {/* Keep the centre quiet behind the headline */}
