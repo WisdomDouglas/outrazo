@@ -16,18 +16,19 @@ export function HeroBackdrop() {
           alt=""
           loading="lazy"
           decoding="async"
-          className="outrazo-drift absolute inset-0 size-full object-cover object-center opacity-90 mix-blend-screen"
+          className="outrazo-drift absolute inset-0 size-full object-cover object-center opacity-100 mix-blend-screen brightness-150 saturate-125"
         />
         <img
           src={heroLines.url}
           alt=""
           loading="lazy"
           decoding="async"
-          className="outrazo-drift absolute inset-0 hidden size-full scale-x-[-1] object-cover opacity-40 mix-blend-screen lg:block"
+          className="outrazo-drift absolute inset-0 hidden size-full scale-x-[-1] object-cover opacity-70 mix-blend-screen brightness-125 lg:block"
           style={{ animationDelay: "-9s" }}
         />
         {/* Keep the centre quiet behind the headline */}
-        <div className="absolute inset-0 bg-[radial-gradient(60%_55%_at_50%_45%,var(--outrazo-bg-canvas)_0%,color-mix(in_srgb,var(--outrazo-bg-canvas)_85%,transparent)_45%,transparent_78%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(46%_42%_at_50%_46%,var(--outrazo-bg-canvas)_0%,color-mix(in_srgb,var(--outrazo-bg-canvas)_80%,transparent)_55%,transparent_85%)]" />
+
         <div className="absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-b from-transparent to-canvas" />
       </div>
 
