@@ -108,3 +108,11 @@
   offset-path: var(--path);
   animation: outrazo-trace var(--dur, 8s) linear infinite;
 }
+
+.outrazo-hero-bg { opacity: 1; }
+.light .outrazo-hero-bg { opacity: 0.16; }
+
+@media (max-width: 1023px) {
+  .outrazo-hero-bg { opacity: 0.6; }
+  .light .outrazo-hero-bg { opacity: 0.12; }
+}
