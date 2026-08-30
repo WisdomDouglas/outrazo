@@ -29,6 +29,7 @@ import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { EventCard } from "@/design-system/components/EventCard";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
+import { HeroBackdrop } from "@/showcase/landing/HeroBackdrop";
 import {
   HeroCardStrip,
   HeroFloatingCards,
@@ -150,20 +151,22 @@ function Landing() {
 
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden">
+        <section className="relative isolate overflow-hidden">
+          <HeroBackdrop />
           {/* ambient glows */}
           <div
             aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[-10%] size-[520px] -translate-x-1/2 rounded-full bg-accent/20 blur-[120px]"
+            className="pointer-events-none absolute left-1/2 top-[-10%] -z-10 size-[520px] -translate-x-1/2 rounded-full bg-accent/20 blur-[120px]"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute bottom-[-20%] right-[10%] size-[320px] rounded-full bg-transactional/10 blur-[120px]"
+            className="pointer-events-none absolute bottom-[-20%] right-[10%] -z-10 size-[320px] rounded-full bg-transactional/10 blur-[120px]"
           />
 
           <div className="relative mx-auto min-h-[560px] max-w-[1200px] px-md py-2xl lg:min-h-[760px] lg:px-xl lg:py-section">
             <HeroFloatingCards />
             <HeroVectorArt />
+
 
 
             <div className="relative z-10 mx-auto flex max-w-[640px] flex-col items-center gap-lg text-center">
