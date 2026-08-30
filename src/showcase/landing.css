@@ -72,3 +72,39 @@
 .outrazo-pulse-ring {
   animation: outrazo-pulse-ring 3s ease-out infinite;
 }
+
+/* --- Hero backdrop illustration motion --- */
+@keyframes outrazo-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.04); }
+  50% { transform: translate3d(-1.5%, -1.5%, 0) scale(1.08); }
+}
+
+@keyframes outrazo-breathe {
+  0%, 100% { opacity: 0.35; transform: scale(0.96); }
+  50% { opacity: 0.9; transform: scale(1.06); }
+}
+
+@keyframes outrazo-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes outrazo-trace {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+@keyframes outrazo-sway {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -8px, 0); }
+}
+
+.outrazo-drift { animation: outrazo-drift 22s ease-in-out infinite; will-change: transform; }
+.outrazo-breathe { animation: outrazo-breathe 7s ease-in-out infinite; }
+.outrazo-spin-slow { animation: outrazo-spin 26s linear infinite; transform-origin: center; }
+.outrazo-sway { animation: outrazo-sway 14s ease-in-out infinite; }
+.outrazo-trace {
+  offset-path: var(--path);
+  animation: outrazo-trace var(--dur, 8s) linear infinite;
+}
