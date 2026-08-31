@@ -116,3 +116,29 @@
   .outrazo-hero-bg { opacity: 0.6; }
   .light .outrazo-hero-bg { opacity: 0.12; }
 }
+
+/* --- Hero scene (orbits, city, stage, crowd) --- */
+.outrazo-hero-bg {
+  --scene-city: color-mix(in srgb, var(--color-accent) 16%, var(--outrazo-bg-canvas));
+  --scene-window: var(--color-accent);
+  --scene-stage: color-mix(in srgb, var(--color-accent) 34%, var(--outrazo-bg-canvas));
+  --scene-crowd: color-mix(in srgb, var(--outrazo-bg-canvas) 72%, #000);
+  opacity: 1;
+}
+
+.light .outrazo-hero-bg {
+  --scene-city: color-mix(in srgb, var(--color-accent) 12%, #ffffff);
+  --scene-window: color-mix(in srgb, var(--color-accent) 40%, #ffffff);
+  --scene-stage: color-mix(in srgb, var(--color-accent) 28%, #ffffff);
+  --scene-crowd: color-mix(in srgb, var(--color-accent) 22%, #cfd9d4);
+  opacity: 0.9;
+}
+
+.outrazo-orbit-icon:hover {
+  box-shadow: 0 0 28px color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+@media (max-width: 1023px) {
+  .outrazo-hero-bg { opacity: 0.85; }
+  .light .outrazo-hero-bg { opacity: 0.8; }
+}

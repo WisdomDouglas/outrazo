@@ -1,147 +1,225 @@
-import heroLines from "@/assets/hero-lines.jpg.asset.json";
+import { MapPin, Music, Ticket, Users } from "lucide-react";
 
 /**
- * Atmospheric hero backdrop: the OUTRAZO line-art illustration blended into the
- * canvas, plus a few lightweight animated accents (drifting particles, travelling
- * dots, rotating dashed orbits, breathing glows). Purely decorative and never
- * interactive — hero content sits above it.
+ * Hero scene: orbital paths, drifting particles, a city skyline, a lit event
+ * stage and a crowd silhouette — composed entirely in SVG so it themes with the
+ * design tokens and scales cleanly from small phones to wide desktops.
+ * Purely decorative; it always sits behind the hero content.
  */
-export function HeroBackdrop() {
+
+/** Deterministic pseudo-random helper so the crowd/skyline stay stable across renders. */
+function rand(seed: number) {
+  const x = Math.sin(seed * 127.1) * 43758.5453;
+  return Math.round((x - Math.floor(x)) * 1000) / 1000;
+}
+
+const BUILDINGS = Array.from({ length: 34 }, (_, i) => {
+  const w = Math.round(26 + rand(i + 1) * 44);
+  const x = Math.round(i * 37 - 20 + rand(i + 9) * 10);
+  const h = Math.round(70 + rand(i + 3) * 210);
+  return { x, w, h, i };
+});
+
+const CROWD = Array.from({ length: 46 }, (_, i) => {
+  const x = Math.round(i * 27 - 15 + rand(i + 21) * 12);
+  const y = Math.round(748 + rand(i + 5) * 18);
+  const r = Math.round(9 + rand(i + 7) * 5);
+  return { x, y, r, i };
+});
+
+const PARTICLES = [
+  { cx: 190, cy: 250, r: 2.5, d: "0s" },
+  { cx: 132, cy: 330, r: 2, d: "-2.2s" },
+  { cx: 226, cy: 520, r: 2.2, d: "-4.1s" },
+  { cx: 300, cy: 175, r: 1.8, d: "-1.4s" },
+  { cx: 980, cy: 210, r: 2.4, d: "-3.2s" },
+  { cx: 1064, cy: 300, r: 2, d: "-5s" },
+  { cx: 1120, cy: 452, r: 2.6, d: "-2.7s" },
+  { cx: 880, cy: 140, r: 1.8, d: "-4.6s" },
+  { cx: 620, cy: 118, r: 2, d: "-1.1s" },
+  { cx: 430, cy: 96, r: 1.6, d: "-3.9s" },
+];
+
+function Skyline() {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      {/* Illustration layer — mirrored halves keep strong linework at the edges */}
-      <div className="outrazo-hero-bg absolute inset-0">
-        <img
-          src={heroLines.url}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="outrazo-drift absolute inset-0 size-full object-cover object-center opacity-100 brightness-125 saturate-125"
-        />
-        <img
-          src={heroLines.url}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="outrazo-drift absolute inset-0 hidden size-full scale-x-[-1] object-cover opacity-60 brightness-110 lg:block"
-          style={{ animationDelay: "-9s" }}
-        />
-        {/* Keep the centre quiet behind the headline */}
-        <div className="absolute inset-0 bg-[radial-gradient(46%_42%_at_50%_46%,var(--outrazo-bg-canvas)_0%,color-mix(in_srgb,var(--outrazo-bg-canvas)_80%,transparent)_55%,transparent_85%)]" />
-
-        <div className="absolute inset-x-0 bottom-0 h-[28%] bg-gradient-to-b from-transparent to-canvas" />
-      </div>
-
-      {/* Animated accents */}
-      <svg
-        className="absolute inset-0 size-full"
-        viewBox="0 0 1200 760"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <g className="outrazo-sway" style={{ animationDuration: "18s" }}>
-          <path
-            id="outrazo-line-a"
-            d="M-40 600C160 520 300 660 520 610S900 470 1240 560"
-            fill="none"
-            stroke="var(--color-accent)"
-            strokeOpacity="0.22"
-            strokeWidth="1.5"
-          />
+    <g className="outrazo-city">
+      {BUILDINGS.map(({ x, w, h, i }) => (
+        <g key={i}>
+          <rect x={x} y={800 - h} width={w} height={h} rx="2" fill="var(--scene-city)" />
+          {Array.from({ length: Math.floor(h / 34) }, (_, r) => (
+            <rect
+              key={r}
+              x={x + 6}
+              y={800 - h + 14 + r * 30}
+              width={Math.max(4, w - 12)}
+              height="5"
+              rx="2"
+              fill="var(--scene-window)"
+              opacity={Math.round((0.25 + rand(i * 7 + r) * 0.6) * 100) / 100}
+            />
+          ))}
         </g>
-        <g className="outrazo-sway" style={{ animationDuration: "24s", animationDelay: "-6s" }}>
-          <path
-            d="M-40 680C220 640 340 730 620 690S980 600 1240 650"
-            fill="none"
-            stroke="var(--color-accent)"
-            strokeOpacity="0.14"
-            strokeWidth="1"
-            strokeDasharray="4 12"
-          />
-        </g>
+      ))}
+    </g>
+  );
+}
 
-        {/* Rotating dashed orbits */}
-        <g className="outrazo-spin-slow" style={{ transformOrigin: "110px 120px" }}>
-          <circle
-            cx="110"
-            cy="120"
-            r="86"
-            fill="none"
-            stroke="var(--color-accent)"
-            strokeOpacity="0.25"
-            strokeWidth="1"
-            strokeDasharray="3 10"
-          />
-        </g>
-        <g
-          className="outrazo-spin-slow"
-          style={{ transformOrigin: "1080px 620px", animationDuration: "34s" }}
-        >
-          <circle
-            cx="1080"
-            cy="620"
-            r="58"
-            fill="none"
-            stroke="var(--color-accent)"
-            strokeOpacity="0.2"
-            strokeWidth="1"
-            strokeDasharray="2 9"
-          />
-        </g>
-
-        {/* Breathing glow nodes */}
-        {[
-          { cx: 96, cy: 206, r: 6, d: "0s" },
-          { cx: 240, cy: 78, r: 4, d: "-2.5s" },
-          { cx: 940, cy: 96, r: 4.5, d: "-4s" },
-          { cx: 1150, cy: 300, r: 3.5, d: "-1.2s" },
-          { cx: 180, cy: 660, r: 4, d: "-5.5s" },
-          { cx: 700, cy: 706, r: 3.5, d: "-3.3s" },
-        ].map((n) => (
-          <circle
-            key={`${n.cx}-${n.cy}`}
-            className="outrazo-breathe"
-            cx={n.cx}
-            cy={n.cy}
-            r={n.r}
-            fill="var(--color-accent)"
-            style={{ animationDelay: n.d, transformOrigin: `${n.cx}px ${n.cy}px` }}
-          />
-        ))}
+function Stage() {
+  return (
+    <g className="outrazo-stage">
+      {/* truss */}
+      <rect x="500" y="672" width="200" height="10" rx="3" fill="var(--scene-stage)" />
+      <rect x="506" y="682" width="6" height="46" rx="2" fill="var(--scene-stage)" />
+      <rect x="688" y="682" width="6" height="46" rx="2" fill="var(--scene-stage)" />
+      <rect x="500" y="726" width="200" height="8" rx="3" fill="var(--scene-stage)" />
+      {/* lights */}
+      {Array.from({ length: 9 }, (_, i) => (
         <circle
+          key={i}
           className="outrazo-breathe"
-          cx="1060"
-          cy="180"
-          r="3"
-          fill="var(--color-transactional)"
-          style={{ animationDelay: "-3.8s", transformOrigin: "1060px 180px" }}
+          cx={520 + i * 20}
+          cy={690}
+          r="3.4"
+          fill="var(--color-accent)"
+          style={{ animationDelay: `${-i * 0.35}s`, transformOrigin: `${520 + i * 20}px 690px` }}
         />
-      </svg>
+      ))}
+      {/* stage glow */}
+      <ellipse cx="600" cy="742" rx="170" ry="54" fill="url(#outrazo-stage-glow)" />
+    </g>
+  );
+}
 
-      {/* Dots travelling along the neon curves */}
-      <svg
-        className="absolute inset-0 size-full"
-        viewBox="0 0 1200 760"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        {[
-          { dur: "9s", delay: "0s" },
-          { dur: "12s", delay: "-4s" },
-          { dur: "7s", delay: "-2.5s" },
-        ].map((t) => (
-          <circle
-            key={t.dur + t.delay}
-            className="outrazo-trace"
-            r="3"
-            fill="var(--color-accent)"
-            style={{
-              ["--path" as string]:
-                'path("M-40 600C160 520 300 660 520 610S900 470 1240 560")',
-              ["--dur" as string]: t.dur,
-              animationDelay: t.delay,
-            }}
+function Crowd() {
+  return (
+    <g className="outrazo-crowd">
+      {CROWD.map(({ x, y, r, i }) => (
+        <g key={i} className="outrazo-sway" style={{ animationDuration: `${(8 + rand(i) * 8).toFixed(2)}s`, animationDelay: `${(-rand(i + 2) * 8).toFixed(2)}s` }}>
+          <circle cx={x} cy={y} r={r} fill="var(--scene-crowd)" />
+          <path
+            d={`M${x - r * 1.7} 800 q${r * 1.7} -${r * 2.6} ${r * 3.4} 0 Z`}
+            fill="var(--scene-crowd)"
           />
-        ))}
-      </svg>
+        </g>
+      ))}
+    </g>
+  );
+}
+
+const ORBIT_ICONS = [
+  { Icon: Music, radius: "clamp(120px, 26vw, 330px)", squash: 0.62, duration: "72s", delay: "0s", label: "music" },
+  { Icon: Users, radius: "clamp(140px, 31vw, 400px)", squash: 0.52, duration: "96s", delay: "-38s", label: "people" },
+  { Icon: MapPin, radius: "clamp(128px, 28vw, 360px)", squash: 0.58, duration: "84s", delay: "-56s", label: "location" },
+  { Icon: Ticket, radius: "clamp(150px, 34vw, 430px)", squash: 0.46, duration: "110s", delay: "-18s", label: "ticket" },
+];
+
+function OrbitIcons() {
+  return (
+    <div aria-hidden className="absolute inset-0">
+      {ORBIT_ICONS.map(({ Icon, radius, squash, duration, delay, label }) => (
+        <div
+          key={label}
+          className="pointer-events-none absolute left-1/2 top-[42%]"
+          style={{ transform: `scaleY(${squash})` }}
+        >
+          <div
+            className="outrazo-orbit"
+            style={{ ["--orbit" as string]: radius, animationDuration: duration, animationDelay: delay }}
+          >
+            <span
+              className="outrazo-orbit-icon pointer-events-auto grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-accent/30 bg-card/70 text-accent shadow-glow backdrop-blur-sm transition-transform duration-300 hover:scale-110 lg:size-14"
+              style={{ transform: `scaleY(${1 / squash})` }}
+            >
+              <Icon aria-hidden className="size-4 lg:size-6" strokeWidth={1.8} />
+            </span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
+
+export function HeroBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      {/* Orbits, halo and particles */}
+      <svg
+        className="outrazo-hero-bg absolute inset-0 size-full"
+        viewBox="0 0 1200 800"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <defs>
+          <radialGradient id="outrazo-halo" cx="50%" cy="40%" r="62%">
+            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.2" />
+            <stop offset="55%" stopColor="var(--color-accent)" stopOpacity="0.06" />
+            <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        <rect x="0" y="0" width="1200" height="800" fill="url(#outrazo-halo)" />
+
+        <g stroke="var(--color-accent)" fill="none">
+          <ellipse cx="600" cy="340" rx="430" ry="266" strokeOpacity="0.2" strokeWidth="1.2" />
+          <ellipse cx="600" cy="340" rx="352" ry="212" strokeOpacity="0.14" strokeWidth="1" />
+          <ellipse
+            cx="600"
+            cy="340"
+            rx="500"
+            ry="312"
+            strokeOpacity="0.11"
+            strokeWidth="1"
+            strokeDasharray="3 12"
+          />
+          <ellipse
+            cx="600"
+            cy="340"
+            rx="272"
+            ry="164"
+            strokeOpacity="0.09"
+            strokeWidth="1"
+            strokeDasharray="2 10"
+          />
+        </g>
+
+        {PARTICLES.map((p) => (
+          <circle
+            key={`${p.cx}-${p.cy}`}
+            className="outrazo-breathe"
+            cx={p.cx}
+            cy={p.cy}
+            r={p.r}
+            fill="var(--color-accent)"
+            style={{ animationDelay: p.d, transformOrigin: `${p.cx}px ${p.cy}px` }}
+          />
+        ))}
+      </svg>
+
+      {/* City skyline, stage and crowd — a band pinned to the bottom of the hero */}
+      <svg
+        className="outrazo-hero-city absolute inset-x-0 bottom-0 h-[34%] w-full lg:h-[30%]"
+        viewBox="0 500 1200 300"
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <radialGradient id="outrazo-stage-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="outrazo-city-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--outrazo-bg-canvas)" stopOpacity="1" />
+            <stop offset="100%" stopColor="var(--outrazo-bg-canvas)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        <Skyline />
+        <Stage />
+        <Crowd />
+
+        <rect x="0" y="470" width="1200" height="130" fill="url(#outrazo-city-fade)" />
+      </svg>
+
+      <OrbitIcons />
+    </div>
+  );
+}
+
