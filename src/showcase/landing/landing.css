@@ -4,3 +4,7 @@
 @media (max-width: 1023px) {
   .outrazo-hero-city { opacity: 0.32; }
 }
+
+@media (max-width: 1023px) {
+  .outrazo-orbit-icon { opacity: 0.55; }
+}
