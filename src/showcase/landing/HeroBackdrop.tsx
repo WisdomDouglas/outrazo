@@ -196,9 +196,9 @@ export function HeroBackdrop() {
 
       {/* City skyline, stage and crowd — a band pinned to the bottom of the hero */}
       <svg
-        className="outrazo-hero-city absolute inset-x-0 bottom-0 h-[42%] w-full lg:h-[38%]"
-        viewBox="240 470 720 330"
-        preserveAspectRatio="xMidYMax slice"
+        className="outrazo-hero-city absolute inset-x-0 bottom-0 h-[34%] w-full lg:h-[30%]"
+        viewBox="0 500 1200 300"
+        preserveAspectRatio="none"
       >
         <defs>
           <radialGradient id="outrazo-stage-glow" cx="50%" cy="50%" r="50%">

@@ -1,6 +1,6 @@
 
-.outrazo-hero-city { opacity: 0.5; }
-.light .outrazo-hero-city { opacity: 0.42; }
+.outrazo-hero-city { opacity: 0.38; }
+.light .outrazo-hero-city { opacity: 0.34; }
 @media (max-width: 1023px) {
-  .outrazo-hero-city { opacity: 0.42; }
+  .outrazo-hero-city { opacity: 0.32; }
 }
