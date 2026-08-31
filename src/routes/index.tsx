@@ -33,6 +33,7 @@ import { HeroBackdrop } from "@/showcase/landing/HeroBackdrop";
 import {
   HeroCardStrip,
   HeroFloatingCards,
+  HeroVectorArt,
 } from "@/showcase/landing/HeroFloatingCards";
 
 import { ATTENDEES, EVENTS } from "@/showcase/sample-data";
@@ -164,6 +165,7 @@ function Landing() {
 
           <div className="relative mx-auto min-h-[560px] max-w-[1200px] px-md py-2xl lg:min-h-[760px] lg:px-xl lg:py-section">
             <HeroFloatingCards />
+            <HeroVectorArt />
 
 
 
