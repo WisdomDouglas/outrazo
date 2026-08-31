@@ -10,20 +10,20 @@ import { MapPin, Music, Ticket, Users } from "lucide-react";
 /** Deterministic pseudo-random helper so the crowd/skyline stay stable across renders. */
 function rand(seed: number) {
   const x = Math.sin(seed * 127.1) * 43758.5453;
-  return x - Math.floor(x);
+  return Math.round((x - Math.floor(x)) * 1000) / 1000;
 }
 
 const BUILDINGS = Array.from({ length: 34 }, (_, i) => {
-  const w = 26 + rand(i + 1) * 44;
-  const x = i * 37 - 20 + rand(i + 9) * 10;
-  const h = 70 + rand(i + 3) * 210;
+  const w = Math.round(26 + rand(i + 1) * 44);
+  const x = Math.round(i * 37 - 20 + rand(i + 9) * 10);
+  const h = Math.round(70 + rand(i + 3) * 210);
   return { x, w, h, i };
 });
 
 const CROWD = Array.from({ length: 46 }, (_, i) => {
-  const x = i * 27 - 15 + rand(i + 21) * 12;
-  const y = 748 + rand(i + 5) * 18;
-  const r = 9 + rand(i + 7) * 5;
+  const x = Math.round(i * 27 - 15 + rand(i + 21) * 12);
+  const y = Math.round(748 + rand(i + 5) * 18);
+  const r = Math.round(9 + rand(i + 7) * 5);
   return { x, y, r, i };
 });
 
@@ -55,7 +55,7 @@ function Skyline() {
               height="5"
               rx="2"
               fill="var(--scene-window)"
-              opacity={0.25 + rand(i * 7 + r) * 0.6}
+              opacity={Math.round((0.25 + rand(i * 7 + r) * 0.6) * 100) / 100}
             />
           ))}
         </g>
@@ -94,7 +94,7 @@ function Crowd() {
   return (
     <g className="outrazo-crowd">
       {CROWD.map(({ x, y, r, i }) => (
-        <g key={i} className="outrazo-sway" style={{ animationDuration: `${8 + rand(i) * 8}s`, animationDelay: `${-rand(i + 2) * 8}s` }}>
+        <g key={i} className="outrazo-sway" style={{ animationDuration: `${(8 + rand(i) * 8).toFixed(2)}s`, animationDelay: `${(-rand(i + 2) * 8).toFixed(2)}s` }}>
           <circle cx={x} cy={y} r={r} fill="var(--scene-crowd)" />
           <path
             d={`M${x - r * 1.7} 800 q${r * 1.7} -${r * 2.6} ${r * 3.4} 0 Z`}
