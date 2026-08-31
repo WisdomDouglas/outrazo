@@ -107,10 +107,10 @@ function Crowd() {
 }
 
 const ORBIT_ICONS = [
-  { Icon: Music, radius: "clamp(120px, 30vw, 380px)", squash: 0.62, duration: "72s", delay: "0s", label: "music" },
-  { Icon: Users, radius: "clamp(140px, 36vw, 450px)", squash: 0.5, duration: "96s", delay: "-38s", label: "people" },
-  { Icon: MapPin, radius: "clamp(130px, 33vw, 415px)", squash: 0.58, duration: "84s", delay: "-56s", label: "location" },
-  { Icon: Ticket, radius: "clamp(150px, 38vw, 470px)", squash: 0.46, duration: "110s", delay: "-18s", label: "ticket" },
+  { Icon: Music, radius: "clamp(120px, 26vw, 330px)", squash: 0.62, duration: "72s", delay: "0s", label: "music" },
+  { Icon: Users, radius: "clamp(140px, 31vw, 400px)", squash: 0.52, duration: "96s", delay: "-38s", label: "people" },
+  { Icon: MapPin, radius: "clamp(128px, 28vw, 360px)", squash: 0.58, duration: "84s", delay: "-56s", label: "location" },
+  { Icon: Ticket, radius: "clamp(150px, 34vw, 430px)", squash: 0.46, duration: "110s", delay: "-18s", label: "ticket" },
 ];
 
 function OrbitIcons() {
@@ -119,7 +119,7 @@ function OrbitIcons() {
       {ORBIT_ICONS.map(({ Icon, radius, squash, duration, delay, label }) => (
         <div
           key={label}
-          className="pointer-events-none absolute left-1/2 top-[46%]"
+          className="pointer-events-none absolute left-1/2 top-[42%]"
           style={{ transform: `scaleY(${squash})` }}
         >
           <div
@@ -127,10 +127,10 @@ function OrbitIcons() {
             style={{ ["--orbit" as string]: radius, animationDuration: duration, animationDelay: delay }}
           >
             <span
-              className="outrazo-orbit-icon pointer-events-auto grid size-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-accent/30 bg-card/70 text-accent shadow-glow backdrop-blur-sm transition-transform duration-300 hover:scale-110 lg:size-14"
+              className="outrazo-orbit-icon pointer-events-auto grid size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-accent/30 bg-card/70 text-accent shadow-glow backdrop-blur-sm transition-transform duration-300 hover:scale-110 lg:size-14"
               style={{ transform: `scaleY(${1 / squash})` }}
             >
-              <Icon aria-hidden className="size-5 lg:size-6" strokeWidth={1.8} />
+              <Icon aria-hidden className="size-4 lg:size-6" strokeWidth={1.8} />
             </span>
           </div>
         </div>
@@ -142,55 +142,45 @@ function OrbitIcons() {
 export function HeroBackdrop() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      {/* Orbits, halo and particles */}
       <svg
         className="outrazo-hero-bg absolute inset-0 size-full"
         viewBox="0 0 1200 800"
-        preserveAspectRatio="xMidYMax slice"
+        preserveAspectRatio="xMidYMid slice"
       >
         <defs>
-          <radialGradient id="outrazo-halo" cx="50%" cy="42%" r="60%">
-            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.22" />
-            <stop offset="55%" stopColor="var(--color-accent)" stopOpacity="0.07" />
+          <radialGradient id="outrazo-halo" cx="50%" cy="40%" r="62%">
+            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.2" />
+            <stop offset="55%" stopColor="var(--color-accent)" stopOpacity="0.06" />
             <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
           </radialGradient>
-          <radialGradient id="outrazo-stage-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="outrazo-city-fade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--outrazo-bg-canvas)" stopOpacity="1" />
-            <stop offset="100%" stopColor="var(--outrazo-bg-canvas)" stopOpacity="0" />
-          </linearGradient>
         </defs>
 
-        {/* atmospheric halo */}
         <rect x="0" y="0" width="1200" height="800" fill="url(#outrazo-halo)" />
 
-        {/* orbital paths */}
-        <g className="outrazo-orbit-paths" stroke="var(--color-accent)" fill="none">
-          <ellipse cx="600" cy="368" rx="470" ry="292" strokeOpacity="0.22" strokeWidth="1.2" />
-          <ellipse cx="600" cy="368" rx="392" ry="240" strokeOpacity="0.16" strokeWidth="1" />
+        <g stroke="var(--color-accent)" fill="none">
+          <ellipse cx="600" cy="340" rx="430" ry="266" strokeOpacity="0.2" strokeWidth="1.2" />
+          <ellipse cx="600" cy="340" rx="352" ry="212" strokeOpacity="0.14" strokeWidth="1" />
           <ellipse
             cx="600"
-            cy="368"
-            rx="524"
-            ry="330"
-            strokeOpacity="0.12"
+            cy="340"
+            rx="500"
+            ry="312"
+            strokeOpacity="0.11"
             strokeWidth="1"
             strokeDasharray="3 12"
           />
           <ellipse
             cx="600"
-            cy="368"
-            rx="300"
-            ry="182"
-            strokeOpacity="0.1"
+            cy="340"
+            rx="272"
+            ry="164"
+            strokeOpacity="0.09"
             strokeWidth="1"
             strokeDasharray="2 10"
           />
         </g>
 
-        {/* particles */}
         {PARTICLES.map((p) => (
           <circle
             key={`${p.cx}-${p.cy}`}
@@ -202,17 +192,34 @@ export function HeroBackdrop() {
             style={{ animationDelay: p.d, transformOrigin: `${p.cx}px ${p.cy}px` }}
           />
         ))}
+      </svg>
 
-        {/* city / stage / crowd */}
+      {/* City skyline, stage and crowd — a band pinned to the bottom of the hero */}
+      <svg
+        className="outrazo-hero-city absolute inset-x-0 bottom-0 h-[42%] w-full lg:h-[38%]"
+        viewBox="240 470 720 330"
+        preserveAspectRatio="xMidYMax slice"
+      >
+        <defs>
+          <radialGradient id="outrazo-stage-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="outrazo-city-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--outrazo-bg-canvas)" stopOpacity="1" />
+            <stop offset="100%" stopColor="var(--outrazo-bg-canvas)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
         <Skyline />
         <Stage />
         <Crowd />
 
-        {/* keep the top of the skyline soft */}
-        <rect x="0" y="470" width="1200" height="150" fill="url(#outrazo-city-fade)" />
+        <rect x="0" y="470" width="1200" height="130" fill="url(#outrazo-city-fade)" />
       </svg>
 
       <OrbitIcons />
     </div>
   );
 }
+
