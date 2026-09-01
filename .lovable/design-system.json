@@ -2,7 +2,7 @@
   "meta": {
     "name": "My Little Library",
     "package": "@ws-4hutpagaanrcygcldpya/49851e5c-65c1-40ce-a6d3-b9bd74ef975f",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system",
@@ -23,8 +23,13 @@
       "eslint.config.js": "07a67437fb1a45ab36d6de0145ff09de",
       "lovable.toml": "9636c1bf32f9901bfba4eabb92981217",
       "mockupPreviewPlugin.ts": "08be2d15337c9b4145cc506cdf63a04e",
-      "package.json": "279266fe790b36483401ecaa1b88de37",
+      "package.json": "3d1b0ed2d7dde39378a1e28a18ab54b7",
       "public/favicon.ico": "9f504444f85a5af2eef9264b02ae40be",
+      "src/assets/hero-desktop-dark.png.asset.json": "75d1148bd8870af8c0c86dedc1807754",
+      "src/assets/hero-desktop-light.png.asset.json": "9ceff3f872f27b34f458a3d7b0cbb017",
+      "src/assets/hero-lines.jpg.asset.json": "7b558d48a21de4106a6fe4f770bc08c4",
+      "src/assets/hero-mobile-dark.png.asset.json": "fa9b909bf671185ec50e3d941acabf7c",
+      "src/assets/hero-mobile-light.png.asset.json": "90cdda63c61ad095be5bfad9c4b9f903",
       "src/design-system/components/Avatar.tsx": "df22d03d11cf6e3eba54398f65e4be7c",
       "src/design-system/components/AvatarStack.tsx": "428215c60d8234bf2638deb8be858bf4",
       "src/design-system/components/Badge.tsx": "5f87eef8f53ecf6063f8cead20e37152",
@@ -45,9 +50,10 @@
       "src/routes/[__component].preview.$.tsx": "3a40af1fe37daff2e891175a6e6d4f99",
       "src/routes/[__mockup].preview.$.tsx": "5d9f42470848aa60148f20f9580e240e",
       "src/routes/__root.tsx": "fb359cfb6776e7383dc1b5c0e9117ed3",
-      "src/routes/index.tsx": "609bda3dc334110a927badb7e43d3a1e",
-      "src/showcase/landing.css": "7667bf7dc0b60ac9f72d48b3468687ca",
-      "src/showcase/landing/HeroFloatingCards.tsx": "902ac560d0b0d2c69036658ede4d3a6c",
+      "src/routes/index.tsx": "4bd9ab3a3a868d217f3e4c9ff52122bf",
+      "src/showcase/landing.css": "01b189992e119b268f8aa298c794972e",
+      "src/showcase/landing/HeroBackdrop.tsx": "ecae7e6a10f6222f7bad1b1e9d581f7c",
+      "src/showcase/landing/HeroFloatingCards.tsx": "919a0d62e13e02b250fc57a88d199def",
       "src/showcase/sample-data.ts": "1816276aed7f6851e8d6488a74eec1a8",
       "src/styles.css": "77fbbd692908328dc4e56e2c1f75d8ba",
       "tsconfig.json": "994abf64c2b9f78b568879f80ed0170e",
@@ -493,6 +499,38 @@
           "default": "#"
         }
       ]
+    }
+  ],
+  "assets": [
+    {
+      "file": "src/assets/hero-desktop-dark.png.asset.json",
+      "kind": "image",
+      "format": "png",
+      "pointer": true
+    },
+    {
+      "file": "src/assets/hero-desktop-light.png.asset.json",
+      "kind": "image",
+      "format": "png",
+      "pointer": true
+    },
+    {
+      "file": "src/assets/hero-lines.jpg.asset.json",
+      "kind": "image",
+      "format": "jpg",
+      "pointer": true
+    },
+    {
+      "file": "src/assets/hero-mobile-dark.png.asset.json",
+      "kind": "image",
+      "format": "png",
+      "pointer": true
+    },
+    {
+      "file": "src/assets/hero-mobile-light.png.asset.json",
+      "kind": "image",
+      "format": "png",
+      "pointer": true
     }
   ]
 }
