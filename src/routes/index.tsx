@@ -97,7 +97,7 @@ function Landing() {
   return (
     <div className="min-h-screen bg-canvas text-primary-text">
       <header className="sticky top-0 z-40 px-md pt-md lg:pt-lg">
-        <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-line bg-card/80 px-md py-sm shadow-floating backdrop-blur-xl lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
+        <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-line/70 bg-canvas/55 px-md py-sm shadow-floating backdrop-blur-2xl lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
           <a href="#" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
             OUTRAZO<span className="text-accent">.</span>
           </a>
@@ -148,6 +148,12 @@ function Landing() {
           <HeroBackdrop />
 
           <div className="relative mx-auto min-h-[540px] max-w-[1100px] px-md py-xl lg:min-h-[720px] lg:px-xl lg:py-2xl">
+            {/* Readability scrim: softens the artwork behind the hero copy,
+                strongest on mobile where the artwork is busiest */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 h-[86%] bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_72%)] opacity-85 lg:opacity-55"
+            />
             <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-md text-center lg:gap-lg">
               <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
                 <Flame aria-hidden className="size-4" strokeWidth={2.5} />
@@ -172,7 +178,7 @@ function Landing() {
                   <ArrowRight aria-hidden className="size-4" />
                 </Button>
                 <Button size="md" variant="outline">
-                  Post Your Event
+                  Get Started
                   <Plus aria-hidden className="size-4" />
                 </Button>
               </div>
