@@ -3,7 +3,6 @@ import {
   ArrowRight,
   Briefcase,
   CalendarCheck,
-  Clock,
   Compass,
   Flame,
   Menu,
@@ -19,22 +18,16 @@ import {
   Trophy,
   UtensilsCrossed,
   Laptop,
-  MapPin,
   Users,
 } from "lucide-react";
 
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
-import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { EventCard } from "@/design-system/components/EventCard";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
 import { HeroBackdrop } from "@/showcase/landing/HeroBackdrop";
-import {
-  HeroCardStrip,
-  HeroFloatingCards,
-  HeroVectorArt,
-} from "@/showcase/landing/HeroFloatingCards";
+import { HeroCardStrip } from "@/showcase/landing/HeroFloatingCards";
 
 import { ATTENDEES, EVENTS } from "@/showcase/sample-data";
 
@@ -153,58 +146,32 @@ function Landing() {
         {/* Hero */}
         <section className="relative isolate overflow-hidden">
           <HeroBackdrop />
-          {/* ambient glows */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[-10%] -z-10 size-[520px] -translate-x-1/2 rounded-full bg-accent/20 blur-[120px]"
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute bottom-[-20%] right-[10%] -z-10 size-[320px] rounded-full bg-transactional/10 blur-[120px]"
-          />
 
-          <div className="relative mx-auto min-h-[560px] max-w-[1200px] px-md py-2xl lg:min-h-[760px] lg:px-xl lg:py-section">
-            <HeroFloatingCards />
-            <HeroVectorArt />
-
-
-
-            <div className="relative z-10 mx-auto flex max-w-[640px] flex-col items-center gap-lg text-center">
-              <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-sm font-semibold text-accent backdrop-blur-md">
+          <div className="relative mx-auto min-h-[540px] max-w-[1100px] px-md py-xl lg:min-h-[720px] lg:px-xl lg:py-2xl">
+            <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-md text-center lg:gap-lg">
+              <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
                 <Flame aria-hidden className="size-4" strokeWidth={2.5} />
                 Trending around you
               </span>
-              <h1 className="type-hero text-balance">
+              <h1 className="type-h1 text-balance lg:text-[56px]">
                 Your city. Your people.{" "}
                 <span className="text-accent">Your experiences.</span>
               </h1>
-              <p className="type-body-lg max-w-[46ch] text-muted-text">
+              <p className="type-body max-w-[44ch] text-muted-text">
                 Discover events, experiences and communities worth showing up for — from
                 rooftop parties to tech meetups, all happening around you.
               </p>
 
-              <div className="flex w-full flex-col items-center gap-md">
-                <div className="w-full max-w-[520px]">
-                  <SearchField placeholder="Search events, places, or communities..." />
-                </div>
-                <div className="flex flex-wrap justify-center gap-sm">
-                  <CategoryChip icon={<Clock className="size-4" />} active>
-                    Tonight
-                  </CategoryChip>
-                  <CategoryChip icon={<CalendarCheck className="size-4" />}>
-                    This Weekend
-                  </CategoryChip>
-                  <CategoryChip icon={<MapPin className="size-4" />}>Near You</CategoryChip>
-                  <CategoryChip icon={<Ticket className="size-4" />}>Free Events</CategoryChip>
-                </div>
+              <div className="w-full max-w-[460px]">
+                <SearchField placeholder="Search events, places, or communities..." />
               </div>
 
-              <div className="flex w-full flex-col gap-md sm:w-auto sm:flex-row sm:justify-center">
-                <Button size="lg">
+              <div className="flex w-full flex-col gap-sm sm:w-auto sm:flex-row sm:justify-center">
+                <Button size="md">
                   Explore Events
                   <ArrowRight aria-hidden className="size-4" />
                 </Button>
-                <Button size="lg" variant="outline">
+                <Button size="md" variant="outline">
                   Post Your Event
                   <Plus aria-hidden className="size-4" />
                 </Button>
