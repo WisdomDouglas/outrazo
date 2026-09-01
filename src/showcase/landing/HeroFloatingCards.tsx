@@ -215,13 +215,13 @@ export function HeroVectorArt() {
   );
 }
 
-/** Mobile/tablet strip: tilted, drifting event cards with a supporting stat pill. */
+/** Two tilted, drifting event cards shown beneath the hero copy on all viewports. */
 export function HeroCardStrip() {
   return (
-    <div className="relative z-10 flex w-full flex-col items-center gap-md lg:hidden">
-      <div className="flex w-full items-center justify-center gap-md">
+    <div className="relative z-10 flex w-full flex-col items-center gap-md">
+      <div className="flex w-full items-end justify-center gap-md lg:gap-lg">
         <div
-          className="outrazo-float w-[44%] max-w-[190px]"
+          className="outrazo-float w-[44%] max-w-[180px] lg:max-w-[210px]"
           style={{ ["--tilt" as string]: "-6deg" }}
         >
           <PhotoCard
@@ -233,7 +233,7 @@ export function HeroCardStrip() {
           />
         </div>
         <div
-          className="outrazo-float w-[44%] max-w-[190px]"
+          className="outrazo-float w-[44%] max-w-[180px] lg:max-w-[210px]"
           style={{ ["--tilt" as string]: "7deg", animationDelay: "-2.2s" }}
         >
           <PhotoCard
@@ -245,7 +245,7 @@ export function HeroCardStrip() {
         </div>
       </div>
 
-      <div className="outrazo-pop flex items-center gap-md rounded-full border border-line bg-card/95 px-md py-sm shadow-floating backdrop-blur-md">
+      <div className="outrazo-pop flex items-center gap-sm rounded-full border border-line bg-card/95 px-md py-sm shadow-floating backdrop-blur-md">
         <AvatarStack people={ATTENDEES.slice(0, 4)} />
         <span className="type-caption text-muted-text">
           <span className="font-semibold text-primary-text">128+</span> going tonight
