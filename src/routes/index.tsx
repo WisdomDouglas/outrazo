@@ -97,7 +97,8 @@ function Landing() {
   return (
     <div className="min-h-screen bg-canvas text-primary-text">
       <header className="sticky top-0 z-40 px-md pt-md lg:pt-lg">
-        <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-line/70 bg-canvas/55 px-md py-sm shadow-floating backdrop-blur-2xl lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
+        <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-primary-text/10 bg-canvas/25 px-md py-sm shadow-[0_10px_30px_-18px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-primary-text/5 backdrop-blur-xl backdrop-saturate-150 transition-colors lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
+
           <a href="#" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
             OUTRAZO<span className="text-accent">.</span>
           </a>
@@ -109,18 +110,19 @@ function Landing() {
               <a
                 key={item}
                 href="#"
-                className="focus-ring type-body rounded-full px-md py-sm text-muted-text transition-colors hover:bg-primary-text/8 hover:text-primary-text"
+                className="focus-ring type-body rounded-full px-md py-sm font-medium text-muted-text transition-colors hover:bg-primary-text/8 hover:text-primary-text"
               >
                 {item}
               </a>
             ))}
           </nav>
+
           <div className="flex items-center justify-end gap-sm">
             <button
               type="button"
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-line text-muted-text transition-colors hover:text-primary-text"
+              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-primary-text/15 bg-primary-text/5 text-muted-text transition-colors hover:bg-primary-text/10 hover:text-primary-text"
             >
               {theme === "dark" ? (
                 <Sun aria-hidden className="size-4" />
@@ -129,16 +131,17 @@ function Landing() {
               )}
             </button>
             <Button size="sm" className="hidden sm:inline-flex">
-              Post Your Event
+              Get Started
             </Button>
             <button
               type="button"
               aria-label="Open menu"
-              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-line text-muted-text lg:hidden"
+              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-primary-text/15 bg-primary-text/5 text-muted-text transition-colors hover:text-primary-text lg:hidden"
             >
               <Menu aria-hidden className="size-4" />
             </button>
           </div>
+
         </div>
       </header>
 
