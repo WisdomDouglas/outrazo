@@ -97,7 +97,8 @@ function Landing() {
   return (
     <div className="min-h-screen bg-canvas text-primary-text">
       <header className="sticky top-0 z-40 px-md pt-md lg:pt-lg">
-        <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-line/70 bg-canvas/55 px-md py-sm shadow-floating backdrop-blur-2xl lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
+        <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-primary-text/10 bg-canvas/25 px-md py-sm shadow-[0_10px_30px_-18px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-primary-text/5 backdrop-blur-xl backdrop-saturate-150 transition-colors lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
+
           <a href="#" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
             OUTRAZO<span className="text-accent">.</span>
           </a>
@@ -109,18 +110,19 @@ function Landing() {
               <a
                 key={item}
                 href="#"
-                className="focus-ring type-body rounded-full px-md py-sm text-muted-text transition-colors hover:bg-primary-text/8 hover:text-primary-text"
+                className="focus-ring type-body rounded-full px-md py-sm font-medium text-muted-text transition-colors hover:bg-primary-text/8 hover:text-primary-text"
               >
                 {item}
               </a>
             ))}
           </nav>
+
           <div className="flex items-center justify-end gap-sm">
             <button
               type="button"
               onClick={toggleTheme}
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-line text-muted-text transition-colors hover:text-primary-text"
+              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-primary-text/15 bg-primary-text/5 text-muted-text transition-colors hover:bg-primary-text/10 hover:text-primary-text"
             >
               {theme === "dark" ? (
                 <Sun aria-hidden className="size-4" />
@@ -129,16 +131,17 @@ function Landing() {
               )}
             </button>
             <Button size="sm" className="hidden sm:inline-flex">
-              Post Your Event
+              Get Started
             </Button>
             <button
               type="button"
               aria-label="Open menu"
-              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-line text-muted-text lg:hidden"
+              className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-primary-text/15 bg-primary-text/5 text-muted-text transition-colors hover:text-primary-text lg:hidden"
             >
               <Menu aria-hidden className="size-4" />
             </button>
           </div>
+
         </div>
       </header>
 
@@ -147,13 +150,18 @@ function Landing() {
         <section className="relative isolate overflow-hidden">
           <HeroBackdrop />
 
-          <div className="relative mx-auto min-h-[540px] max-w-[1100px] px-md py-xl lg:min-h-[720px] lg:px-xl lg:py-2xl">
-            {/* Readability scrim: softens the artwork behind the hero copy,
-                strongest on mobile where the artwork is busiest */}
+          <div className="relative mx-auto min-h-[560px] max-w-[1100px] px-md pb-xl pt-lg lg:min-h-[720px] lg:px-xl lg:py-2xl">
+            {/* Readability layers: a vertical canvas wash plus a soft radial glow keep
+                the copy legible over the artwork — strongest on mobile, subtle on desktop */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 h-[86%] bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_72%)] opacity-85 lg:opacity-55"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-b from-canvas via-canvas/70 to-transparent opacity-90 lg:from-canvas/70 lg:via-canvas/25 lg:opacity-60"
             />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-1/2 h-[92%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_68%)] opacity-100 lg:opacity-50"
+            />
+
             <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-md text-center lg:gap-lg">
               <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
                 <Flame aria-hidden className="size-4" strokeWidth={2.5} />
@@ -172,16 +180,17 @@ function Landing() {
                 <SearchField placeholder="Search events, places, or communities..." />
               </div>
 
-              <div className="flex w-full flex-col gap-sm sm:w-auto sm:flex-row sm:justify-center">
-                <Button size="md">
+              <div className="flex w-full max-w-[460px] flex-col items-center gap-xs sm:w-auto sm:flex-row sm:justify-center sm:gap-sm">
+                <Button size="md" className="w-full sm:w-auto">
                   Explore Events
                   <ArrowRight aria-hidden className="size-4" />
                 </Button>
-                <Button size="md" variant="outline">
+                <Button size="md" variant="ghost" className="w-full text-accent sm:w-auto">
                   Get Started
                   <Plus aria-hidden className="size-4" />
                 </Button>
               </div>
+
 
               <HeroCardStrip />
             </div>

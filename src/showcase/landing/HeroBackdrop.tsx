@@ -27,17 +27,22 @@ export function HeroBackdrop() {
         src={mobileDark.url}
         alt=""
         decoding="async"
-        className="hero-bg hero-bg-mobile-dark absolute inset-0 size-full object-cover object-bottom"
+        className="hero-bg hero-bg-mobile-dark absolute inset-0 size-full object-cover object-[center_top]"
       />
       <img
         src={mobileLight.url}
         alt=""
         decoding="async"
-        className="hero-bg hero-bg-mobile-light absolute inset-0 size-full object-cover object-bottom"
+        className="hero-bg hero-bg-mobile-light absolute inset-0 size-full object-cover object-[center_top]"
       />
 
-      {/* Blend the artwork edge into the page canvas */}
-      <div className="absolute inset-x-0 bottom-0 h-[18%] bg-gradient-to-b from-transparent to-canvas" />
+      {/* Calms the artwork on small screens so hero copy and controls stay legible */}
+      <div className="absolute inset-0 bg-canvas/55 lg:bg-canvas/15" />
+
+      {/* Blend the artwork edges into the page canvas */}
+      <div className="absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-canvas to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-[22%] bg-gradient-to-b from-transparent to-canvas" />
     </div>
   );
 }
+
