@@ -339,7 +339,8 @@ function Landing() {
               </p>
             </div>
             <Button size="lg">
-              Post Your Event
+              Get Started
+
               <Plus aria-hidden className="size-4" />
             </Button>
           </div>
