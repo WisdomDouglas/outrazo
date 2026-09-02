@@ -180,16 +180,17 @@ function Landing() {
                 <SearchField placeholder="Search events, places, or communities..." />
               </div>
 
-              <div className="flex w-full flex-col gap-sm sm:w-auto sm:flex-row sm:justify-center">
-                <Button size="md">
+              <div className="flex w-full max-w-[460px] flex-col items-center gap-xs sm:w-auto sm:flex-row sm:justify-center sm:gap-sm">
+                <Button size="md" className="w-full sm:w-auto">
                   Explore Events
                   <ArrowRight aria-hidden className="size-4" />
                 </Button>
-                <Button size="md" variant="outline">
+                <Button size="md" variant="ghost" className="w-full text-accent sm:w-auto">
                   Get Started
                   <Plus aria-hidden className="size-4" />
                 </Button>
               </div>
+
 
               <HeroCardStrip />
             </div>
