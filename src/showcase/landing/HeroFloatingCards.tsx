@@ -27,7 +27,7 @@ function PhotoCard({
         <img src={src} alt={alt} loading="lazy" className="aspect-[4/3] w-full object-cover" />
         {badge ? <div className="absolute left-sm top-sm">{badge}</div> : null}
       </div>
-      <figcaption className="p-md">
+      <figcaption className="p-sm lg:p-md">
         <p className="type-h3 truncate text-primary-text">{label}</p>
         <p className="type-caption truncate text-muted-text">{meta}</p>
       </figcaption>
@@ -218,10 +218,10 @@ export function HeroVectorArt() {
 /** Two tilted, drifting event cards shown beneath the hero copy on all viewports. */
 export function HeroCardStrip() {
   return (
-    <div className="relative z-10 flex w-full flex-col items-center gap-md">
-      <div className="flex w-full items-end justify-center gap-md lg:gap-lg">
+    <div className="relative z-10 flex w-full flex-col items-center gap-sm lg:gap-md">
+      <div className="flex w-full items-end justify-center gap-sm lg:gap-lg">
         <div
-          className="outrazo-float w-[44%] max-w-[180px] lg:max-w-[210px]"
+          className="outrazo-float w-[46%] max-w-[158px] lg:max-w-[210px]"
           style={{ ["--tilt" as string]: "-6deg" }}
         >
           <PhotoCard
@@ -233,7 +233,7 @@ export function HeroCardStrip() {
           />
         </div>
         <div
-          className="outrazo-float w-[44%] max-w-[180px] lg:max-w-[210px]"
+          className="outrazo-float w-[46%] max-w-[158px] lg:max-w-[210px]"
           style={{ ["--tilt" as string]: "7deg", animationDelay: "-2.2s" }}
         >
           <PhotoCard
