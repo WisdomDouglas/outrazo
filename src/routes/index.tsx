@@ -159,7 +159,7 @@ function Landing() {
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-1/2 h-[92%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_70%)] opacity-90 lg:opacity-50"
+              className="pointer-events-none absolute inset-x-0 top-1/2 h-[92%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_68%)] opacity-100 lg:opacity-50"
             />
 
             <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-md text-center lg:gap-lg">

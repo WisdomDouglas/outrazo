@@ -37,7 +37,7 @@ export function HeroBackdrop() {
       />
 
       {/* Calms the artwork on small screens so hero copy and controls stay legible */}
-      <div className="absolute inset-0 bg-canvas/45 lg:bg-canvas/15" />
+      <div className="absolute inset-0 bg-canvas/55 lg:bg-canvas/15" />
 
       {/* Blend the artwork edges into the page canvas */}
       <div className="absolute inset-x-0 top-0 h-[22%] bg-gradient-to-b from-canvas to-transparent" />
