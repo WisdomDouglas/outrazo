@@ -150,7 +150,7 @@ function Landing() {
         <section className="relative isolate overflow-hidden">
           <HeroBackdrop />
 
-          <div className="relative mx-auto min-h-[560px] max-w-[1100px] px-md pb-xl pt-lg lg:min-h-[720px] lg:px-xl lg:py-2xl">
+          <div className="relative mx-auto max-w-[1100px] px-md pb-lg pt-md lg:min-h-[720px] lg:px-xl lg:py-2xl">
             {/* Readability layers: a vertical canvas wash plus a soft radial glow keep
                 the copy legible over the artwork — strongest on mobile, subtle on desktop */}
             <div
@@ -162,16 +162,16 @@ function Landing() {
               className="pointer-events-none absolute inset-x-0 top-1/2 h-[92%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_68%)] opacity-100 lg:opacity-50"
             />
 
-            <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-md text-center lg:gap-lg">
+            <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-sm text-center lg:gap-lg">
               <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
                 <Flame aria-hidden className="size-4" strokeWidth={2.5} />
                 Trending around you
               </span>
-              <h1 className="type-h1 text-balance lg:text-[56px]">
+              <h1 className="type-h1 text-balance text-[30px] leading-[1.15] sm:text-[40px] lg:text-[56px]">
                 Your city. Your people.{" "}
                 <span className="text-accent">Your experiences.</span>
               </h1>
-              <p className="type-body max-w-[44ch] text-muted-text">
+              <p className="type-body max-w-[40ch] text-[14px] text-muted-text sm:text-[15px] lg:text-[16px]">
                 Discover events, experiences and communities worth showing up for — from
                 rooftop parties to tech meetups, all happening around you.
               </p>
@@ -186,7 +186,7 @@ function Landing() {
                   <ArrowRight aria-hidden className="size-4" />
                 </Button>
                 <Button size="md" variant="ghost" className="w-full text-accent sm:w-auto">
-                  Get Started
+                  Post Your Event
                   <Plus aria-hidden className="size-4" />
                 </Button>
               </div>
@@ -195,6 +195,7 @@ function Landing() {
               <HeroCardStrip />
             </div>
           </div>
+
         </section>
 
 
