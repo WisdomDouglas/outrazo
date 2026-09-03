@@ -1,0 +1,63 @@
+import { useEffect, useRef, useState } from "react";
+
+/** True when the user has asked for reduced motion. */
+export function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(query.matches);
+    const onChange = () => setReduced(query.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
+  return reduced;
+}
+
+export interface UseRevealOptions {
+  /** Fraction of the element that must be visible. */
+  threshold?: number;
+  /** Re-hide the element when it scrolls out of view. */
+  once?: boolean;
+}
+
+/**
+ * Scroll-reveal primitive: attach `ref` to an element and use `revealed`
+ * to drive the `data-revealed` attribute consumed by `.ds-reveal`.
+ */
+export function useReveal<T extends HTMLElement = HTMLDivElement>({
+  threshold = 0.15,
+  once = true,
+}: UseRevealOptions = {}) {
+  const ref = useRef<T | null>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setRevealed(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setRevealed(true);
+            if (once) observer.unobserve(entry.target);
+          } else if (!once) {
+            setRevealed(false);
+          }
+        }
+      },
+      { threshold, rootMargin: "0px 0px -8% 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [threshold, once]);
+
+  return { ref, revealed };
+}
