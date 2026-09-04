@@ -1,35 +1,34 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Briefcase,
   CalendarCheck,
   Compass,
   Flame,
   Menu,
   Moon,
-  MoreHorizontal,
-  Music,
-  PartyPopper,
   Plus,
-  Palette,
   ShieldCheck,
   Sun,
   Ticket,
-  Trophy,
-  UtensilsCrossed,
-  Laptop,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
+import { Carousel } from "@/design-system/components/Carousel";
+import { CategoryCard } from "@/design-system/components/CategoryCard";
+import { CityCard } from "@/design-system/components/CityCard";
 import { EventCard } from "@/design-system/components/EventCard";
+import { Reveal } from "@/design-system/components/Reveal";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
 import { HeroBackdrop } from "@/showcase/landing/HeroBackdrop";
 import { HeroCardStrip } from "@/showcase/landing/HeroFloatingCards";
+import { CATEGORIES } from "@/showcase/discovery/categories";
+import { useDiscovery } from "@/showcase/discovery/use-discovery";
 
-import { ATTENDEES, EVENTS } from "@/showcase/sample-data";
+import { ATTENDEES, CITIES } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -53,18 +52,6 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const CATEGORIES = [
-  { label: "Parties", icon: PartyPopper, count: "412 events" },
-  { label: "Music", icon: Music, count: "268 events" },
-  { label: "Tech", icon: Laptop, count: "154 events" },
-  { label: "Business", icon: Briefcase, count: "97 events" },
-  { label: "Culture", icon: Palette, count: "132 events" },
-  { label: "Food", icon: UtensilsCrossed, count: "88 events" },
-  { label: "Sports", icon: Trophy, count: "76 events" },
-  { label: "More", icon: MoreHorizontal, count: "All categories" },
-];
-
-
 const TONIGHT = [
   { title: "Girls Night Out", city: "Lagos", src: "photo-1516450360452-9312f5e86fc7" },
   { title: "RnB & Vibes", city: "Lagos", src: "photo-1493225457124-a3eb161ffa5f" },
@@ -74,13 +61,6 @@ const TONIGHT = [
   { title: "Rooftop Sundown", city: "Lekki", src: "photo-1533174072545-7a4b6ad7a6c3" },
 ];
 
-const CITIES = [
-  { name: "Lagos", count: "1,234 events", src: "photo-1618828665011-0abd973f7bb4" },
-  { name: "Abuja", count: "842 events", src: "photo-1590846406792-0adc7f938f1d" },
-  { name: "Port Harcourt", count: "612 events", src: "photo-1449824913935-59a10b8d2000" },
-  { name: "Ibadan", count: "423 events", src: "photo-1477959858617-67f85cf4f1df" },
-];
-
 const TRUST = [
   { icon: Users, title: "Real events", copy: "Real people" },
   { icon: ShieldCheck, title: "Trusted", copy: "Organizers" },
@@ -88,33 +68,60 @@ const TRUST = [
   { icon: CalendarCheck, title: "Easy", copy: "Check-in" },
 ];
 
+const NAV = [
+  { label: "Explore", href: "/events" as const },
+  { label: "Categories", hash: "categories" },
+  { label: "Discover", hash: "discover" },
+];
+
 const unsplash = (id: string, w = 800) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
 
 function Landing() {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const discovery = useDiscovery();
+
+  const submitSearch = () =>
+    navigate({ to: "/events", search: query.trim() ? { q: query.trim() } : {} });
+
+  const scrollTo = (id: string) =>
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
     <div className="min-h-screen bg-canvas text-primary-text">
       <header className="sticky top-0 z-40 px-md pt-md lg:pt-lg">
         <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-primary-text/10 bg-canvas/25 px-md py-sm shadow-[0_10px_30px_-18px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-primary-text/5 backdrop-blur-xl backdrop-saturate-150 transition-colors lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
 
-          <a href="#" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
+          <Link to="/" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
             OUTRAZO<span className="text-accent">.</span>
-          </a>
+          </Link>
           <nav
             aria-label="Primary"
             className="hidden items-center justify-center gap-xs lg:flex"
           >
-            {["Explore", "Categories", "Discover"].map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="focus-ring type-body rounded-full px-md py-sm font-medium text-muted-text transition-colors hover:bg-primary-text/8 hover:text-primary-text"
-              >
-                {item}
-              </a>
-            ))}
+            {NAV.map((item) =>
+              item.href ? (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  search={{}}
+                  className="focus-ring type-body rounded-full px-md py-sm font-medium text-muted-text transition-colors hover:bg-primary-text/8 hover:text-primary-text"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => scrollTo(item.hash!)}
+                  className="focus-ring type-body rounded-full px-md py-sm font-medium text-muted-text transition-colors hover:bg-primary-text/8 hover:text-primary-text"
+                >
+                  {item.label}
+                </button>
+              ),
+            )}
           </nav>
 
           <div className="flex items-center justify-end gap-sm">
@@ -130,12 +137,17 @@ function Landing() {
                 <Moon aria-hidden className="size-4" />
               )}
             </button>
-            <Button size="sm" className="hidden sm:inline-flex">
+            <Button
+              size="sm"
+              className="hidden sm:inline-flex"
+              onClick={() => navigate({ to: "/create" })}
+            >
               Get Started
             </Button>
             <button
               type="button"
               aria-label="Open menu"
+              onClick={() => scrollTo("categories")}
               className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-primary-text/15 bg-primary-text/5 text-muted-text transition-colors hover:text-primary-text lg:hidden"
             >
               <Menu aria-hidden className="size-4" />
@@ -176,16 +188,36 @@ function Landing() {
                 rooftop parties to tech meetups, all happening around you.
               </p>
 
-              <div className="w-full max-w-[460px]">
-                <SearchField placeholder="Search events, places, or communities..." />
-              </div>
+              <form
+                className="w-full max-w-[460px]"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  submitSearch();
+                }}
+              >
+                <SearchField
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  onClear={() => setQuery("")}
+                  placeholder="Search events, places, or communities..."
+                />
+              </form>
 
               <div className="flex w-full max-w-[460px] flex-col items-center gap-xs sm:w-auto sm:flex-row sm:justify-center sm:gap-sm">
-                <Button size="md" className="w-full sm:w-auto">
+                <Button
+                  size="md"
+                  className="w-full sm:w-auto"
+                  onClick={() => navigate({ to: "/events", search: {} })}
+                >
                   Explore Events
                   <ArrowRight aria-hidden className="size-4" />
                 </Button>
-                <Button size="md" variant="ghost" className="w-full text-accent sm:w-auto">
+                <Button
+                  size="md"
+                  variant="ghost"
+                  className="w-full text-accent sm:w-auto"
+                  onClick={() => navigate({ to: "/create" })}
+                >
                   Post Your Event
                   <Plus aria-hidden className="size-4" />
                 </Button>
@@ -200,60 +232,114 @@ function Landing() {
 
 
         {/* Categories */}
-        <section className="mx-auto max-w-[1200px] px-md lg:px-xl">
-          <div className="mb-lg flex flex-wrap items-end justify-between gap-md">
+        <section
+          id="categories"
+          className="mx-auto max-w-[1200px] scroll-mt-24 px-md py-section lg:px-xl"
+        >
+          <Reveal className="mb-lg flex flex-wrap items-end justify-between gap-md">
             <div className="flex flex-col gap-xs">
               <h2 className="type-h2">Discover your kind of experience</h2>
               <p className="type-body text-muted-text">
-                Browse by scene — every category updates as new events go live.
+                Browse by scene — tap a category to filter what&apos;s happening below.
               </p>
             </div>
-            <a href="#" className="focus-ring type-body rounded-sm text-accent hover:underline">
+            <Link
+              to="/events"
+              search={{}}
+              className="focus-ring type-body rounded-sm text-accent hover:underline"
+            >
               Browse all
-            </a>
-          </div>
-          <ul className="grid grid-cols-1 gap-md sm:grid-cols-2 lg:grid-cols-4">
-            {CATEGORIES.map(({ label, icon: Icon, count }) => (
-              <li key={label}>
-                <button
-                  type="button"
-                  className="focus-ring group relative flex w-full items-center gap-md overflow-hidden rounded-lg border border-line bg-card p-md text-left shadow-card transition-all duration-200 hover:-translate-y-[3px] hover:border-accent/50 hover:shadow-glow"
-                >
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute -right-6 -top-8 size-20 rounded-full bg-accent/10 opacity-0 blur-xl transition-opacity duration-200 group-hover:opacity-100"
+            </Link>
+          </Reveal>
+
+          {/* Mobile: swipeable rail. Desktop: grid. */}
+          <Carousel
+            label="Event categories"
+            controls={false}
+            className="lg:hidden"
+            trackClassName="-mx-md px-md"
+            slideClassName="w-[200px]"
+          >
+            {CATEGORIES.map(({ id, label, icon: Icon, count }) => (
+              <CategoryCard
+                key={id}
+                label={label}
+                meta={count}
+                active={discovery.category === id}
+                icon={<Icon aria-hidden className="size-5" strokeWidth={2} />}
+                onClick={() => discovery.setCategory(id)}
+              />
+            ))}
+          </Carousel>
+
+          <ul className="hidden gap-md lg:grid lg:grid-cols-4">
+            {CATEGORIES.map(({ id, label, icon: Icon, count }, index) => (
+              <li key={id}>
+                <Reveal delay={index * 40}>
+                  <CategoryCard
+                    label={label}
+                    meta={count}
+                    active={discovery.category === id}
+                    icon={<Icon aria-hidden className="size-5" strokeWidth={2} />}
+                    onClick={() => discovery.setCategory(id)}
                   />
-                  <span className="grid size-11 shrink-0 place-items-center rounded-md border border-line bg-elevated text-accent transition-colors group-hover:border-accent/40">
-                    <Icon aria-hidden className="size-5" strokeWidth={2} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="type-body block truncate font-semibold text-primary-text">
-                      {label}
-                    </span>
-                    <span className="type-caption block truncate text-subtle-text">{count}</span>
-                  </span>
-                  <ArrowRight
-                    aria-hidden
-                    className="ml-auto size-4 shrink-0 text-subtle-text transition-transform duration-200 group-hover:translate-x-1 group-hover:text-accent"
-                  />
-                </button>
+                </Reveal>
               </li>
             ))}
           </ul>
         </section>
 
-
-        {/* Trending */}
-        <section className="mx-auto max-w-[1200px] px-md py-section lg:px-xl">
+        {/* Recommended */}
+        <section
+          id="discover"
+          className="mx-auto max-w-[1200px] scroll-mt-24 px-md pb-section lg:px-xl"
+        >
           <div className="mb-lg flex items-end justify-between gap-md">
-            <h2 className="type-h2">Recommended for you</h2>
-            <a href="#" className="focus-ring type-body rounded-sm text-accent hover:underline">
+            <div className="flex flex-col gap-xs">
+              <h2 className="type-h2">Recommended for you</h2>
+              <p className="type-body text-muted-text">
+                {discovery.events.length} events
+                {discovery.category !== "all" ? " in this category" : " around you"}
+              </p>
+            </div>
+            <Link
+              to="/events"
+              search={{}}
+              className="focus-ring type-body rounded-sm text-accent hover:underline"
+            >
               See all
-            </a>
+            </Link>
           </div>
-          <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
-            {EVENTS.map((event) => (
-              <EventCard key={event.title} {...event} attendees={ATTENDEES.slice(0, 3)} />
+
+          {/* Mobile: horizontal rail. Desktop: grid. */}
+          <Carousel
+            label="Recommended events"
+            controls={false}
+            className="lg:hidden"
+            trackClassName="-mx-md px-md"
+            slideClassName="w-[280px]"
+          >
+            {discovery.events.map((event) => (
+              <EventCard
+                key={event.id}
+                {...event}
+                attendees={ATTENDEES.slice(0, 3)}
+                saved={discovery.isSaved(event.id)}
+                onToggleSave={() => discovery.toggleSave(event.id)}
+              />
+            ))}
+          </Carousel>
+
+          <div className="hidden gap-lg lg:grid lg:grid-cols-3">
+            {discovery.events.map((event, index) => (
+              <Reveal key={event.id} delay={index * 50}>
+                <EventCard
+                  {...event}
+                  attendees={ATTENDEES.slice(0, 3)}
+                  saved={discovery.isSaved(event.id)}
+                  onToggleSave={() => discovery.toggleSave(event.id)}
+                />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -289,61 +375,74 @@ function Landing() {
 
         {/* Near you */}
         <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
-          <h2 className="type-h2 mb-lg">Near you</h2>
-          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
-            {CITIES.map((city) => (
-              <article
-                key={city.name}
-                className="relative overflow-hidden rounded-lg transition-transform duration-200 hover:-translate-y-[2px]"
+          <Reveal className="mb-lg flex items-end justify-between gap-md">
+            <div className="flex flex-col gap-xs">
+              <h2 className="type-h2">Near you</h2>
+              <p className="type-body text-muted-text">
+                Pick a city to filter the events above.
+              </p>
+            </div>
+            {discovery.city ? (
+              <button
+                type="button"
+                onClick={() => discovery.setCity(null)}
+                className="focus-ring type-body rounded-sm text-accent hover:underline"
               >
-                <img
-                  src={unsplash(city.src, 600)}
-                  alt={`${city.name} skyline`}
-                  loading="lazy"
-                  className="aspect-[16/10] w-full object-cover"
+                Clear city
+              </button>
+            ) : null}
+          </Reveal>
+          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+            {CITIES.map((city, index) => (
+              <Reveal key={city.name} delay={index * 50}>
+                <CityCard
+                  name={city.name}
+                  imageSrc={city.src}
+                  meta={city.count}
+                  distance={city.distance}
+                  active={discovery.city === city.name}
+                  onClick={() =>
+                    discovery.setCity(discovery.city === city.name ? null : city.name)
+                  }
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-canvas/90 to-transparent" />
-                <div className="absolute bottom-md left-md">
-                  <h3 className="type-h3 text-primary-text">{city.name}</h3>
-                  <p className="type-caption text-muted-text">{city.count}</p>
-                </div>
-              </article>
+              </Reveal>
             ))}
           </div>
         </section>
 
         {/* Trust bar */}
         <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
-          <ul className="grid grid-cols-2 gap-lg rounded-lg bg-card p-xl shadow-card lg:grid-cols-4">
-            {TRUST.map(({ icon: Icon, title, copy }) => (
-              <li key={title} className="flex items-center gap-md">
-                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent/15 text-accent">
-                  <Icon aria-hidden className="size-5" strokeWidth={2} />
-                </span>
-                <span className="type-body">
-                  <span className="block font-semibold">{title}</span>
-                  <span className="text-muted-text">{copy}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
+          <Reveal>
+            <ul className="grid grid-cols-2 gap-lg rounded-lg bg-card p-xl shadow-card lg:grid-cols-4">
+              {TRUST.map(({ icon: Icon, title, copy }) => (
+                <li key={title} className="flex items-center gap-md">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent/15 text-accent">
+                    <Icon aria-hidden className="size-5" strokeWidth={2} />
+                  </span>
+                  <span className="type-body">
+                    <span className="block font-semibold">{title}</span>
+                    <span className="text-muted-text">{copy}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </section>
 
         {/* CTA */}
         <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
-          <div className="flex flex-col items-start gap-lg rounded-lg bg-card p-xl shadow-glow lg:flex-row lg:items-center lg:justify-between lg:p-2xl">
+          <Reveal className="flex flex-col items-start gap-lg rounded-lg bg-card p-xl shadow-glow lg:flex-row lg:items-center lg:justify-between lg:p-2xl">
             <div className="flex flex-col gap-sm">
               <h2 className="type-h2">Have something amazing planned?</h2>
               <p className="type-body-lg text-muted-text">
                 Bring people together. Share your event with Outrazo.
               </p>
             </div>
-            <Button size="lg">
+            <Button size="lg" onClick={() => navigate({ to: "/create" })}>
               Get Started
-
               <Plus aria-hidden className="size-4" />
             </Button>
-          </div>
+          </Reveal>
         </section>
       </main>
 
@@ -353,15 +452,26 @@ function Landing() {
             OUTRAZO<span className="text-accent">.</span>
           </span>
           <nav aria-label="Footer" className="flex flex-wrap gap-md">
-            {["Explore", "Categories", "Organizers", "Support"].map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="focus-ring type-body rounded-sm text-muted-text hover:text-primary-text"
-              >
-                {item}
-              </a>
-            ))}
+            <Link
+              to="/events"
+              search={{}}
+              className="focus-ring type-body rounded-sm text-muted-text hover:text-primary-text"
+            >
+              Explore
+            </Link>
+            <button
+              type="button"
+              onClick={() => scrollTo("categories")}
+              className="focus-ring type-body rounded-sm text-muted-text hover:text-primary-text"
+            >
+              Categories
+            </button>
+            <Link
+              to="/create"
+              className="focus-ring type-body rounded-sm text-muted-text hover:text-primary-text"
+            >
+              Organizers
+            </Link>
           </nav>
           <p className="type-caption ml-auto flex items-center gap-xs text-subtle-text">
             <Compass aria-hidden className="size-4" />

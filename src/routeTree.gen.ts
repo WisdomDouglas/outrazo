@@ -9,10 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as CreateRouteImport } from './routes/create'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
 import { Route as Char91__componentChar93PreviewSplatRouteImport } from './routes/[__component].preview.$'
 
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateRoute = CreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -33,36 +45,74 @@ const Char91__componentChar93PreviewSplatRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
+  '/events': typeof EventsRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
+  '/events': typeof EventsRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
+  '/events': typeof EventsRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/__component/preview/$' | '/__mockup/preview/$'
+  fullPaths:
+    | '/'
+    | '/create'
+    | '/events'
+    | '/__component/preview/$'
+    | '/__mockup/preview/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/__component/preview/$' | '/__mockup/preview/$'
-  id: '__root__' | '/' | '/__component/preview/$' | '/__mockup/preview/$'
+  to:
+    | '/'
+    | '/create'
+    | '/events'
+    | '/__component/preview/$'
+    | '/__mockup/preview/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/create'
+    | '/events'
+    | '/__component/preview/$'
+    | '/__mockup/preview/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CreateRoute: typeof CreateRoute
+  EventsRoute: typeof EventsRoute
   Char91__componentChar93PreviewSplatRoute: typeof Char91__componentChar93PreviewSplatRoute
   Char91__mockupChar93PreviewSplatRoute: typeof Char91__mockupChar93PreviewSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create': {
+      id: '/create'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -89,6 +139,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CreateRoute: CreateRoute,
+  EventsRoute: EventsRoute,
   Char91__componentChar93PreviewSplatRoute:
     Char91__componentChar93PreviewSplatRoute,
   Char91__mockupChar93PreviewSplatRoute: Char91__mockupChar93PreviewSplatRoute,
