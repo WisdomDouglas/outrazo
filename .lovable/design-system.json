@@ -2,7 +2,7 @@
   "meta": {
     "name": "My Little Library",
     "package": "@ws-4hutpagaanrcygcldpya/49851e5c-65c1-40ce-a6d3-b9bd74ef975f",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system",
@@ -11,7 +11,7 @@
     ],
     "source_type": "local",
     "source_manifest": {
-      "#enrichment": "15ef99cd19c0a7dfdcfcfbe152f281f7a0d9df71daa5c446cc539485ca7d5d4c",
+      "#enrichment": "96717643617ef0e04981fbc9e2894127aac85b5be8e2ca5cc8ed4e54a2c1144f",
       ".dsignore": "2c7d76468c15bc0f1499420154f01ae3",
       ".gitignore": "6059213806e442947666752f3db6bfdc",
       ".lovable/meta.yaml": "8794970d6049858cc148d2b86f7a2b22",
@@ -34,27 +34,37 @@
       "src/design-system/components/AvatarStack.tsx": "428215c60d8234bf2638deb8be858bf4",
       "src/design-system/components/Badge.tsx": "5f87eef8f53ecf6063f8cead20e37152",
       "src/design-system/components/Button.tsx": "16baf8553e1c1981e1233c6b109cf616",
+      "src/design-system/components/Carousel.tsx": "7359129af39c85e361c19c7fe89ce08f",
+      "src/design-system/components/CategoryCard.tsx": "c32834c9ef1c6a54db582be103fb5081",
       "src/design-system/components/CategoryChip.tsx": "c9ba7e17e9c9a7f063e7fbf5ca3d338e",
-      "src/design-system/components/EventCard.tsx": "632e37e70a3acf7107841ee6e7a202b6",
+      "src/design-system/components/CityCard.tsx": "4ac07df9ab94d36f966fbf527e7ace32",
+      "src/design-system/components/EventCard.tsx": "dbb68f7b4f8b9ead7de987725d8d07fb",
       "src/design-system/components/Input.tsx": "5d12263a4a17da646f2383cd97fcf0c2",
+      "src/design-system/components/Reveal.tsx": "7341e2603d48e2c8db4523dd9c17844a",
       "src/design-system/components/SearchField.tsx": "05aca26877151aed3ca27dfe19ee79a9",
       "src/design-system/components/Skeleton.tsx": "0a74eb467b341292795d3beef2c71dba",
-      "src/design-system/index.ts": "f111c81ea94af7e98ff4e652e070e0ad",
+      "src/design-system/index.ts": "178e2d5234b94043accdf3b449278da1",
+      "src/design-system/lib/use-reveal.ts": "34af87f446bdf34fc09f91f7cb60e62c",
+      "src/design-system/lib/use-saved-items.ts": "fcbffec4b794eceecf47701758833d2e",
       "src/design-system/lib/use-theme.ts": "1bbea86e5cf84c4d6535f3fc3b22eed6",
       "src/design-system/lib/utils.ts": "53176bde4b744ac6c1fff0b8db2ae9b8",
-      "src/design-system/styles/theme.css": "188d0c2a8d5fb10e5aae006daf89c455",
+      "src/design-system/styles/theme.css": "86c16cb914b500c405c2b8cea0bd3ca8",
       "src/index.ts": "ab35d8f1c11e0b18cc3bb7f06af3d665",
       "src/mockup-preview.d.ts": "38969839f35ce2966e32a9f01a5c09ea",
-      "src/routeTree.gen.ts": "4fd75eb72aeb2d60f12add8cac402a7e",
+      "src/routeTree.gen.ts": "cb7fee78e26d6e67b1f138bb1bd243a6",
       "src/router.tsx": "8f905e713b0eba7fa8148b7995a708c9",
       "src/routes/[__component].preview.$.tsx": "3a40af1fe37daff2e891175a6e6d4f99",
       "src/routes/[__mockup].preview.$.tsx": "5d9f42470848aa60148f20f9580e240e",
       "src/routes/__root.tsx": "fb359cfb6776e7383dc1b5c0e9117ed3",
-      "src/routes/index.tsx": "4e14a0f2c9156bf53fa60d18a75ececb",
+      "src/routes/create.tsx": "1cb21a8c0f0c3fd37cb1d3df51576191",
+      "src/routes/events.tsx": "f6fee20441d26a249c8e6686a8be727d",
+      "src/routes/index.tsx": "a3547aa7a1e2ed6e89300e9744b64e49",
+      "src/showcase/discovery/categories.ts": "ecec01dbf3736e158a990b84deb41704",
+      "src/showcase/discovery/use-discovery.ts": "e4da677a5fcc71350c5232407237e830",
       "src/showcase/landing.css": "01b189992e119b268f8aa298c794972e",
       "src/showcase/landing/HeroBackdrop.tsx": "5adf6ffdbbd2169a5b12d0ff3e739989",
       "src/showcase/landing/HeroFloatingCards.tsx": "d4c7b944dd296d0391a68a8c915f1e63",
-      "src/showcase/sample-data.ts": "1816276aed7f6851e8d6488a74eec1a8",
+      "src/showcase/sample-data.ts": "3ac2516df8b6fa6e4dcb066190384319",
       "src/styles.css": "77fbbd692908328dc4e56e2c1f75d8ba",
       "tsconfig.json": "994abf64c2b9f78b568879f80ed0170e",
       "vite.config.ts": "7c640e4b2b5a19f5894c64cd9e0e86e3",
@@ -381,6 +391,113 @@
       ]
     },
     {
+      "name": "CategoryCard",
+      "file": "src/design-system/components/CategoryCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "icon",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "meta",
+          "type": "string"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "name": "CityCard",
+      "file": "src/design-system/components/CityCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "imageSrc",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "meta",
+          "type": "string"
+        },
+        {
+          "name": "distance",
+          "type": "string"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "name": "Carousel",
+      "file": "src/design-system/components/Carousel",
+      "import_path": "",
+      "props": [
+        {
+          "name": "children",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "controls",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "slideClassName",
+          "type": "string"
+        },
+        {
+          "name": "trackClassName",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Reveal",
+      "file": "src/design-system/components/Reveal",
+      "import_path": "",
+      "props": [
+        {
+          "name": "as",
+          "type": "any"
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "default": "0"
+        },
+        {
+          "name": "repeat",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
       "name": "Avatar",
       "file": "src/design-system/components/Avatar",
       "import_path": "",
@@ -476,6 +593,21 @@
           "type": "any"
         },
         {
+          "name": "tag",
+          "type": "string"
+        },
+        {
+          "name": "tagVariant",
+          "type": "enum",
+          "values": [
+            "accent",
+            "transactional",
+            "neutral",
+            "outline"
+          ],
+          "default": "accent"
+        },
+        {
           "name": "aspect",
           "type": "enum",
           "values": [
@@ -491,6 +623,10 @@
         },
         {
           "name": "onToggleSave",
+          "type": "function"
+        },
+        {
+          "name": "onSelect",
           "type": "function"
         },
         {

@@ -4,7 +4,7 @@
 
 The design system exports these components — import them from `@ws-4hutpagaanrcygcldpya/49851e5c-65c1-40ce-a6d3-b9bd74ef975f` and compose them before building anything from scratch:
 
-`AvatarStack`, `Avatar`, `Badge`, `Button`, `CategoryChip`, `EventCard`, `Input`, `SearchField`, `Skeleton`
+`AvatarStack`, `Avatar`, `Badge`, `Button`, `Carousel`, `CategoryCard`, `CategoryChip`, `CityCard`, `EventCard`, `Input`, `Reveal`, `SearchField`, `Skeleton`
 
 Per-component details (import stanzas, props, variants, examples) live in `.lovable/rules/libraries/{slug}/components.md` — on disk, not auto-loaded. Read that file or the component source when the name alone isn't enough.
 
