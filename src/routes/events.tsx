@@ -14,7 +14,7 @@ import { useDiscovery } from "@/showcase/discovery/use-discovery";
 import { ATTENDEES, CITIES } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/events")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown>): { q?: string } => ({
     q: typeof search.q === "string" ? search.q : undefined,
   }),
   head: () => ({
