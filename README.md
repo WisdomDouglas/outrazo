@@ -1,15 +1,14 @@
 # Custom design system (TanStack Start)
 
-A deliberately bare [TanStack Start](https://tanstack.com/start) + React starter
-for building a design system from scratch. No CSS framework, no component
-library, no theme tokens — just a router, a blank page, and a plain-CSS reset.
-Bring your own styling approach.
+A design system library built with [TanStack Start](https://tanstack.com/start) + React.
+It provides the Forest Tech design tokens, Tailwind 4 utilities, and a suite of
+event-discovery components for the Outrazo platform.
 
-## What's (intentionally) not here
+## Features
 
-- No Tailwind, no PostCSS, no `components.json`
-- No shadcn/ui or Radix primitives
-- No theme tokens or design system — `src/styles.css` is a minimal reset
+- Tailwind 4 token system (@theme inline)
+- Brand-aligned component library (Button, Carousel, EventCard, etc.)
+- Dark-first theme with light-mode support
 
 ## Stack
 

@@ -1,4 +1,11 @@
 /**
+ * REQUIRED: Add these links to your <head> to load the brand fonts:
+ * <link rel="preconnect" href="https://fonts.googleapis.com">
+ * <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ * <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap">
+ */
+
+/**
  * Outrazo — Forest Tech theme.
  * Single entry point: import this file to receive the full design system theme.
  * Dark is the default; add class="light" to <html> for light mode.
