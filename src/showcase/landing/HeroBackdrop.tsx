@@ -5,35 +5,35 @@ import mobileLight from "@/assets/hero-mobile-light.png.asset.json";
 
 /**
  * Hero background: the four supplied artworks, swapped by theme (dark/light)
- * and viewport (desktop/mobile). Artwork is used as-is — only cover-cropping
- * and positioning are applied, never stretching. Purely decorative.
+ * and viewport (desktop/mobile).
+ *
+ * Rendered as CSS background images so each artwork scales/crops with
+ * `background-size: cover` and `background-position: center`. A dedicated
+ * inner frame keeps the focal area centered and prevents awkward truncation
+ * on narrow mobile screens.
  */
 export function HeroBackdrop() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      <img
-        src={desktopDark.url}
-        alt=""
-        decoding="async"
-        className="hero-bg hero-bg-desktop-dark absolute inset-0 size-full object-cover object-bottom"
+      {/* Desktop dark */}
+      <div
+        className="hero-bg hero-bg-desktop-dark absolute inset-0 bg-cover bg-bottom bg-no-repeat"
+        style={{ backgroundImage: `url(${desktopDark.url})` }}
       />
-      <img
-        src={desktopLight.url}
-        alt=""
-        decoding="async"
-        className="hero-bg hero-bg-desktop-light absolute inset-0 size-full object-cover object-bottom"
+      {/* Desktop light */}
+      <div
+        className="hero-bg hero-bg-desktop-light absolute inset-0 bg-cover bg-bottom bg-no-repeat"
+        style={{ backgroundImage: `url(${desktopLight.url})` }}
       />
-      <img
-        src={mobileDark.url}
-        alt=""
-        decoding="async"
-        className="hero-bg hero-bg-mobile-dark absolute inset-0 size-full object-cover object-[center_top]"
+      {/* Mobile dark — centered crop with a safe aspect frame */}
+      <div
+        className="hero-bg hero-bg-mobile-dark absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${mobileDark.url})` }}
       />
-      <img
-        src={mobileLight.url}
-        alt=""
-        decoding="async"
-        className="hero-bg hero-bg-mobile-light absolute inset-0 size-full object-cover object-[center_top]"
+      {/* Mobile light */}
+      <div
+        className="hero-bg hero-bg-mobile-light absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${mobileLight.url})` }}
       />
 
       {/* Calms the artwork on small screens so hero copy and controls stay legible */}
