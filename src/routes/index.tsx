@@ -90,7 +90,7 @@ function Landing() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
-    <div className="min-h-screen bg-canvas text-primary-text">
+    <div className="min-h-screen overflow-x-clip bg-canvas text-primary-text">
       <header className="sticky top-0 z-40 px-md pt-md lg:pt-lg">
         <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-primary-text/10 bg-canvas/25 px-md py-sm shadow-[0_10px_30px_-18px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-primary-text/5 backdrop-blur-xl backdrop-saturate-150 transition-colors lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
 
@@ -159,10 +159,10 @@ function Landing() {
 
       <main>
         {/* Hero */}
-        <section className="relative isolate flex min-h-[88vh] flex-col overflow-hidden lg:min-h-[720px]">
+        <section className="relative isolate flex min-h-[85vh] flex-col overflow-hidden lg:min-h-[720px]">
           <HeroBackdrop />
 
-          <div className="relative mx-auto flex w-full max-w-[1100px] flex-1 flex-col justify-center px-md pb-16 pt-10 lg:min-h-[720px] lg:px-xl lg:py-2xl">
+          <div className="relative mx-auto flex w-full max-w-[1100px] flex-1 flex-col justify-center px-md pb-12 pt-24 lg:min-h-[720px] lg:px-xl lg:py-2xl">
             {/* Readability layers: a vertical canvas wash plus a soft radial glow keep
                 the copy legible over the artwork — strongest on mobile, subtle on desktop */}
             <div

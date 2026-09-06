@@ -1,5 +1,11 @@
 /* Preview-only landing page motion. Not part of the shipped design system. */
 
+/* The swipeable rails must never make the page itself horizontally scrollable. */
+html,
+body {
+  overflow-x: clip;
+}
+
 @keyframes outrazo-float {
   0%,
   100% {
