@@ -149,15 +149,58 @@ function Landing() {
             </Button>
             <button
               type="button"
-              aria-label="Open menu"
-              onClick={() => scrollTo("categories")}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
               className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-primary-text/15 bg-primary-text/5 text-muted-text transition-colors hover:text-primary-text lg:hidden"
             >
-              <Menu aria-hidden className="size-4" />
+              {menuOpen ? (
+                <X aria-hidden className="size-4" />
+              ) : (
+                <Menu aria-hidden className="size-4" />
+              )}
             </button>
           </div>
 
         </div>
+
+        {/* Collapsed mobile menu */}
+        {menuOpen ? (
+          <nav
+            aria-label="Mobile"
+            className="mx-auto mt-sm flex max-w-[1080px] flex-col gap-xs rounded-lg border border-primary-text/10 bg-canvas/80 p-md shadow-card backdrop-blur-xl lg:hidden"
+          >
+            <Link
+              to="/events"
+              search={{}}
+              onClick={() => setMenuOpen(false)}
+              className="focus-ring type-body rounded-md px-md py-sm font-medium text-primary-text transition-colors hover:bg-primary-text/8"
+            >
+              Explore
+            </Link>
+            <button
+              type="button"
+              onClick={() => scrollTo("categories")}
+              className="focus-ring type-body rounded-md px-md py-sm text-left font-medium text-primary-text transition-colors hover:bg-primary-text/8"
+            >
+              Categories
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollTo("discover")}
+              className="focus-ring type-body rounded-md px-md py-sm text-left font-medium text-primary-text transition-colors hover:bg-primary-text/8"
+            >
+              Discover
+            </button>
+            <Link
+              to="/create"
+              onClick={() => setMenuOpen(false)}
+              className="focus-ring type-body rounded-md px-md py-sm font-semibold text-accent transition-colors hover:bg-primary-text/8"
+            >
+              Post Your Event
+            </Link>
+          </nav>
+        ) : null}
       </header>
 
       <main>
