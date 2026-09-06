@@ -81,17 +81,20 @@ function Landing() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
   const discovery = useDiscovery();
 
   const submitSearch = () =>
     navigate({ to: "/events", search: query.trim() ? { q: query.trim() } : {} });
 
-  const scrollTo = (id: string) =>
+  const scrollTo = (id: string) => {
+    setMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="min-h-screen overflow-x-clip bg-canvas text-primary-text">
-      <header className="sticky top-0 z-40 px-md pt-md lg:pt-lg">
+      <header className="sticky top-0 z-40 px-md pt-sm lg:pt-md">
         <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-primary-text/10 bg-canvas/25 px-md py-sm shadow-[0_10px_30px_-18px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-primary-text/5 backdrop-blur-xl backdrop-saturate-150 transition-colors lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
 
           <Link to="/" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
