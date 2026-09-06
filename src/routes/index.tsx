@@ -11,6 +11,7 @@ import {
   Sun,
   Ticket,
   Users,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -81,17 +82,20 @@ function Landing() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
   const discovery = useDiscovery();
 
   const submitSearch = () =>
     navigate({ to: "/events", search: query.trim() ? { q: query.trim() } : {} });
 
-  const scrollTo = (id: string) =>
+  const scrollTo = (id: string) => {
+    setMenuOpen(false);
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="min-h-screen overflow-x-clip bg-canvas text-primary-text">
-      <header className="sticky top-0 z-40 px-md pt-md lg:pt-lg">
+      <header className="sticky top-0 z-40 px-md pt-sm lg:pt-md">
         <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-primary-text/10 bg-canvas/25 px-md py-sm shadow-[0_10px_30px_-18px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-primary-text/5 backdrop-blur-xl backdrop-saturate-150 transition-colors lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
 
           <Link to="/" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
@@ -146,15 +150,58 @@ function Landing() {
             </Button>
             <button
               type="button"
-              aria-label="Open menu"
-              onClick={() => scrollTo("categories")}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
               className="focus-ring grid size-10 shrink-0 place-items-center rounded-full border border-primary-text/15 bg-primary-text/5 text-muted-text transition-colors hover:text-primary-text lg:hidden"
             >
-              <Menu aria-hidden className="size-4" />
+              {menuOpen ? (
+                <X aria-hidden className="size-4" />
+              ) : (
+                <Menu aria-hidden className="size-4" />
+              )}
             </button>
           </div>
 
         </div>
+
+        {/* Collapsed mobile menu */}
+        {menuOpen ? (
+          <nav
+            aria-label="Mobile"
+            className="mx-auto mt-sm flex max-w-[1080px] flex-col gap-xs rounded-lg border border-primary-text/10 bg-canvas/80 p-md shadow-card backdrop-blur-xl lg:hidden"
+          >
+            <Link
+              to="/events"
+              search={{}}
+              onClick={() => setMenuOpen(false)}
+              className="focus-ring type-body rounded-md px-md py-sm font-medium text-primary-text transition-colors hover:bg-primary-text/8"
+            >
+              Explore
+            </Link>
+            <button
+              type="button"
+              onClick={() => scrollTo("categories")}
+              className="focus-ring type-body rounded-md px-md py-sm text-left font-medium text-primary-text transition-colors hover:bg-primary-text/8"
+            >
+              Categories
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollTo("discover")}
+              className="focus-ring type-body rounded-md px-md py-sm text-left font-medium text-primary-text transition-colors hover:bg-primary-text/8"
+            >
+              Discover
+            </button>
+            <Link
+              to="/create"
+              onClick={() => setMenuOpen(false)}
+              className="focus-ring type-body rounded-md px-md py-sm font-semibold text-accent transition-colors hover:bg-primary-text/8"
+            >
+              Post Your Event
+            </Link>
+          </nav>
+        ) : null}
       </header>
 
       <main>
@@ -162,20 +209,20 @@ function Landing() {
         <section className="relative isolate flex min-h-[85vh] flex-col overflow-hidden lg:min-h-[720px]">
           <HeroBackdrop />
 
-          <div className="relative mx-auto flex w-full max-w-[1100px] flex-1 flex-col justify-center px-md pb-12 pt-24 lg:min-h-[720px] lg:px-xl lg:py-2xl">
+          <div className="relative mx-auto flex w-full max-w-[1100px] flex-1 flex-col justify-center px-md pb-16 pt-20 lg:min-h-[720px] lg:px-xl lg:py-2xl">
             {/* Readability layers: a vertical canvas wash plus a soft radial glow keep
-                the copy legible over the artwork — strongest on mobile, subtle on desktop */}
+                the copy legible while letting the artwork show through */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-b from-canvas via-canvas/70 to-transparent opacity-90 lg:from-canvas/70 lg:via-canvas/25 lg:opacity-60"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-b from-canvas/80 via-canvas/45 to-transparent opacity-70 lg:from-canvas/60 lg:via-canvas/20 lg:opacity-50"
             />
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-1/2 h-[92%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_68%)] opacity-100 lg:opacity-50"
+              className="pointer-events-none absolute inset-x-0 top-1/2 h-[92%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_68%)] opacity-60 lg:opacity-40"
             />
 
-            <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-3 text-center lg:gap-lg">
-              <div className="flex flex-col items-center gap-2">
+            <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-6 text-center lg:gap-lg">
+              <div className="flex flex-col items-center gap-3">
                 <span className="type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
                   <Flame aria-hidden className="size-4" strokeWidth={2.5} />
                   Trending around you

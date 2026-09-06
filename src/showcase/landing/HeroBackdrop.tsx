@@ -36,8 +36,8 @@ export function HeroBackdrop() {
         style={{ backgroundImage: `url(${mobileLight.url})` }}
       />
 
-      {/* Calms the artwork on small screens so hero copy and controls stay legible */}
-      <div className="absolute inset-0 bg-canvas/60 lg:bg-canvas/15" />
+      {/* Lightly calms the artwork so hero copy stays legible while it shows through */}
+      <div className="absolute inset-0 bg-canvas/35 lg:bg-canvas/10" />
 
       {/* Blend the artwork edges into the page canvas; the deeper bottom fade
           gives a smooth scroll transition into the Discover section */}
