@@ -17,8 +17,12 @@ export interface EventCardProps extends HTMLAttributes<HTMLElement> {
   /** Display price, e.g. "₦12,000". Omit for a free event. */
   price?: string;
   host: { name: string; avatarSrc?: string };
+  /** Community or collective the host belongs to. */
+  community?: string;
   /** Attendees shown as social proof. */
   attendees?: AvatarStackPerson[];
+  /** Total number of people going, when larger than the avatars provided. */
+  attendeeCount?: number;
   /** Highlight label, e.g. "Trending", "Tonight", "This weekend". */
   tag?: string;
   /** Visual tone of the highlight label. */
