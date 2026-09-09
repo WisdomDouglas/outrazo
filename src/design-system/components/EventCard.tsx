@@ -50,7 +50,9 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
       location,
       price,
       host,
+      community,
       attendees,
+      attendeeCount,
       tag,
       tagVariant = "accent",
       aspect = "16/9",
@@ -134,12 +136,17 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
       <div className="mt-auto flex items-center justify-between gap-md">
         <span className="type-caption flex min-w-0 items-center gap-sm text-muted-text">
           <Avatar name={host.name} src={host.avatarSrc} size="sm" />
-          <span className="truncate">{host.name}</span>
+          <span className="min-w-0">
+            <span className="block truncate text-primary-text">{host.name}</span>
+            {community ? <span className="block truncate">{community}</span> : null}
+          </span>
         </span>
         <Badge variant={price ? "transactional" : "accent"}>{price ?? "Free"}</Badge>
       </div>
 
-      {attendees?.length ? <AvatarStack people={attendees} /> : null}
+      {attendees?.length ? (
+        <AvatarStack people={attendees} totalCount={attendeeCount} />
+      ) : null}
     </article>
   ),
 );
