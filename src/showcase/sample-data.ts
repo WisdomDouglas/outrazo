@@ -477,3 +477,23 @@ export const CITIES = Object.entries(cityMeta).map(([name, meta]) => {
     src: meta.src,
   };
 });
+
+/** Maps a demo event record onto EventCard props. Swap the source, keep the UI. */
+export function toEventCardProps(event: OutrazoEvent) {
+  const organizer = getOrganizer(event.organizerId);
+  return {
+    id: event.id,
+    title: event.title,
+    imageSrc: event.imageSrc,
+    date: event.date,
+    time: event.time,
+    location: event.location,
+    price: event.price,
+    host: { name: organizer.name },
+    community: organizer.community,
+    attendees: getAttendees(event.attendeeIds),
+    attendeeCount: event.attendeeCount,
+    tag: event.tag,
+    tagVariant: event.tagVariant,
+  };
+}
