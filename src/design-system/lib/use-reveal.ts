@@ -41,6 +41,14 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>({
       return;
     }
 
+    // Anything already on screen at mount reveals right away, so content is
+    // never left invisible when the observer has nothing to report.
+    const box = node.getBoundingClientRect();
+    if (box.top < window.innerHeight && box.bottom > 0) {
+      setRevealed(true);
+      if (once) return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
