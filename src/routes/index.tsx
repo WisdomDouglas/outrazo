@@ -20,7 +20,10 @@ import { Button } from "@/design-system/components/Button";
 import { Carousel } from "@/design-system/components/Carousel";
 import { CategoryCard } from "@/design-system/components/CategoryCard";
 import { CityCard } from "@/design-system/components/CityCard";
+import { EmptyState } from "@/design-system/components/EmptyState";
+import { ErrorState } from "@/design-system/components/ErrorState";
 import { EventCard } from "@/design-system/components/EventCard";
+import { EventCardSkeleton } from "@/design-system/components/EventCardSkeleton";
 import { Reveal } from "@/design-system/components/Reveal";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
@@ -29,7 +32,7 @@ import { HeroCardStrip } from "@/showcase/landing/HeroFloatingCards";
 import { CATEGORIES } from "@/showcase/discovery/categories";
 import { useDiscovery } from "@/showcase/discovery/use-discovery";
 
-import { ATTENDEES, CITIES } from "@/showcase/sample-data";
+import { CITIES, TONIGHT_EVENTS, toEventCardProps } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -53,15 +56,6 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const TONIGHT = [
-  { title: "Girls Night Out", city: "Lagos", src: "photo-1516450360452-9312f5e86fc7" },
-  { title: "RnB & Vibes", city: "Lagos", src: "photo-1493225457124-a3eb161ffa5f" },
-  { title: "Comedy Show", city: "Abuja", src: "photo-1527224857830-43a7acc85260" },
-  { title: "House Party", city: "Lagos", src: "photo-1470229722913-7c0e2dbbafd3" },
-  { title: "Live Band Session", city: "Ibadan", src: "photo-1524368535928-5b5e00ddc76b" },
-  { title: "Rooftop Sundown", city: "Lekki", src: "photo-1533174072545-7a4b6ad7a6c3" },
-];
-
 const TRUST = [
   { icon: Users, title: "Real events", copy: "Real people" },
   { icon: ShieldCheck, title: "Trusted", copy: "Organizers" },
@@ -74,9 +68,6 @@ const NAV = [
   { label: "Categories", hash: "categories" },
   { label: "Discover", hash: "discover" },
 ];
-
-const unsplash = (id: string, w = 800) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
 
 function Landing() {
   const { theme, toggleTheme } = useTheme();
@@ -359,37 +350,59 @@ function Landing() {
             </Link>
           </div>
 
-          {/* Mobile: horizontal rail. Desktop: grid. */}
-          <Carousel
-            label="Recommended events"
-            controls={false}
-            className="lg:hidden"
-            trackClassName="-mx-md px-md"
-            slideClassName="w-[280px]"
-          >
-            {discovery.events.map((event) => (
-              <EventCard
-                key={event.id}
-                {...event}
-                attendees={ATTENDEES.slice(0, 3)}
-                saved={discovery.isSaved(event.id)}
-                onToggleSave={() => discovery.toggleSave(event.id)}
-              />
-            ))}
-          </Carousel>
+          {discovery.status === "loading" ? (
+            <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <EventCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : discovery.status === "error" ? (
+            <ErrorState onRetry={discovery.retry} />
+          ) : discovery.events.length === 0 ? (
+            <EmptyState
+              title="Nothing happening here yet."
+              description="Try another location or explore another category."
+              action={
+                <Button variant="outline" onClick={discovery.reset}>
+                  Show all events
+                </Button>
+              }
+            />
+          ) : (
+            <>
+              {/* Mobile: horizontal rail. Desktop: grid. */}
+              <Carousel
+                label="Recommended events"
+                controls={false}
+                className="lg:hidden"
+                trackClassName="-mx-md px-md"
+                slideClassName="w-[280px]"
+              >
+                {discovery.events.slice(0, 8).map((event) => (
+                  <EventCard
+                    key={event.id}
+                    {...toEventCardProps(event)}
+                    saved={discovery.isSaved(event.id)}
+                    onToggleSave={() => discovery.toggleSave(event.id)}
+                    onSelect={() => navigate({ to: "/events", search: {} })}
+                  />
+                ))}
+              </Carousel>
 
-          <div className="hidden gap-lg lg:grid lg:grid-cols-3">
-            {discovery.events.map((event, index) => (
-              <Reveal key={event.id} delay={index * 50}>
-                <EventCard
-                  {...event}
-                  attendees={ATTENDEES.slice(0, 3)}
-                  saved={discovery.isSaved(event.id)}
-                  onToggleSave={() => discovery.toggleSave(event.id)}
-                />
-              </Reveal>
-            ))}
-          </div>
+              <div className="hidden gap-lg lg:grid lg:grid-cols-3">
+                {discovery.events.slice(0, 6).map((event, index) => (
+                  <Reveal key={event.id} delay={index * 50}>
+                    <EventCard
+                      {...toEventCardProps(event)}
+                      saved={discovery.isSaved(event.id)}
+                      onToggleSave={() => discovery.toggleSave(event.id)}
+                      onSelect={() => navigate({ to: "/events", search: {} })}
+                    />
+                  </Reveal>
+                ))}
+              </div>
+            </>
+          )}
         </section>
 
         {/* Happening tonight — looping marquee */}
@@ -400,20 +413,22 @@ function Landing() {
           </div>
           <div className="relative">
             <div className="outrazo-marquee flex w-max gap-md">
-              {[...TONIGHT, ...TONIGHT].map((item, index) => (
+              {[...TONIGHT_EVENTS, ...TONIGHT_EVENTS].map((item, index) => (
                 <article
                   key={`${item.title}-${index}`}
                   className="relative w-[220px] shrink-0 overflow-hidden rounded-lg shadow-card"
                 >
                   <img
-                    src={unsplash(item.src, 500)}
+                    src={item.imageSrc}
                     alt={item.title}
                     loading="lazy"
                     className="aspect-[4/3] w-full object-cover"
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-canvas/75 p-md backdrop-blur-md">
                     <h3 className="type-h3 text-primary-text">{item.title}</h3>
-                    <p className="type-caption text-muted-text">{item.city}</p>
+                    <p className="type-caption text-muted-text">
+                      {item.city} · {item.attendeeCount.toLocaleString("en-NG")} going
+                    </p>
                   </div>
                 </article>
               ))}
@@ -481,13 +496,15 @@ function Landing() {
         <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
           <Reveal className="flex flex-col items-start gap-lg rounded-lg bg-card p-xl shadow-glow lg:flex-row lg:items-center lg:justify-between lg:p-2xl">
             <div className="flex flex-col gap-sm">
-              <h2 className="type-h2">Have something amazing planned?</h2>
+              <h2 className="type-h2">Your event deserves to be discovered.</h2>
               <p className="type-body-lg text-muted-text">
-                Bring people together. Share your event with Outrazo.
+                Reach the people already looking for something to do. Promote your
+                experience, grow your community, manage attendees — and sell tickets as
+                Outrazo grows.
               </p>
             </div>
             <Button size="lg" onClick={() => navigate({ to: "/create" })}>
-              Get Started
+              Post Your Event
               <Plus aria-hidden className="size-4" />
             </Button>
           </Reveal>

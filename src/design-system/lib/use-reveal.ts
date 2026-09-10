@@ -35,10 +35,19 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>({
 
   useEffect(() => {
     const node = ref.current;
+    console.log("REVEAL_EFFECT", !!ref.current);
     if (!node) return;
     if (typeof IntersectionObserver === "undefined") {
       setRevealed(true);
       return;
+    }
+
+    // Anything already on screen at mount reveals right away, so content is
+    // never left invisible when the observer has nothing to report.
+    const box = node.getBoundingClientRect();
+    if (box.top < window.innerHeight && box.bottom > 0) {
+      setRevealed(true);
+      if (once) return;
     }
 
     const observer = new IntersectionObserver(

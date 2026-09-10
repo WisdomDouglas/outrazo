@@ -5,13 +5,16 @@ import { useMemo, useState } from "react";
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
 import { CategoryChip } from "@/design-system/components/CategoryChip";
+import { EmptyState } from "@/design-system/components/EmptyState";
+import { ErrorState } from "@/design-system/components/ErrorState";
+import { EventCardSkeleton } from "@/design-system/components/EventCardSkeleton";
 import { CityCard } from "@/design-system/components/CityCard";
 import { EventCard } from "@/design-system/components/EventCard";
 import { Reveal } from "@/design-system/components/Reveal";
 import { SearchField } from "@/design-system/components/SearchField";
 import { CATEGORIES } from "@/showcase/discovery/categories";
 import { useDiscovery } from "@/showcase/discovery/use-discovery";
-import { ATTENDEES, CITIES } from "@/showcase/sample-data";
+import { CITIES, getOrganizer, toEventCardProps } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/events")({
   validateSearch: (search: Record<string, unknown>): { q?: string } => ({
@@ -47,7 +50,7 @@ function ExploreEvents() {
     const needle = query.trim().toLowerCase();
     if (!needle) return discovery.events;
     return discovery.events.filter((event) =>
-      `${event.title} ${event.location} ${event.city} ${event.host.name}`
+      `${event.title} ${event.location} ${event.city} ${getOrganizer(event.organizerId).name}`
         .toLowerCase()
         .includes(needle),
     );
@@ -130,13 +133,20 @@ function ExploreEvents() {
           </div>
         ) : null}
 
-        {results.length ? (
+        {discovery.status === "loading" ? (
+          <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <EventCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : discovery.status === "error" ? (
+          <ErrorState onRetry={discovery.retry} />
+        ) : results.length ? (
           <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
             {results.map((event, index) => (
               <Reveal key={event.id} delay={index * 40}>
                 <EventCard
-                  {...event}
-                  attendees={ATTENDEES.slice(0, 3)}
+                  {...toEventCardProps(event)}
                   saved={discovery.isSaved(event.id)}
                   onToggleSave={() => discovery.toggleSave(event.id)}
                 />
@@ -144,24 +154,23 @@ function ExploreEvents() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-md rounded-lg border border-line bg-card p-2xl text-center">
-            <SearchX aria-hidden className="size-8 text-accent" />
-            <h2 className="type-h2">No events match that yet</h2>
-            <p className="type-body text-muted-text">
-              Try another category, or clear your search to see everything happening.
-            </p>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setQuery("");
-                discovery.setCategory("all");
-                discovery.setCity(null);
-                navigate({ to: "/events", search: {} });
-              }}
-            >
-              Reset filters
-            </Button>
-          </div>
+          <EmptyState
+            icon={<SearchX aria-hidden className="size-5" strokeWidth={2} />}
+            title="Nothing happening here yet."
+            description="Try another location or explore another category."
+            action={
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setQuery("");
+                  discovery.reset();
+                  navigate({ to: "/events", search: {} });
+                }}
+              >
+                Reset filters
+              </Button>
+            }
+          />
         )}
 
         <section className="pt-section">

@@ -3,7 +3,10 @@ import { Radio, Ticket, Users } from "lucide-react";
 import { AvatarStack } from "@/design-system/components/AvatarStack";
 import { Badge } from "@/design-system/components/Badge";
 import { cn } from "@/design-system/lib/utils";
-import { ATTENDEES } from "../sample-data";
+import { ATTENDEES, TONIGHT_ATTENDING } from "../sample-data";
+
+/** Demo attendance across tonight's sample events. */
+const tonightCount = `${TONIGHT_ATTENDING.toLocaleString("en-NG")}+`;
 
 const photo = (id: string, w = 500) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
@@ -93,7 +96,7 @@ export function HeroFloatingCards() {
         >
           <StatCard
             icon={<Users aria-hidden className="size-5" strokeWidth={2} />}
-            value="128+"
+            value={tonightCount}
             label="going tonight"
           />
         </div>
@@ -248,7 +251,7 @@ export function HeroCardStrip() {
       <div className="outrazo-pop flex items-center gap-sm rounded-full border border-line bg-card/95 px-md py-sm shadow-floating backdrop-blur-md">
         <AvatarStack people={ATTENDEES.slice(0, 4)} />
         <span className="type-caption text-muted-text">
-          <span className="font-semibold text-primary-text">128+</span> going tonight
+          <span className="font-semibold text-primary-text">{tonightCount}</span> going tonight
         </span>
       </div>
     </div>
