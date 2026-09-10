@@ -35,6 +35,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>({
 
   useEffect(() => {
     const node = ref.current;
+    console.log("REVEAL_EFFECT", !!ref.current);
     if (!node) return;
     if (typeof IntersectionObserver === "undefined") {
       setRevealed(true);
