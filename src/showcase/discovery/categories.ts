@@ -10,7 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import type { CategoryId } from "../sample-data";
+import { EVENTS, type CategoryId } from "../sample-data";
 
 export interface CategoryDef {
   id: CategoryId;
@@ -19,13 +19,21 @@ export interface CategoryDef {
   count: string;
 }
 
-export const CATEGORIES: CategoryDef[] = [
-  { id: "all", label: "All events", icon: LayoutGrid, count: "1,227 events" },
-  { id: "parties", label: "Parties", icon: PartyPopper, count: "412 events" },
-  { id: "music", label: "Music", icon: Music, count: "268 events" },
-  { id: "tech", label: "Tech", icon: Laptop, count: "154 events" },
-  { id: "business", label: "Business", icon: Briefcase, count: "97 events" },
-  { id: "culture", label: "Culture", icon: Palette, count: "132 events" },
-  { id: "food", label: "Food", icon: UtensilsCrossed, count: "88 events" },
-  { id: "sports", label: "Sports", icon: Trophy, count: "76 events" },
+const countFor = (id: CategoryId) => {
+  const total = id === "all" ? EVENTS.length : EVENTS.filter((e) => e.category === id).length;
+  return `${total} ${total === 1 ? "event" : "events"}`;
+};
+
+const defs: Array<{ id: CategoryId; label: string; icon: LucideIcon }> = [
+  { id: "all", label: "All events", icon: LayoutGrid },
+  { id: "parties", label: "Parties", icon: PartyPopper },
+  { id: "music", label: "Music", icon: Music },
+  { id: "tech", label: "Tech", icon: Laptop },
+  { id: "business", label: "Business", icon: Briefcase },
+  { id: "culture", label: "Culture", icon: Palette },
+  { id: "food", label: "Food", icon: UtensilsCrossed },
+  { id: "sports", label: "Sports", icon: Trophy },
 ];
+
+/** Counts derive from the demo dataset so labels never drift from the data. */
+export const CATEGORIES: CategoryDef[] = defs.map((d) => ({ ...d, count: countFor(d.id) }));
