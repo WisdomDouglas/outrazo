@@ -168,11 +168,60 @@ body {
   animation: outrazo-sonar 4s cubic-bezier(0.16, 1, 0.3, 1) 900ms infinite;
 }
 
+/* Flame "gradual burn": slow sine-like swell on scaleY with a gentle
+   opacity breathing, anchored at the base so it grows upward like a flame. */
+@keyframes outrazo-flame-burn {
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(1.12);
+    opacity: 0.82;
+  }
+}
+
+.outrazo-flame {
+  transform-origin: 50% 100%;
+  animation: outrazo-flame-burn 3.6s ease-in-out 500ms infinite;
+  will-change: transform, opacity;
+}
+
+/* Text "reveal & settle": starts blurred and slightly tracked-out, then
+   snaps into focus with a polished overshoot-free ease and stays static. */
+@keyframes outrazo-badge-text-reveal {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    letter-spacing: 0.14em;
+    transform: translate3d(0, 3px, 0);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0.6px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    letter-spacing: 0.01em;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.outrazo-badge-text {
+  display: inline-block;
+  animation: outrazo-badge-text-reveal 600ms cubic-bezier(0.22, 1, 0.36, 1) 250ms both;
+  will-change: filter, letter-spacing;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .outrazo-sonar {
     display: none;
   }
-  .outrazo-badge-enter {
+  .outrazo-badge-enter,
+  .outrazo-badge-text,
+  .outrazo-flame {
     animation: none;
   }
 }
