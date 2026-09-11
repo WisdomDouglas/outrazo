@@ -31,7 +31,9 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>({
   once = true,
 }: UseRevealOptions = {}) {
   const [node, setNode] = useState<T | null>(null);
-  const [revealed, setRevealed] = useState(false);
+  // Content is visible by default so SSR, hydration delays, and unsupported
+  // observers can never leave an entire section inaccessible.
+  const [revealed, setRevealed] = useState(true);
   const ref = useCallback((element: T | null) => setNode(element), []);
 
   useEffect(() => {
