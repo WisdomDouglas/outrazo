@@ -109,3 +109,70 @@ body {
     display: block;
   }
 }
+
+/* --- Hero "Trending around you" badge: entrance + sonar echo --- */
+
+/* Highly damped spring entrance: rise 10px and fade in. */
+@keyframes outrazo-badge-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  62% {
+    opacity: 1;
+    transform: translate3d(0, -1.2px, 0);
+  }
+  82% {
+    transform: translate3d(0, 0.35px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.outrazo-badge-enter {
+  animation: outrazo-badge-enter 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Sonar ping emanating from the centre of the flame icon. */
+@keyframes outrazo-sonar {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.45);
+  }
+  8% {
+    opacity: 0.55;
+  }
+  45% {
+    opacity: 0.18;
+    transform: translate(-50%, -50%) scale(2.05);
+  }
+  62%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.3);
+  }
+}
+
+.outrazo-sonar {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  border: 1px solid var(--color-accent);
+  transform: translate(-50%, -50%) scale(0.45);
+  opacity: 0;
+  animation: outrazo-sonar 4s cubic-bezier(0.16, 1, 0.3, 1) 900ms infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .outrazo-sonar {
+    display: none;
+  }
+  .outrazo-badge-enter {
+    animation: none;
+  }
+}
