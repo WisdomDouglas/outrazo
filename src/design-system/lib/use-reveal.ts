@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /** True when the user has asked for reduced motion. */
 export function usePrefersReducedMotion() {
@@ -30,12 +30,11 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>({
   threshold = 0.15,
   once = true,
 }: UseRevealOptions = {}) {
-  const ref = useRef<T | null>(null);
+  const [node, setNode] = useState<T | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const ref = useCallback((element: T | null) => setNode(element), []);
 
   useEffect(() => {
-    const node = ref.current;
-    console.log("REVEAL_EFFECT", !!ref.current);
     if (!node) return;
     if (typeof IntersectionObserver === "undefined") {
       setRevealed(true);
@@ -66,7 +65,7 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>({
 
     observer.observe(node);
     return () => observer.disconnect();
-  }, [threshold, once]);
+  }, [node, threshold, once]);
 
   return { ref, revealed };
 }
