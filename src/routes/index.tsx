@@ -498,8 +498,8 @@ function Landing() {
 
         {/* CTA */}
         <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
-          <Reveal className="overflow-hidden rounded-lg bg-card shadow-glow">
-            <div className="grid items-center gap-lg p-xl lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-xl lg:p-2xl">
+          <Reveal>
+            <div className="grid items-center gap-lg lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-xl">
               <div className="flex flex-col items-center gap-md text-center lg:items-start lg:gap-lg lg:text-left">
                 <div className="flex flex-col gap-sm">
                   <h2 className="type-h2">Your event deserves to be discovered.</h2>

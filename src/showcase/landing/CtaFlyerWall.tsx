@@ -1,97 +1,85 @@
 import { EVENTS } from "@/showcase/sample-data";
 
-/** Split the demo catalogue into three offset rows of flyer cards. */
-const ROWS = [
-  EVENTS.slice(0, 8),
-  EVENTS.slice(8, 15),
-  EVENTS.slice(15, 22),
+/**
+ * Overlapping fan/collage of event invitation cards used beside the organizer
+ * CTA. Cards drift in a slow floating loop and lift on hover.
+ */
+
+type FanCard = {
+  /** Horizontal position, percentage of the container width. */
+  left: number;
+  /** Vertical position, percentage of the container height. */
+  top: number;
+  rotate: number;
+  /** Card width in px at the desktop breakpoint. */
+  width: number;
+  z: number;
+  delay: number;
+};
+
+/** Desktop fan: a loose arc of tilted posters. */
+const DESKTOP: FanCard[] = [
+  { left: 2, top: 22, rotate: -14, width: 150, z: 1, delay: 0 },
+  { left: 17, top: 48, rotate: -8, width: 160, z: 2, delay: 0.8 },
+  { left: 32, top: 12, rotate: 7, width: 165, z: 3, delay: 1.6 },
+  { left: 46, top: 44, rotate: -5, width: 155, z: 4, delay: 0.4 },
+  { left: 60, top: 8, rotate: 12, width: 150, z: 3, delay: 2.2 },
+  { left: 66, top: 46, rotate: 16, width: 145, z: 2, delay: 1.2 },
 ];
 
-const ROW_SPEEDS = ["46s", "58s", "52s"] as const;
+/** Mobile fan: fewer, tighter cards under the copy. */
+const MOBILE: FanCard[] = [
+  { left: 1, top: 30, rotate: -13, width: 108, z: 1, delay: 0.6 },
+  { left: 22, top: 10, rotate: -4, width: 116, z: 3, delay: 0 },
+  { left: 46, top: 26, rotate: 8, width: 112, z: 2, delay: 1.4 },
+  { left: 69, top: 6, rotate: 15, width: 104, z: 1, delay: 2 },
+];
 
-function FlyerCard({
-  title,
-  imageSrc,
-  tilt,
-}: {
-  title: string;
-  imageSrc: string;
-  tilt: number;
-}) {
+function Fan({ cards, className }: { cards: FanCard[]; className?: string }) {
   return (
-    <article
-      className="relative w-[110px] shrink-0 overflow-hidden rounded-md shadow-card sm:w-[130px] lg:w-[140px]"
-      style={{ transform: `rotate(${tilt}deg)` }}
-    >
-      <img
-        src={imageSrc}
-        alt={title}
-        loading="lazy"
-        className="aspect-[3/4] w-full object-cover"
-      />
-      <div className="absolute inset-x-0 bottom-0 bg-canvas/70 px-sm py-xs backdrop-blur-sm">
-        <p className="type-caption truncate font-semibold text-primary-text">{title}</p>
-      </div>
-    </article>
-  );
-}
-
-function FlyerRow({
-  events,
-  speed,
-  reverse,
-  rowIndex,
-}: {
-  events: typeof EVENTS;
-  speed: string;
-  reverse?: boolean;
-  rowIndex: number;
-}) {
-  const doubled = [...events, ...events];
-  return (
-    <div className="overflow-hidden">
-      <div
-        className={`cta-wall-row flex w-max gap-md ${reverse ? "cta-wall-row-reverse" : ""}`}
-        style={{ animationDuration: speed }}
-      >
-        {doubled.map((event, index) => (
-          <FlyerCard
+    <div className={className}>
+      {cards.map((card, index) => {
+        const event = EVENTS[(index * 3 + 1) % EVENTS.length];
+        return (
+          <figure
             key={`${event.id}-${index}`}
-            title={event.title}
-            imageSrc={event.imageSrc}
-            tilt={((index + rowIndex) % 3) * 2 - 2}
-          />
-        ))}
-      </div>
+            className="cta-fan-card group absolute origin-center hover:z-50"
+            style={{
+              left: `${card.left}%`,
+              top: `${card.top}%`,
+              width: card.width,
+              zIndex: card.z,
+              // Consumed by the floating keyframes so each card keeps its tilt.
+              ["--tilt" as string]: `${card.rotate}deg`,
+              animationDelay: `${card.delay}s`,
+            }}
+          >
+            <span className="block overflow-hidden rounded-md shadow-card transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:scale-[1.05] group-hover:shadow-glow">
+              <img
+                src={event.imageSrc}
+                alt={event.title}
+                loading="lazy"
+                className="aspect-[3/4] w-full object-cover"
+              />
+            </span>
+          </figure>
+        );
+      })}
     </div>
   );
 }
 
-/**
- * Tilted, infinitely scrolling collage of event flyers used behind the
- * pre-footer organizer CTA. Rows drift at slightly different speeds and
- * directions for a scattered, vibrant flyer-board feel.
- */
 export function CtaFlyerWall() {
   return (
-    <div
-      aria-hidden
-      className="relative h-[280px] w-full overflow-hidden sm:h-[320px] lg:h-[460px]"
-    >
-      <div className="absolute left-1/2 top-1/2 flex w-[140%] -translate-x-1/2 -translate-y-1/2 -rotate-[13deg] flex-col gap-lg lg:w-[125%]">
-        {ROWS.map((events, index) => (
-          <FlyerRow
-            key={index}
-            events={events}
-            speed={ROW_SPEEDS[index]}
-            reverse={index === 1}
-            rowIndex={index}
-          />
-        ))}
-      </div>
-      {/* Soft edge fades keep the collage blending into the card surface */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-card via-transparent to-card" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-card/60 via-transparent to-card/60" />
+    <div aria-hidden className="relative w-full">
+      <Fan
+        cards={MOBILE}
+        className="relative h-[230px] w-full sm:h-[280px] lg:hidden"
+      />
+      <Fan
+        cards={DESKTOP}
+        className="relative hidden h-[400px] w-full lg:block"
+      />
     </div>
   );
 }
