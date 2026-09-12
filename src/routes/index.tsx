@@ -27,6 +27,7 @@ import { EventCardSkeleton } from "@/design-system/components/EventCardSkeleton"
 import { Reveal } from "@/design-system/components/Reveal";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
+import { CtaFlyerWall } from "@/showcase/landing/CtaFlyerWall";
 import { HeroBackdrop } from "@/showcase/landing/HeroBackdrop";
 import { HeroCardStrip } from "@/showcase/landing/HeroFloatingCards";
 import { CATEGORIES } from "@/showcase/discovery/categories";
@@ -497,19 +498,24 @@ function Landing() {
 
         {/* CTA */}
         <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
-          <Reveal className="flex flex-col items-start gap-lg rounded-lg bg-card p-xl shadow-glow lg:flex-row lg:items-center lg:justify-between lg:p-2xl">
-            <div className="flex flex-col gap-sm">
-              <h2 className="type-h2">Your event deserves to be discovered.</h2>
-              <p className="type-body-lg text-muted-text">
-                Reach the people already looking for something to do. Promote your
-                experience, grow your community, manage attendees — and sell tickets as
-                Outrazo grows.
-              </p>
+          <Reveal className="overflow-hidden rounded-lg bg-card shadow-glow">
+            <div className="grid items-center gap-lg p-xl lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-xl lg:p-2xl">
+              <div className="flex flex-col items-center gap-md text-center lg:items-start lg:gap-lg lg:text-left">
+                <div className="flex flex-col gap-sm">
+                  <h2 className="type-h2">Your event deserves to be discovered.</h2>
+                  <p className="type-body-lg text-muted-text">
+                    Reach the people already looking for something to do. Promote your
+                    experience, grow your community, manage attendees — and sell tickets
+                    as Outrazo grows.
+                  </p>
+                </div>
+                <Button size="lg" onClick={() => navigate({ to: "/create" })}>
+                  Post Your Event
+                  <Plus aria-hidden className="size-4" />
+                </Button>
+              </div>
+              <CtaFlyerWall />
             </div>
-            <Button size="lg" onClick={() => navigate({ to: "/create" })}>
-              Post Your Event
-              <Plus aria-hidden className="size-4" />
-            </Button>
           </Reveal>
         </section>
       </main>
