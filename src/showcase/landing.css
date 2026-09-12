@@ -215,13 +215,23 @@ body {
   will-change: filter, letter-spacing;
 }
 
+/* --- CTA flyer wall marquee rows --- */
+.cta-wall-row {
+  animation: outrazo-marquee 50s linear infinite;
+}
+
+.cta-wall-row-reverse {
+  animation-direction: reverse;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .outrazo-sonar {
     display: none;
   }
   .outrazo-badge-enter,
   .outrazo-badge-text,
-  .outrazo-flame {
+  .outrazo-flame,
+  .cta-wall-row {
     animation: none;
   }
 }
