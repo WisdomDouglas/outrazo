@@ -43,7 +43,7 @@ function Fan({ cards, className }: { cards: FanCard[]; className?: string }) {
         return (
           <figure
             key={`${event.id}-${index}`}
-            className="cta-fan-card absolute origin-center overflow-hidden rounded-md shadow-card transition-transform duration-300 ease-out hover:z-50 hover:scale-[1.06]"
+            className="cta-fan-card group absolute origin-center hover:z-50"
             style={{
               left: `${card.left}%`,
               top: `${card.top}%`,
@@ -54,12 +54,14 @@ function Fan({ cards, className }: { cards: FanCard[]; className?: string }) {
               animationDelay: `${card.delay}s`,
             }}
           >
-            <img
-              src={event.imageSrc}
-              alt={event.title}
-              loading="lazy"
-              className="aspect-[3/4] w-full object-cover"
-            />
+            <span className="block overflow-hidden rounded-md shadow-card transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:scale-[1.05] group-hover:shadow-glow">
+              <img
+                src={event.imageSrc}
+                alt={event.title}
+                loading="lazy"
+                className="aspect-[3/4] w-full object-cover"
+              />
+            </span>
           </figure>
         );
       })}

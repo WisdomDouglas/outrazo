@@ -215,13 +215,21 @@ body {
   will-change: filter, letter-spacing;
 }
 
-/* --- CTA flyer wall marquee rows --- */
-.cta-wall-row {
-  animation: outrazo-marquee 50s linear infinite;
+/* --- CTA invitation card fan --- */
+@keyframes outrazo-fan-float {
+  0%,
+  100% {
+    transform: rotate(var(--tilt, 0deg)) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(var(--tilt, 0deg)) translate3d(0, -12px, 0);
+  }
 }
 
-.cta-wall-row-reverse {
-  animation-direction: reverse;
+.cta-fan-card {
+  transform: rotate(var(--tilt, 0deg));
+  animation: outrazo-fan-float 8s ease-in-out infinite;
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -231,7 +239,7 @@ body {
   .outrazo-badge-enter,
   .outrazo-badge-text,
   .outrazo-flame,
-  .cta-wall-row {
+  .cta-fan-card {
     animation: none;
   }
 }
