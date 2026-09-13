@@ -226,39 +226,89 @@ body {
 }
 
 .cta-stream-window {
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 7%, black 93%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 7%, black 93%, transparent);
 }
 
 .cta-stream-grid {
-  transform: rotate(-12deg);
+  transform: rotate(-10deg);
   transform-origin: center;
 }
 
+.cta-stream-lane-1 {
+  padding-top: 92px;
+}
+
+.cta-stream-lane-2 {
+  padding-top: 12px;
+}
+
+.cta-stream-lane-3 {
+  padding-top: 58px;
+}
+
 .cta-stream-column {
-  animation: marquee 24s linear infinite;
+  animation: marquee 26s linear infinite;
   will-change: transform;
 }
 
 .cta-stream-column-2 {
-  animation-duration: 29s;
-  animation-delay: -11s;
+  animation-duration: 31s;
+  animation-delay: -13s;
 }
 
 .cta-stream-column-3 {
-  animation-duration: 26s;
-  animation-delay: -18s;
+  animation-duration: 28s;
+  animation-delay: -19s;
 }
 
 .cta-stream-card {
   transform: rotate(var(--card-tilt, 0deg));
   transition: transform 200ms ease, box-shadow 200ms ease;
+  border: 1px solid color-mix(in srgb, var(--color-primary-text) 10%, transparent);
 }
 
 .cta-stream-card:hover {
   z-index: 10;
   transform: translate3d(0, -8px, 0) rotate(var(--card-tilt, 0deg)) scale(1.03);
   box-shadow: var(--shadow-glow);
+}
+
+@media (max-width: 639px) {
+  .cta-stream-grid {
+    transform: rotate(-8deg);
+  }
+
+  .cta-stream-lane-1 {
+    padding-top: 76px;
+  }
+
+  .cta-stream-lane-2 {
+    padding-top: 8px;
+  }
+
+  .cta-stream-lane-3 {
+    padding-top: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cta-stream-window {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
+  }
+
+  .cta-stream-lane-1 {
+    padding-top: 148px;
+  }
+
+  .cta-stream-lane-2 {
+    padding-top: 28px;
+  }
+
+  .cta-stream-lane-3 {
+    padding-top: 84px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
