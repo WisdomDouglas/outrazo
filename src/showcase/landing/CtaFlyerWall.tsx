@@ -1,85 +1,71 @@
 import { EVENTS } from "@/showcase/sample-data";
 
-/**
- * Overlapping fan/collage of event invitation cards used beside the organizer
- * CTA. Cards drift in a slow floating loop and lift on hover.
- */
-
-type FanCard = {
-  /** Horizontal position, percentage of the container width. */
-  left: number;
-  /** Vertical position, percentage of the container height. */
-  top: number;
-  rotate: number;
-  /** Card width in px at the desktop breakpoint. */
-  width: number;
-  z: number;
-  delay: number;
-};
-
-/** Desktop fan: a loose arc of tilted posters. */
-const DESKTOP: FanCard[] = [
-  { left: 2, top: 22, rotate: -14, width: 150, z: 1, delay: 0 },
-  { left: 17, top: 48, rotate: -8, width: 160, z: 2, delay: 0.8 },
-  { left: 32, top: 12, rotate: 7, width: 165, z: 3, delay: 1.6 },
-  { left: 46, top: 44, rotate: -5, width: 155, z: 4, delay: 0.4 },
-  { left: 60, top: 8, rotate: 12, width: 150, z: 3, delay: 2.2 },
-  { left: 66, top: 46, rotate: 16, width: 145, z: 2, delay: 1.2 },
+const COLUMN_EVENT_INDEXES = [
+  [0, 5, 12, 17],
+  [3, 9, 14, 20],
+  [1, 7, 11, 18],
 ];
 
-/** Mobile fan: fewer, tighter cards under the copy. */
-const MOBILE: FanCard[] = [
-  { left: 1, top: 30, rotate: -13, width: 108, z: 1, delay: 0.6 },
-  { left: 22, top: 10, rotate: -4, width: 116, z: 3, delay: 0 },
-  { left: 46, top: 26, rotate: 8, width: 112, z: 2, delay: 1.4 },
-  { left: 69, top: 6, rotate: 15, width: 104, z: 1, delay: 2 },
-];
+const TILTS = [-8, 6, -3, 12, 4, -6, 9, -2];
 
-function Fan({ cards, className }: { cards: FanCard[]; className?: string }) {
+function Flyer({ eventIndex, cardIndex }: { eventIndex: number; cardIndex: number }) {
+  const event = EVENTS[eventIndex % EVENTS.length];
+  const tilt = TILTS[cardIndex % TILTS.length];
+  const compact = cardIndex % 3 === 1;
+
   return (
-    <div className={className}>
-      {cards.map((card, index) => {
-        const event = EVENTS[(index * 3 + 1) % EVENTS.length];
-        return (
-          <figure
-            key={`${event.id}-${index}`}
-            className="cta-fan-card group absolute origin-center hover:z-50"
-            style={{
-              left: `${card.left}%`,
-              top: `${card.top}%`,
-              width: card.width,
-              zIndex: card.z,
-              // Consumed by the floating keyframes so each card keeps its tilt.
-              ["--tilt" as string]: `${card.rotate}deg`,
-              animationDelay: `${card.delay}s`,
-            }}
-          >
-            <span className="block overflow-hidden rounded-md shadow-card transition-all duration-300 ease-out group-hover:-translate-y-2 group-hover:scale-[1.05] group-hover:shadow-glow">
-              <img
-                src={event.imageSrc}
-                alt={event.title}
-                loading="lazy"
-                className="aspect-[3/4] w-full object-cover"
-              />
-            </span>
-          </figure>
-        );
-      })}
+    <figure
+      className="cta-stream-card group relative shrink-0 overflow-hidden rounded-md shadow-card"
+      style={{ ["--card-tilt" as string]: `${tilt}deg` }}
+    >
+      <img
+        src={event.imageSrc}
+        alt=""
+        loading="lazy"
+        className={compact ? "aspect-square w-full object-cover" : "aspect-[3/4] w-full object-cover"}
+      />
+      <span className="absolute inset-0 bg-gradient-to-t from-canvas/90 via-canvas/10 to-transparent" />
+      <figcaption className="absolute inset-x-0 bottom-0 flex flex-col gap-xs p-sm">
+        <span className="type-caption font-semibold uppercase text-accent">
+          {event.category}
+        </span>
+        <span className="type-body line-clamp-2 font-semibold text-primary-text">
+          {event.title}
+        </span>
+        <span className="type-caption text-muted-text">{event.date} · {event.city}</span>
+      </figcaption>
+    </figure>
+  );
+}
+
+function FlyerGroup({ indexes, group }: { indexes: number[]; group: number }) {
+  return (
+    <div className="flex flex-col gap-md pb-md">
+      {indexes.map((eventIndex, index) => (
+        <Flyer
+          key={`${group}-${EVENTS[eventIndex % EVENTS.length].id}`}
+          eventIndex={eventIndex}
+          cardIndex={eventIndex + index}
+        />
+      ))}
     </div>
   );
 }
 
 export function CtaFlyerWall() {
   return (
-    <div aria-hidden className="relative w-full">
-      <Fan
-        cards={MOBILE}
-        className="relative h-[230px] w-full sm:h-[280px] lg:hidden"
-      />
-      <Fan
-        cards={DESKTOP}
-        className="relative hidden h-[400px] w-full lg:block"
-      />
+    <div aria-hidden className="cta-stream-window relative h-[300px] w-full overflow-hidden sm:h-[340px] lg:h-[430px]">
+      <div className="cta-stream-grid absolute inset-x-[-12%] top-[-45%] grid grid-cols-3 gap-md sm:gap-lg lg:inset-x-[-6%] lg:top-[-55%]">
+        {COLUMN_EVENT_INDEXES.map((indexes, columnIndex) => (
+          <div
+            key={columnIndex}
+            className={`cta-stream-column cta-stream-column-${columnIndex + 1} min-w-0`}
+          >
+            <FlyerGroup indexes={indexes} group={columnIndex * 2} />
+            <FlyerGroup indexes={indexes} group={columnIndex * 2 + 1} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

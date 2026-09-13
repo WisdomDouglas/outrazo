@@ -215,21 +215,50 @@ body {
   will-change: filter, letter-spacing;
 }
 
-/* --- CTA invitation card fan --- */
-@keyframes outrazo-fan-float {
-  0%,
-  100% {
-    transform: rotate(var(--tilt, 0deg)) translate3d(0, 0, 0);
+/* --- CTA invitation conveyor --- */
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
   }
-  50% {
-    transform: rotate(var(--tilt, 0deg)) translate3d(0, -12px, 0);
+  to {
+    transform: translate3d(0, -50%, 0);
   }
 }
 
-.cta-fan-card {
-  transform: rotate(var(--tilt, 0deg));
-  animation: outrazo-fan-float 8s ease-in-out infinite;
+.cta-stream-window {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+}
+
+.cta-stream-grid {
+  transform: rotate(-12deg);
+  transform-origin: center;
+}
+
+.cta-stream-column {
+  animation: marquee 24s linear infinite;
   will-change: transform;
+}
+
+.cta-stream-column-2 {
+  animation-duration: 29s;
+  animation-delay: -11s;
+}
+
+.cta-stream-column-3 {
+  animation-duration: 26s;
+  animation-delay: -18s;
+}
+
+.cta-stream-card {
+  transform: rotate(var(--card-tilt, 0deg));
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.cta-stream-card:hover {
+  z-index: 10;
+  transform: translate3d(0, -8px, 0) rotate(var(--card-tilt, 0deg)) scale(1.03);
+  box-shadow: var(--shadow-glow);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -239,7 +268,7 @@ body {
   .outrazo-badge-enter,
   .outrazo-badge-text,
   .outrazo-flame,
-  .cta-fan-card {
+  .cta-stream-column {
     animation: none;
   }
 }
