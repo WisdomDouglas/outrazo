@@ -1,6 +1,6 @@
 import { EVENTS } from "@/showcase/sample-data";
 
-const COLLAGE_EVENT_INDEXES = [2, 5, 12, 17, 8, 3, 9, 14, 20, 6, 1, 7];
+const COLLAGE_EVENT_INDEXES = [13, 1, 5, 18, 10, 6, 3, 12, 8, 20, 17, 14];
 
 function Flyer({ eventIndex, position }: { eventIndex: number; position: number }) {
   const event = EVENTS[eventIndex % EVENTS.length];
@@ -19,27 +19,19 @@ function Flyer({ eventIndex, position }: { eventIndex: number; position: number 
   );
 }
 
-function FlyerCollage({ copy }: { copy: number }) {
+export function CtaFlyerWall() {
   return (
-    <div className="cta-collage-group relative shrink-0">
+    <div
+      aria-hidden
+      className="cta-collage-window relative -mx-md h-[390px] overflow-hidden sm:mx-0 sm:h-[460px] lg:h-[580px]"
+    >
       {COLLAGE_EVENT_INDEXES.map((eventIndex, position) => (
         <Flyer
-          key={`${copy}-${EVENTS[eventIndex % EVENTS.length].id}`}
+          key={EVENTS[eventIndex % EVENTS.length].id}
           eventIndex={eventIndex}
           position={position}
         />
       ))}
-    </div>
-  );
-}
-
-export function CtaFlyerWall() {
-  return (
-    <div aria-hidden className="cta-collage-window relative -mx-md h-[390px] overflow-hidden sm:mx-0 sm:h-[460px] lg:h-[580px]">
-      <div className="cta-collage-track absolute inset-x-0 top-0 flex flex-col">
-        <FlyerCollage copy={0} />
-        <FlyerCollage copy={1} />
-      </div>
     </div>
   );
 }
