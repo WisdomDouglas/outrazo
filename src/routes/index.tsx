@@ -500,8 +500,8 @@ function Landing() {
         <section className="overflow-hidden pb-section">
           <div className="mx-auto max-w-[1200px] px-md lg:px-xl">
             <Reveal>
-              <div className="grid items-center gap-0 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-xl">
-              <div className="flex flex-col items-center gap-md text-center lg:items-start lg:gap-lg lg:text-left">
+              <div className="grid min-h-[580px] items-center gap-0 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-lg">
+              <div className="relative z-10 flex flex-col items-center gap-md pt-xl text-center lg:items-start lg:gap-lg lg:pt-0 lg:text-left">
                 <div className="flex flex-col gap-sm">
                   <h2 className="type-h2">Your event deserves to be discovered.</h2>
                   <p className="type-body-lg text-muted-text">
