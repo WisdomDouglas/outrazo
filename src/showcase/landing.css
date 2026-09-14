@@ -215,99 +215,85 @@ body {
   will-change: filter, letter-spacing;
 }
 
-/* --- CTA invitation conveyor --- */
+/* --- CTA invitation collage conveyor --- */
 @keyframes marquee {
   from {
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(0, -50%, 0);
+    transform: translate3d(-3%, -50%, 0);
   }
 }
 
-.cta-stream-window {
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 7%, black 93%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, black 7%, black 93%, transparent);
+.cta-collage-window {
+  -webkit-mask-image: linear-gradient(to bottom, black 92%, transparent);
+  mask-image: linear-gradient(to bottom, black 92%, transparent);
 }
 
-.cta-stream-grid {
-  transform: rotate(-10deg);
-  transform-origin: center;
-}
-
-.cta-stream-lane-1 {
-  padding-top: 92px;
-}
-
-.cta-stream-lane-2 {
-  padding-top: 12px;
-}
-
-.cta-stream-lane-3 {
-  padding-top: 58px;
-}
-
-.cta-stream-column {
-  animation: marquee 26s linear infinite;
+.cta-collage-track {
+  width: 106%;
+  animation: marquee 32s linear infinite;
   will-change: transform;
 }
 
-.cta-stream-column-2 {
-  animation-duration: 31s;
-  animation-delay: -13s;
+.cta-collage-group {
+  width: 100%;
+  height: 460px;
 }
 
-.cta-stream-column-3 {
-  animation-duration: 28s;
-  animation-delay: -19s;
-}
-
-.cta-stream-card {
-  transform: rotate(var(--card-tilt, 0deg));
+.cta-collage-card {
+  border: 1px solid color-mix(in srgb, var(--color-primary-text) 12%, transparent);
   transition: transform 200ms ease, box-shadow 200ms ease;
-  border: 1px solid color-mix(in srgb, var(--color-primary-text) 10%, transparent);
+  will-change: transform;
 }
 
-.cta-stream-card:hover {
-  z-index: 10;
-  transform: translate3d(0, -8px, 0) rotate(var(--card-tilt, 0deg)) scale(1.03);
+.cta-collage-card:hover {
+  z-index: 30;
   box-shadow: var(--shadow-glow);
 }
 
+.cta-collage-card-1 { left: -5%; top: 42%; width: 34%; height: 43%; transform: rotate(-8deg); z-index: 7; }
+.cta-collage-card-2 { left: 18%; top: 30%; width: 31%; height: 45%; transform: rotate(7deg); z-index: 9; }
+.cta-collage-card-3 { left: 41%; top: 39%; width: 31%; height: 43%; transform: rotate(-5deg); z-index: 12; }
+.cta-collage-card-4 { left: 66%; top: 31%; width: 31%; height: 44%; transform: rotate(10deg); z-index: 10; }
+.cta-collage-card-5 { left: 84%; top: 47%; width: 27%; height: 40%; transform: rotate(8deg); z-index: 6; }
+.cta-collage-card-6 { left: 1%; top: 72%; width: 31%; height: 41%; transform: rotate(11deg); z-index: 15; }
+.cta-collage-card-7 { left: 25%; top: 65%; width: 32%; height: 44%; transform: rotate(-6deg); z-index: 18; }
+.cta-collage-card-8 { left: 49%; top: 69%; width: 31%; height: 42%; transform: rotate(8deg); z-index: 20; }
+.cta-collage-card-9 { left: 73%; top: 68%; width: 31%; height: 42%; transform: rotate(-7deg); z-index: 17; }
+.cta-collage-card-10 { left: 11%; top: 4%; width: 28%; height: 40%; transform: rotate(-9deg); z-index: 2; }
+.cta-collage-card-11 { left: 47%; top: 1%; width: 29%; height: 42%; transform: rotate(8deg); z-index: 4; }
+.cta-collage-card-12 { left: 78%; top: 7%; width: 29%; height: 40%; transform: rotate(5deg); z-index: 3; }
+
+.cta-collage-card:hover {
+  transform: translate3d(0, -8px, 0) rotate(0deg) scale(1.03);
+}
+
 @media (max-width: 639px) {
-  .cta-stream-grid {
-    transform: rotate(-8deg);
+  .cta-collage-window {
+    margin-top: -8px;
   }
 
-  .cta-stream-lane-1 {
-    padding-top: 76px;
+  .cta-collage-track {
+    width: 112%;
+    left: -6%;
+    animation-duration: 38s;
   }
 
-  .cta-stream-lane-2 {
-    padding-top: 8px;
-  }
-
-  .cta-stream-lane-3 {
-    padding-top: 48px;
+  .cta-collage-group {
+    height: 390px;
   }
 }
 
 @media (min-width: 1024px) {
-  .cta-stream-window {
-    -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
-    mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
+  .cta-collage-window {
+    margin-right: -12%;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 100%);
+    mask-image: linear-gradient(to right, transparent, black 8%, black 100%);
   }
 
-  .cta-stream-lane-1 {
-    padding-top: 148px;
-  }
-
-  .cta-stream-lane-2 {
-    padding-top: 28px;
-  }
-
-  .cta-stream-lane-3 {
-    padding-top: 84px;
+  .cta-collage-group {
+    height: 580px;
   }
 }
 
@@ -318,7 +304,7 @@ body {
   .outrazo-badge-enter,
   .outrazo-badge-text,
   .outrazo-flame,
-  .cta-stream-column {
+  .cta-collage-track {
     animation: none;
   }
 }
