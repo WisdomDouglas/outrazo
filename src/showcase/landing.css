@@ -215,79 +215,102 @@ body {
   will-change: filter, letter-spacing;
 }
 
-/* --- CTA editorial invitation collage --- */
-@keyframes cta-float-a {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--card-rotation)); }
-  50% { transform: translate3d(4px, -7px, 0) rotate(calc(var(--card-rotation) + 0.8deg)); }
+/* --- CTA invitation stream --- */
+@keyframes cta-flow {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 
-@keyframes cta-float-b {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--card-rotation)); }
-  50% { transform: translate3d(-5px, 5px, 0) rotate(calc(var(--card-rotation) - 0.65deg)); }
+@keyframes cta-card-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0.2rem, -0.45rem, 0); }
 }
 
-@keyframes cta-float-c {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--card-rotation)); }
-  50% { transform: translate3d(3px, 6px, 0) rotate(calc(var(--card-rotation) + 0.55deg)); }
+@keyframes cta-card-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(-0.25rem, 0.35rem, 0); }
 }
 
-@keyframes cta-float-d {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--card-rotation)); }
-  50% { transform: translate3d(-4px, -6px, 0) rotate(calc(var(--card-rotation) - 0.75deg)); }
+.cta-flow-window {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
 }
 
-.cta-collage-card {
-  aspect-ratio: 4 / 5;
-  border: 1px solid color-mix(in srgb, var(--color-primary-text) 12%, transparent);
-  transition: transform 200ms ease, box-shadow 200ms ease;
+.cta-flow-track {
+  position: absolute;
+  bottom: -4%;
+  left: 0;
+  display: flex;
+  width: max-content;
+  align-items: flex-end;
+  animation: cta-flow 28s linear infinite;
   will-change: transform;
 }
 
-.cta-collage-card:hover {
-  z-index: 30;
+.cta-flow-group {
+  display: flex;
+  align-items: flex-end;
+  padding-inline: 1.5rem;
+}
+
+.cta-flow-card {
+  position: relative;
+  z-index: var(--card-layer, 1);
+  width: clamp(7.75rem, 31vw, 9.25rem);
+  flex: none;
+  margin-left: -2.15rem;
+  aspect-ratio: 4 / 5;
+  transform: translate3d(0, var(--card-rise, 0), 0) rotate(var(--card-rotation, 0deg));
+  transform-origin: 50% 100%;
+}
+
+.cta-flow-card:first-child { margin-left: 0; }
+
+.cta-flow-card-art {
+  width: 100%;
+  height: 100%;
+  border: 1px solid color-mix(in srgb, var(--color-primary-text) 12%, transparent);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  animation: cta-card-drift-a 7.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.cta-flow-card:nth-child(even) .cta-flow-card-art {
+  animation-name: cta-card-drift-b;
+  animation-duration: 9.2s;
+  animation-delay: -3.4s;
+}
+
+.cta-flow-card:hover { z-index: 30; }
+.cta-flow-card:hover .cta-flow-card-art {
+  transform: translate3d(0, -0.5rem, 0) scale(1.025);
   box-shadow: var(--shadow-glow);
 }
 
-.cta-collage-card-1 { --card-rotation: -8deg; left: -7%; top: 4%; width: 34%; z-index: 4; animation: cta-float-a 7.4s ease-in-out -1.6s infinite; }
-.cta-collage-card-2 { --card-rotation: 8deg; left: 38%; top: 1%; width: 35%; z-index: 5; animation: cta-float-b 8.7s ease-in-out -4.1s infinite; }
-.cta-collage-card-3 { --card-rotation: 7deg; left: 78%; top: 5%; width: 32%; z-index: 3; animation: cta-float-c 7.9s ease-in-out -2.8s infinite; }
-.cta-collage-card-4 { --card-rotation: -10deg; left: -18%; top: 34%; width: 38%; z-index: 7; animation: cta-float-d 9.1s ease-in-out -5.3s infinite; }
-.cta-collage-card-5 { --card-rotation: -3deg; left: 15%; top: 25%; width: 38%; z-index: 10; animation: cta-float-b 7.1s ease-in-out -3.7s infinite; }
-.cta-collage-card-6 { --card-rotation: 10deg; left: 48%; top: 30%; width: 36%; z-index: 9; animation: cta-float-a 8.3s ease-in-out -6.2s infinite; }
-.cta-collage-card-7 { --card-rotation: 6deg; left: 78%; top: 34%; width: 35%; z-index: 8; animation: cta-float-d 7.7s ease-in-out -2.1s infinite; }
-.cta-collage-card-8 { --card-rotation: 11deg; left: -8%; top: 63%; width: 34%; z-index: 11; animation: cta-float-c 8.9s ease-in-out -4.8s infinite; }
-.cta-collage-card-9 { --card-rotation: -7deg; left: 22%; top: 58%; width: 38%; z-index: 13; animation: cta-float-a 7.6s ease-in-out -5.7s infinite; }
-.cta-collage-card-10 { --card-rotation: 8deg; left: 54%; top: 64%; width: 35%; z-index: 12; animation: cta-float-b 9.4s ease-in-out -3.2s infinite; }
-.cta-collage-card-11 { --card-rotation: -8deg; left: 83%; top: 67%; width: 34%; z-index: 10; animation: cta-float-c 8.1s ease-in-out -6.5s infinite; }
-.cta-collage-card-12 { display: none; }
-
-.cta-collage-card:hover {
-  transform: translate3d(0, -8px, 0) rotate(0deg) scale(1.03);
-}
-
-@media (max-width: 639px) {
-  .cta-collage-window {
-    margin-top: 8px;
-  }
-}
+.cta-flow-card-1 { --card-rise: -2.5rem; --card-rotation: -9deg; --card-layer: 2; }
+.cta-flow-card-2 { --card-rise: -5.5rem; --card-rotation: 7deg; --card-layer: 4; }
+.cta-flow-card-3 { --card-rise: -7.5rem; --card-rotation: -5deg; --card-layer: 6; }
+.cta-flow-card-4 { --card-rise: -8.75rem; --card-rotation: 10deg; --card-layer: 8; }
+.cta-flow-card-5 { --card-rise: -9.25rem; --card-rotation: -4deg; --card-layer: 10; }
+.cta-flow-card-6 { --card-rise: -8.75rem; --card-rotation: 8deg; --card-layer: 9; }
+.cta-flow-card-7 { --card-rise: -7.25rem; --card-rotation: -7deg; --card-layer: 7; }
+.cta-flow-card-8 { --card-rise: -5rem; --card-rotation: 11deg; --card-layer: 5; }
+.cta-flow-card-9 { --card-rise: -2.75rem; --card-rotation: -6deg; --card-layer: 3; }
+.cta-flow-card-10 { --card-rise: -1rem; --card-rotation: 6deg; --card-layer: 1; }
 
 @media (min-width: 1024px) {
-  .cta-collage-window {
-    margin-right: -22%;
+  .cta-flow-window {
+    margin-right: -28%;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 9%, black 92%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 9%, black 92%, transparent 100%);
   }
 
-  .cta-collage-card-1 { left: 8%; top: -15%; width: 31%; }
-  .cta-collage-card-2 { left: 51%; top: -8%; width: 29%; }
-  .cta-collage-card-3 { left: 87%; top: -13%; width: 27%; }
-  .cta-collage-card-4 { left: -5%; top: 29%; width: 31%; }
-  .cta-collage-card-5 { left: 27%; top: 21%; width: 33%; }
-  .cta-collage-card-6 { left: 59%; top: 23%; width: 31%; }
-  .cta-collage-card-7 { left: 87%; top: 28%; width: 29%; }
-  .cta-collage-card-8 { left: 1%; top: 63%; width: 29%; }
-  .cta-collage-card-9 { left: 31%; top: 56%; width: 33%; }
-  .cta-collage-card-10 { left: 62%; top: 59%; width: 31%; }
-  .cta-collage-card-11 { left: 90%; top: 64%; width: 28%; }
-  .cta-collage-card-12 { --card-rotation: 5deg; display: block; left: 75%; top: 81%; width: 28%; z-index: 14; animation: cta-float-d 8.5s ease-in-out -4.4s infinite; }
+  .cta-flow-track { bottom: 3%; }
+
+  .cta-flow-card {
+    width: clamp(8.5rem, 11vw, 10.5rem);
+    margin-left: -2.6rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -297,7 +320,8 @@ body {
   .outrazo-badge-enter,
   .outrazo-badge-text,
   .outrazo-flame,
-  .cta-collage-card {
+  .cta-flow-track,
+  .cta-flow-card-art {
     animation: none;
   }
 }
