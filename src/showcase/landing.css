@@ -355,6 +355,10 @@ body {
     will-change: offset-distance, opacity;
   }
 
+  .cta-flow-window:hover .cta-flow-card {
+    animation-play-state: paused;
+  }
+
   .cta-flow-card-1 { --card-position: 1; --card-rotation: -8deg; }
   .cta-flow-card-2 { --card-position: 2; --card-rotation: -6deg; }
   .cta-flow-card-3 { --card-position: 3; --card-rotation: -4deg; }
