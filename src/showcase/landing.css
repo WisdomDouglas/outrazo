@@ -317,18 +317,18 @@ body {
     margin-left: -2.6rem;
   }
 
-  /* Desktop: incomplete circle rising from the lower entry, cresting, then
-     curving toward the upper exit while each card remains in the same stack. */
+  /* Desktop: incomplete circle rising from the lower entry toward the upper
+     exit. The missing circumference remains open above/left of the stack. */
   .cta-flow-card-1 { --card-rise: -0.5rem; --card-rotation: -13deg; --card-layer: 2; }
   .cta-flow-card-2 { --card-rise: -4.5rem; --card-rotation: -10deg; --card-layer: 3; }
   .cta-flow-card-3 { --card-rise: -8rem; --card-rotation: -7deg; --card-layer: 4; }
   .cta-flow-card-4 { --card-rise: -10.75rem; --card-rotation: -4deg; --card-layer: 5; }
-  .cta-flow-card-5 { --card-rise: -12.5rem; --card-rotation: -1deg; --card-layer: 6; }
-  .cta-flow-card-6 { --card-rise: -13rem; --card-rotation: 2deg; --card-layer: 7; }
-  .cta-flow-card-7 { --card-rise: -12.25rem; --card-rotation: 5deg; --card-layer: 8; }
-  .cta-flow-card-8 { --card-rise: -10rem; --card-rotation: 8deg; --card-layer: 7; }
-  .cta-flow-card-9 { --card-rise: -6.75rem; --card-rotation: 11deg; --card-layer: 6; }
-  .cta-flow-card-10 { --card-rise: -2.5rem; --card-rotation: 14deg; --card-layer: 5; }
+  .cta-flow-card-5 { --card-rise: -12.75rem; --card-rotation: -2deg; --card-layer: 6; }
+  .cta-flow-card-6 { --card-rise: -14.25rem; --card-rotation: 0deg; --card-layer: 7; }
+  .cta-flow-card-7 { --card-rise: -15.25rem; --card-rotation: 2deg; --card-layer: 8; }
+  .cta-flow-card-8 { --card-rise: -15.85rem; --card-rotation: 4deg; --card-layer: 9; }
+  .cta-flow-card-9 { --card-rise: -16.15rem; --card-rotation: 6deg; --card-layer: 10; }
+  .cta-flow-card-10 { --card-rise: -16.25rem; --card-rotation: 8deg; --card-layer: 11; }
 }
 
 
