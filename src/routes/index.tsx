@@ -410,7 +410,7 @@ function Landing() {
         </section>
 
         {/* Happening tonight — looping marquee */}
-        <section className="overflow-hidden pb-section">
+        <section className="overflow-visible pb-section">
           <div className="mx-auto mb-lg flex max-w-[1200px] items-center gap-sm px-md lg:px-xl">
             <h2 className="type-h2">Happening tonight</h2>
             <Badge variant="transactional">Live</Badge>

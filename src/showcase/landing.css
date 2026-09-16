@@ -216,21 +216,6 @@ body {
 }
 
 /* --- CTA invitation stream: one stack following a broken circular path --- */
-@keyframes cta-flow {
-  from { transform: translate3d(0, 0, 0); }
-  to { transform: translate3d(-50%, 0, 0); }
-}
-
-@keyframes cta-card-drift-a {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0.2rem, -0.45rem, 0); }
-}
-
-@keyframes cta-card-drift-b {
-  0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(-0.25rem, 0.35rem, 0); }
-}
-
 @keyframes cta-circle-flow {
   0% {
     offset-distance: 0%;
@@ -247,57 +232,41 @@ body {
 }
 
 .cta-flow-window {
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 9%, black 91%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0%, black 9%, black 91%, transparent 100%);
+  isolation: isolate;
 }
 
 .cta-flow-track {
   position: absolute;
-  bottom: -2%;
-  left: 0;
-  display: flex;
-  width: max-content;
-  align-items: flex-end;
-  animation: cta-flow 28s linear infinite;
-  will-change: transform;
-}
-
-.cta-flow-window:hover .cta-flow-track {
-  animation-play-state: paused;
+  inset: 0;
 }
 
 .cta-flow-group {
-  display: flex;
-  align-items: flex-end;
-  padding-inline: 1.5rem;
+  position: absolute;
+  inset: 0;
 }
 
 .cta-flow-card {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: var(--card-layer, 1);
-  flex: none;
   width: clamp(7.75rem, 31vw, 9.25rem);
   aspect-ratio: 4 / 5;
-  margin-left: -2.15rem;
-  transform: translate3d(0, var(--card-rise, 0), 0) rotate(var(--card-rotation, 0deg));
+  offset-path: path("M -110 260 Q 215 65 540 260");
+  offset-anchor: center;
+  offset-rotate: 0deg;
+  transform: rotate(var(--card-rotation, 0deg));
   transform-origin: 50% 100%;
+  animation: cta-circle-flow 28s linear infinite;
+  animation-delay: calc((var(--card-position) - 1) * -2.8s);
+  will-change: offset-distance, opacity;
 }
-
-.cta-flow-card:first-child { margin-left: 0; }
 
 .cta-flow-card-art {
   width: 100%;
   height: 100%;
   border: 1px solid color-mix(in srgb, var(--color-primary-text) 12%, transparent);
   transition: transform 200ms ease, box-shadow 200ms ease;
-  animation: cta-card-drift-a 7.8s ease-in-out infinite;
-  will-change: transform;
-}
-
-.cta-flow-card:nth-child(even) .cta-flow-card-art {
-  animation-name: cta-card-drift-b;
-  animation-duration: 9.2s;
-  animation-delay: -3.4s;
 }
 
 .cta-flow-card:hover { z-index: 30; }
@@ -306,39 +275,24 @@ body {
   box-shadow: var(--shadow-glow);
 }
 
-/* Mobile: shallow downward arc, highest at the ends and lowest at its centre. */
-.cta-flow-card-1 { --card-rise: -5.5rem; --card-rotation: -10deg; --card-layer: 2; }
-.cta-flow-card-2 { --card-rise: -3.5rem; --card-rotation: -7deg; --card-layer: 3; }
-.cta-flow-card-3 { --card-rise: -1.75rem; --card-rotation: -4deg; --card-layer: 4; }
-.cta-flow-card-4 { --card-rise: -0.5rem; --card-rotation: -2deg; --card-layer: 5; }
-.cta-flow-card-5 { --card-rise: 0rem; --card-rotation: 0deg; --card-layer: 6; }
-.cta-flow-card-6 { --card-rise: 0rem; --card-rotation: 1deg; --card-layer: 6; }
-.cta-flow-card-7 { --card-rise: -0.75rem; --card-rotation: 3deg; --card-layer: 5; }
-.cta-flow-card-8 { --card-rise: -2rem; --card-rotation: 5deg; --card-layer: 4; }
-.cta-flow-card-9 { --card-rise: -3.75rem; --card-rotation: 8deg; --card-layer: 3; }
-.cta-flow-card-10 { --card-rise: -5.75rem; --card-rotation: 11deg; --card-layer: 2; }
+.cta-flow-card-1 { --card-position: 1; --card-rotation: -10deg; }
+.cta-flow-card-2 { --card-position: 2; --card-rotation: -7deg; }
+.cta-flow-card-3 { --card-position: 3; --card-rotation: -5deg; }
+.cta-flow-card-4 { --card-position: 4; --card-rotation: -2deg; }
+.cta-flow-card-5 { --card-position: 5; --card-rotation: 0deg; }
+.cta-flow-card-6 { --card-position: 6; --card-rotation: 0deg; }
+.cta-flow-card-7 { --card-position: 7; --card-rotation: 2deg; }
+.cta-flow-card-8 { --card-position: 8; --card-rotation: 5deg; }
+.cta-flow-card-9 { --card-position: 9; --card-rotation: 7deg; }
+.cta-flow-card-10 { --card-position: 10; --card-rotation: 10deg; }
+
+.cta-flow-window:hover .cta-flow-card {
+  animation-play-state: paused;
+}
 
 @media (min-width: 1024px) {
   .cta-flow-window {
     margin-right: -28%;
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
-  .cta-flow-track {
-    inset: 0;
-    width: auto;
-    animation: none;
-  }
-
-  .cta-flow-group {
-    position: absolute;
-    inset: 0;
-    padding: 0;
-  }
-
-  .cta-flow-group[aria-hidden="true"] {
-    display: none;
   }
 
   .cta-flow-card {
@@ -346,29 +300,8 @@ body {
     top: 0;
     left: 0;
     width: clamp(8.5rem, 11vw, 10.5rem);
-    margin: 0;
     offset-path: ellipse(37% 43% at 69% 50%);
-    offset-anchor: center;
-    offset-rotate: 0deg;
-    animation: cta-circle-flow 28s linear infinite;
-    animation-delay: calc((var(--card-position) - 1) * -2.8s);
-    will-change: offset-distance, opacity;
   }
-
-  .cta-flow-window:hover .cta-flow-card {
-    animation-play-state: paused;
-  }
-
-  .cta-flow-card-1 { --card-position: 1; --card-rotation: -8deg; }
-  .cta-flow-card-2 { --card-position: 2; --card-rotation: -6deg; }
-  .cta-flow-card-3 { --card-position: 3; --card-rotation: -4deg; }
-  .cta-flow-card-4 { --card-position: 4; --card-rotation: -2deg; }
-  .cta-flow-card-5 { --card-position: 5; --card-rotation: 0deg; }
-  .cta-flow-card-6 { --card-position: 6; --card-rotation: 0deg; }
-  .cta-flow-card-7 { --card-position: 7; --card-rotation: 2deg; }
-  .cta-flow-card-8 { --card-position: 8; --card-rotation: 4deg; }
-  .cta-flow-card-9 { --card-position: 9; --card-rotation: 6deg; }
-  .cta-flow-card-10 { --card-position: 10; --card-rotation: 8deg; }
 }
 
 

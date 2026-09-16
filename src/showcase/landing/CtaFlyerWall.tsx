@@ -21,12 +21,12 @@ function Flyer({ eventIndex, position }: { eventIndex: number; position: number 
   );
 }
 
-function FlyerGroup({ duplicate = false }: { duplicate?: boolean }) {
+function FlyerGroup() {
   return (
-    <div className="cta-flow-group" aria-hidden={duplicate || undefined}>
+    <div className="cta-flow-group">
       {COLLAGE_EVENT_INDEXES.map((eventIndex, position) => (
         <Flyer
-          key={`${duplicate ? "duplicate" : "original"}-${EVENTS[eventIndex % EVENTS.length].id}`}
+          key={EVENTS[eventIndex % EVENTS.length].id}
           eventIndex={eventIndex}
           position={position}
         />
@@ -39,11 +39,10 @@ export function CtaFlyerWall() {
   return (
     <div
       aria-hidden
-      className="cta-flow-window relative -mx-md h-[360px] overflow-hidden sm:mx-0 sm:h-[420px] lg:h-[580px]"
+      className="cta-flow-window relative -mx-md h-[360px] overflow-visible sm:mx-0 sm:h-[420px] lg:h-[580px]"
     >
       <div className="cta-flow-track">
         <FlyerGroup />
-        <FlyerGroup duplicate />
       </div>
     </div>
   );
