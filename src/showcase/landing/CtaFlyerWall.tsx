@@ -11,7 +11,6 @@ function Flyer({ eventIndex, position }: { eventIndex: number; position: number 
         <img
           src={event.imageSrc}
           alt=""
-          loading="lazy"
           className="cta-flow-card-image size-full object-cover"
         />
         <figcaption className="cta-flow-card-caption">
