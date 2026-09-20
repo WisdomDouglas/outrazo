@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,11 @@ import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
 import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
 import { Route as Char91__componentChar93PreviewSplatRouteImport } from './routes/[__component].preview.$'
 
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/events': typeof EventsRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
   '/events/': typeof EventsIndexRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/onboarding': typeof OnboardingRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
   '/events': typeof EventsIndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/events': typeof EventsRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
   '/events/': typeof EventsIndexRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/create'
     | '/events'
+    | '/onboarding'
     | '/events/$eventId'
     | '/organizers/$organizerId'
     | '/events/'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/create'
+    | '/onboarding'
     | '/events/$eventId'
     | '/organizers/$organizerId'
     | '/events'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/create'
     | '/events'
+    | '/onboarding'
     | '/events/$eventId'
     | '/organizers/$organizerId'
     | '/events/'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateRoute: typeof CreateRoute
   EventsRoute: typeof EventsRouteWithChildren
+  OnboardingRoute: typeof OnboardingRoute
   OrganizersOrganizerIdRoute: typeof OrganizersOrganizerIdRoute
   Char91__componentChar93PreviewSplatRoute: typeof Char91__componentChar93PreviewSplatRoute
   Char91__mockupChar93PreviewSplatRoute: typeof Char91__mockupChar93PreviewSplatRoute
@@ -134,6 +147,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events': {
       id: '/events'
       path: '/events'
@@ -210,6 +230,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateRoute: CreateRoute,
   EventsRoute: EventsRouteWithChildren,
+  OnboardingRoute: OnboardingRoute,
   OrganizersOrganizerIdRoute: OrganizersOrganizerIdRoute,
   Char91__componentChar93PreviewSplatRoute:
     Char91__componentChar93PreviewSplatRoute,
