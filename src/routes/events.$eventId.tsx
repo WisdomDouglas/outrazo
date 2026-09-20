@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Bookmark, CalendarDays, ChevronRight, MapPin, Navigation, Ticket, Users } from "lucide-react";
+import { ArrowLeft, Bookmark, CalendarDays, ChevronRight, Heart, MapPin, Navigation, Ticket, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Avatar } from "@/design-system/components/Avatar";
@@ -86,10 +86,11 @@ function EventDetailsPage() {
     <div className="min-h-screen overflow-x-clip bg-canvas pb-[calc(var(--spacing-section)+var(--spacing-xl))] text-primary-text lg:pb-0">
       <header className="border-b border-line bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex min-h-16 max-w-[1200px] items-center justify-between px-md lg:px-xl">
-          <Link to="/" className="focus-ring type-h3 rounded-sm text-accent">OUTRAZO</Link>
+          <Link to="/events" search={{}} className="focus-ring grid size-11 place-items-center rounded-full text-muted-text hover:text-primary-text sm:hidden" aria-label="Back to Explore"><ArrowLeft aria-hidden className="size-5" /></Link>
+          <Link to="/" className="focus-ring type-h3 hidden rounded-sm text-accent sm:inline-flex">OUTRAZO</Link>
           <nav className="flex items-center gap-sm" aria-label="Event actions">
-            <Button type="button" variant="ghost" size="sm" className="size-11 px-0 sm:hidden" aria-label={saved ? "Remove from saved" : "Save event"} onClick={() => toggle(event.id)}><Bookmark aria-hidden className={saved ? "size-5 fill-accent text-accent" : "size-5"} /></Button>
-            <EventShareMenu title={event.title} />
+            <button type="button" className="focus-ring grid size-11 place-items-center rounded-full border border-line sm:hidden" aria-label={saved ? "Remove from saved" : "Save event"} onClick={() => toggle(event.id)}><Heart aria-hidden className={saved ? "size-5 fill-accent text-accent" : "size-5"} /></button>
+            <div className="hidden sm:block"><EventShareMenu title={event.title} /></div>
           </nav>
         </div>
       </header>
@@ -97,7 +98,7 @@ function EventDetailsPage() {
       {loading ? <DetailSkeleton /> : (
         <main>
           <div className="mx-auto max-w-[1200px] px-md pt-lg lg:px-xl lg:pt-xl">
-            <Link to="/events" search={{}} className="focus-ring type-body inline-flex min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text"><ArrowLeft aria-hidden className="size-4" />Back to Explore</Link>
+            <Link to="/events" search={{}} className="focus-ring type-body hidden min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text sm:inline-flex"><ArrowLeft aria-hidden className="size-4" />Back to Explore</Link>
           </div>
 
           <section className="mx-auto grid max-w-[1200px] gap-xl px-md pb-section pt-md lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:px-xl">
@@ -110,6 +111,7 @@ function EventDetailsPage() {
                 <DetailRow icon={<Users aria-hidden className="size-5" />} label="People going" value={`${event.attendeeCount.toLocaleString()} people going`} />
               </div>
               <Button variant={event.ticketTiers.length ? "transactional" : "primary"} size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />} onClick={() => setBookingOpen(true)}>{actionLabel}</Button>
+              <div className="sm:hidden"><EventShareMenu title={event.title} /></div>
               <div className="hidden grid-cols-2 gap-sm sm:grid">
                 <Button type="button" variant="outline" leadingIcon={<Bookmark aria-hidden className={saved ? "size-4 fill-accent" : "size-4"} />} onClick={() => toggle(event.id)}>{saved ? "Saved" : "Save"}</Button>
                 <EventShareMenu title={event.title} />
