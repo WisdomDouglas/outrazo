@@ -19,5 +19,5 @@
 
 - [ ] Refine the Explore heading and selectable demo location context.
 - [ ] Add responsive date, location, and price filters using the existing mock events.
-- [ ] Polish shared EventCard hierarchy and distinct loading, empty, and error states.
+- [x] Polish shared EventCard hierarchy and distinct loading, empty, and error states.
 - [ ] Verify Explore search, categories, filters, states, and responsiveness on desktop, tablet, and mobile.

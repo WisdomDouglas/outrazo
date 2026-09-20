@@ -113,7 +113,7 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
       </div>
 
       <div className="flex flex-col gap-sm">
-        <h3 className="type-h3">
+        <h3 className="type-h3 min-h-2xl lg:min-h-3xl">
           <a
             href={href}
             onClick={(event) => {
@@ -122,7 +122,7 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
                 onSelect();
               }
             }}
-            className="focus-ring rounded-sm transition-colors hover:text-accent"
+            className="focus-ring line-clamp-2 rounded-sm transition-colors hover:text-accent"
           >
             {title}
           </a>
@@ -133,7 +133,7 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
         </p>
       </div>
 
-      <div className="mt-auto flex items-center justify-between gap-md">
+      <div className="mt-auto flex items-center justify-between gap-md border-t border-line pt-md">
         <span className="type-caption flex min-w-0 items-center gap-sm text-muted-text">
           <Avatar name={host.name} src={host.avatarSrc} size="sm" />
           <span className="min-w-0">
@@ -141,11 +141,13 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
             {community ? <span className="block truncate">{community}</span> : null}
           </span>
         </span>
-        <Badge variant={price ? "transactional" : "accent"}>{price ?? "Free"}</Badge>
+        <Badge className="shrink-0" variant={price ? "transactional" : "accent"}>
+          {price ?? "Free"}
+        </Badge>
       </div>
 
       {attendees?.length ? (
-        <AvatarStack people={attendees} totalCount={attendeeCount} />
+        <AvatarStack people={attendees} totalCount={attendeeCount} className="text-subtle-text" />
       ) : null}
     </article>
   ),
