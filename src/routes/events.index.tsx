@@ -103,6 +103,14 @@ function ExploreEvents() {
   const [draftFilters, setDraftFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const discovery = useDiscovery();
+  const setCategory = discovery.setCategory;
+
+  // Deep links such as /events?category=music preselect the category rail.
+  useEffect(() => {
+    if (categoryParam && CATEGORIES.some((item) => item.id === categoryParam)) {
+      setCategory(categoryParam as CategoryId);
+    }
+  }, [categoryParam, setCategory]);
 
   const filteredEvents = useMemo(
     () => filterEvents(discovery.events, appliedFilters, discovery.city),
