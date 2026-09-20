@@ -70,8 +70,9 @@ function filterEvents(events: OutrazoEvent[], filters: EventFilters, city: strin
 }
 
 export const Route = createFileRoute("/events/")({
-  validateSearch: (search: Record<string, unknown>): { q?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { q?: string; category?: string } => ({
     q: typeof search.q === "string" ? search.q : undefined,
+    category: typeof search.category === "string" ? search.category : undefined,
   }),
   head: () => ({
     meta: [
