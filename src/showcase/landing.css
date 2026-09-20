@@ -215,30 +215,108 @@ body {
   will-change: filter, letter-spacing;
 }
 
-/* --- CTA invitations: one precise, synchronized editorial orbit --- */
+/* --- CTA invitations: one synchronized broken editorial orbit --- */
 @keyframes cta-circle-flow {
   0% {
-    offset-distance: 0%;
+    transform: translate3d(112cqw, 5cqh, 0) rotate(-7deg) scale(0.54);
+    opacity: 0;
+    z-index: 1;
+  }
+  8% {
+    transform: translate3d(101cqw, 3cqh, 0) rotate(-6deg) scale(0.62);
     opacity: 0;
   }
-  6% { opacity: 0; }
-  12% { opacity: 1; }
-  88% { opacity: 1; }
-  94% { opacity: 0; }
-  100% {
-    offset-distance: 100%;
+  15% {
+    transform: translate3d(88cqw, 2cqh, 0) rotate(-5deg) scale(0.72);
+    opacity: 1;
+  }
+  30% {
+    transform: translate3d(59cqw, 4cqh, 0) rotate(-3deg) scale(0.88);
+    opacity: 1;
+    z-index: 4;
+  }
+  47% {
+    transform: translate3d(31cqw, 23cqh, 0) rotate(4deg) scale(1.16);
+    opacity: 1;
+    z-index: 12;
+  }
+  61% {
+    transform: translate3d(43cqw, 58cqh, 0) rotate(2deg) scale(0.98);
+    opacity: 1;
+    z-index: 8;
+  }
+  76% {
+    transform: translate3d(72cqw, 68cqh, 0) rotate(-4deg) scale(0.82);
+    opacity: 1;
+    z-index: 4;
+  }
+  88% {
+    transform: translate3d(101cqw, 54cqh, 0) rotate(-7deg) scale(0.65);
     opacity: 0;
+    z-index: 1;
+  }
+  100% {
+    transform: translate3d(114cqw, 48cqh, 0) rotate(-8deg) scale(0.54);
+    opacity: 0;
+    z-index: 1;
+  }
+}
+
+@keyframes cta-arc-flow {
+  0% {
+    transform: translate3d(112cqw, 3cqh, 0) rotate(-6deg) scale(0.6);
+    opacity: 0;
+    z-index: 1;
+  }
+  8% {
+    transform: translate3d(101cqw, 5cqh, 0) rotate(-5deg) scale(0.66);
+    opacity: 0;
+  }
+  17% {
+    transform: translate3d(83cqw, 10cqh, 0) rotate(-4deg) scale(0.78);
+    opacity: 1;
+  }
+  34% {
+    transform: translate3d(51cqw, 19cqh, 0) rotate(-2deg) scale(0.94);
+    opacity: 1;
+    z-index: 6;
+  }
+  49% {
+    transform: translate3d(22cqw, 34cqh, 0) rotate(3deg) scale(1.1);
+    opacity: 1;
+    z-index: 12;
+  }
+  64% {
+    transform: translate3d(42cqw, 51cqh, 0) rotate(2deg) scale(0.96);
+    opacity: 1;
+    z-index: 8;
+  }
+  79% {
+    transform: translate3d(75cqw, 61cqh, 0) rotate(-3deg) scale(0.8);
+    opacity: 1;
+    z-index: 4;
+  }
+  89% {
+    transform: translate3d(102cqw, 66cqh, 0) rotate(-6deg) scale(0.66);
+    opacity: 0;
+    z-index: 1;
+  }
+  100% {
+    transform: translate3d(113cqw, 69cqh, 0) rotate(-7deg) scale(0.58);
+    opacity: 0;
+    z-index: 1;
   }
 }
 
 .cta-flow-window {
   isolation: isolate;
   contain: layout style;
+  container-type: size;
 }
 
 .cta-flow-track {
   position: absolute;
-  inset: 0;
+  inset: calc(var(--spacing-xl) * -1) 0 0;
 }
 
 .cta-flow-group {
@@ -250,17 +328,12 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: var(--card-layer, 1);
-  width: clamp(7.5rem, 30vw, 8.75rem);
+  width: clamp(calc(var(--spacing-section) * 1.12), 29vw, calc(var(--spacing-section) * 1.34));
   aspect-ratio: 4 / 5;
-  offset-path: path("M -130 270 Q 215 72 560 270");
-  offset-anchor: center;
-  offset-rotate: 0deg;
-  transform: rotate(var(--card-rotation, 0deg));
   transform-origin: center;
-  animation: cta-circle-flow 28s linear infinite;
-  animation-delay: calc((var(--card-position) - 1) * -2.8s);
-  will-change: offset-distance, opacity;
+  animation: cta-arc-flow 32s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: calc((var(--card-position) - 1) * -3.2s);
+  will-change: transform, opacity;
 }
 
 .cta-flow-card-art {
@@ -323,16 +396,16 @@ body {
 }
 .cta-flow-card:hover .cta-flow-card-image { transform: scale(1.025); }
 
-.cta-flow-card-1 { --card-position: 1; --card-rotation: -8deg; }
-.cta-flow-card-2 { --card-position: 2; --card-rotation: -6deg; }
-.cta-flow-card-3 { --card-position: 3; --card-rotation: -4deg; }
-.cta-flow-card-4 { --card-position: 4; --card-rotation: -2deg; }
-.cta-flow-card-5 { --card-position: 5; --card-rotation: 0deg; }
-.cta-flow-card-6 { --card-position: 6; --card-rotation: 0deg; }
-.cta-flow-card-7 { --card-position: 7; --card-rotation: 2deg; }
-.cta-flow-card-8 { --card-position: 8; --card-rotation: 4deg; }
-.cta-flow-card-9 { --card-position: 9; --card-rotation: 6deg; }
-.cta-flow-card-10 { --card-position: 10; --card-rotation: 8deg; }
+.cta-flow-card-1 { --card-position: 1; }
+.cta-flow-card-2 { --card-position: 2; }
+.cta-flow-card-3 { --card-position: 3; }
+.cta-flow-card-4 { --card-position: 4; }
+.cta-flow-card-5 { --card-position: 5; }
+.cta-flow-card-6 { --card-position: 6; }
+.cta-flow-card-7 { --card-position: 7; }
+.cta-flow-card-8 { --card-position: 8; }
+.cta-flow-card-9 { --card-position: 9; }
+.cta-flow-card-10 { --card-position: 10; }
 
 .cta-flow-window:hover .cta-flow-card {
   animation-play-state: paused;
@@ -340,15 +413,16 @@ body {
 
 @media (min-width: 1024px) {
   .cta-flow-window {
-    margin-right: -32%;
+    margin-right: calc(var(--spacing-section) * -1.15);
+  }
+
+  .cta-flow-track {
+    inset: 0;
   }
 
   .cta-flow-card {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: clamp(9.25rem, 11vw, 10.75rem);
-    offset-path: ellipse(42% 43% at 68% 50%);
+    width: clamp(calc(var(--spacing-section) * 1.45), 12vw, calc(var(--spacing-section) * 1.75));
+    animation-name: cta-circle-flow;
   }
 }
 
@@ -361,8 +435,12 @@ body {
   .outrazo-badge-text,
   .outrazo-flame,
   .cta-flow-track,
-  .cta-flow-card,
   .cta-flow-card-art {
     animation: none;
+  }
+  .cta-flow-card {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: both;
   }
 }
