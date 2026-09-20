@@ -7,5 +7,5 @@
 - [x] Align the desktop pictures to the uploaded circular reference with even spacing.
 - [x] Remove hard clipping and synchronize the desktop circle and mobile arc.
 - [x] Refine the organizer cards and circular flow into a premium, organized treatment that works in both themes.
-- [ ] Match the organizer card stage to the uploaded broken-orbit desktop composition and mobile arc.
-- [ ] Verify the revised static spacing and animated path at 1440px, 1280px, 430px, and 390px.
+- [x] Match the organizer card stage to the uploaded broken-orbit desktop composition and mobile arc.
+- [x] Verify the revised static spacing and animated path at 1440px, 1280px, 430px, and 390px.
