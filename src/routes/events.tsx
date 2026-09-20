@@ -162,22 +162,29 @@ function ExploreEvents() {
           navigate({ to: "/events", search: {} });
         },
       }
-    : discovery.city || appliedFilters.location !== "any"
+    : discovery.category !== "all"
       ? {
-          title: "No events found in this location yet.",
-          description: "Try another location or explore events across Nigeria.",
-          label: "Explore other locations",
-          action: () => {
-            discovery.setCity(null);
-            setAppliedFilters({ ...appliedFilters, location: "any" });
-          },
-        }
-      : {
           title: "Nothing happening here yet.",
           description: "Try another category or explore all events.",
           label: "Explore all events",
           action: resetAll,
-        };
+        }
+      : discovery.city || appliedFilters.location !== "any"
+        ? {
+            title: "No events found in this location yet.",
+            description: "Try another location or explore events across Nigeria.",
+            label: "Explore other locations",
+            action: () => {
+              discovery.setCity(null);
+              setAppliedFilters({ ...appliedFilters, location: "any" });
+            },
+          }
+        : {
+            title: "Nothing happening here yet.",
+            description: "Try another category or explore all events.",
+            label: "Explore all events",
+            action: resetAll,
+          };
 
   return (
     <div className="min-h-screen bg-canvas text-primary-text">
