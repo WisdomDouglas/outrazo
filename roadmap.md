@@ -29,9 +29,3 @@
 - [x] Build responsive event details, share, save, RSVP/ticket, success, and demo voucher states.
 - [x] Build the minimal organizer destination with reusable EventCards.
 - [x] Verify the full desktop/mobile flow, direct URLs, invalid IDs, persistence, and Explore regressions.
-
-## Landing hero refinement
-
-- [x] Tighten and reorganize the hero content rhythm on mobile and desktop.
-- [x] Refine the event-card and social-proof cluster without changing hero content or functionality.
-- [x] Verify the hero in both themes across mobile, tablet, and desktop sizes.
