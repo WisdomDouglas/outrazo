@@ -8,7 +8,7 @@ const NOTIFICATIONS = [
 
 export function NotificationPanel() {
   return (
-    <section className="absolute right-0 top-[calc(100%+var(--spacing-sm))] z-50 w-[min(calc(100vw-var(--spacing-xl)),360px)] rounded-lg border border-line bg-card p-sm shadow-card" aria-label="Notifications">
+    <section className="fixed right-md top-20 z-50 w-[min(calc(100vw-var(--spacing-xl)),360px)] rounded-lg border border-line bg-card p-sm shadow-card sm:absolute sm:right-0 sm:top-[calc(100%+var(--spacing-sm))]" aria-label="Notifications">
       <div className="flex items-center justify-between px-sm py-sm">
         <h2 className="type-h3">Notifications</h2>
         <span className="type-caption text-muted-text">Demo</span>
