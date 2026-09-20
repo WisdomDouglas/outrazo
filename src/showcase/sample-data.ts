@@ -15,6 +15,8 @@ export interface Organizer {
   /** Community or venue the organizer is associated with. */
   community: string;
   verified?: boolean;
+  description?: string;
+  avatarSrc?: string;
 }
 
 export interface Attendee extends AvatarStackPerson {
@@ -30,6 +32,21 @@ export type CategoryId =
   | "culture"
   | "food"
   | "sports";
+
+export interface TicketTier {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+}
+
+export interface EventVenue {
+  name: string;
+  address: string;
+  city: string;
+  latitude: number;
+  longitude: number;
+}
 
 export interface OutrazoEvent {
   id: string;
@@ -54,6 +71,12 @@ export interface OutrazoEvent {
   attendeeIds: string[];
   /** Demo flag powering the "tonight" surfaces. */
   tonight?: boolean;
+  summary?: string;
+  description?: string;
+  endTime?: string;
+  venue?: EventVenue;
+  ticketTiers?: TicketTier[];
+  status?: "upcoming" | "sold-out" | "cancelled";
 }
 
 const img = (id: string, w = 800) =>
@@ -75,20 +98,20 @@ export const ATTENDEES: Attendee[] = [
 ];
 
 export const ORGANIZERS: Organizer[] = [
-  { id: "nocturne", name: "Nocturne Collective", community: "Lagos Nightlife", verified: true },
-  { id: "builders", name: "Outrazo Builders", community: "Tech Community", verified: true },
-  { id: "morning", name: "Morning People", community: "Run Club" },
-  { id: "soundhouse", name: "Soundhouse Lagos", community: "Live Music" },
-  { id: "growth", name: "Growth Circle", community: "Founders Network", verified: true },
-  { id: "nok", name: "Nok Gallery", community: "Abuja Arts" },
-  { id: "tablenine", name: "Table Nine", community: "Supper Club" },
-  { id: "sessions", name: "Sessions NG", community: "Ibadan Music" },
-  { id: "afterdark", name: "Lagos After Dark", community: "Party Series" },
-  { id: "kanoarts", name: "Kano Arts Circle", community: "Northern Creatives" },
-  { id: "enugutech", name: "Enugu Tech Hub", community: "Coal City Devs" },
-  { id: "ceremony", name: "Ceremony NG", community: "Culture & Heritage" },
-  { id: "hoopsng", name: "Hoops Lagos", community: "Street Basketball" },
-  { id: "pepperclub", name: "Pepper Club", community: "Food Lovers" },
+  { id: "nocturne", name: "Nocturne Collective", community: "Lagos Nightlife", verified: true, description: "Curating unforgettable nightlife, food, and sound experiences across Lagos." },
+  { id: "builders", name: "Outrazo Builders", community: "Tech Community", verified: true, description: "A community helping ambitious Nigerian builders learn, connect, and ship together." },
+  { id: "morning", name: "Morning People", community: "Run Club", description: "An inclusive movement making early mornings active, social, and joyful." },
+  { id: "soundhouse", name: "Soundhouse Lagos", community: "Live Music", description: "Independent live music experiences spotlighting Nigeria’s most exciting sounds." },
+  { id: "growth", name: "Growth Circle", community: "Founders Network", verified: true, description: "A trusted gathering place for founders, operators, and investors building in Africa." },
+  { id: "nok", name: "Nok Gallery", community: "Abuja Arts", description: "Thoughtful art encounters connecting contemporary artists with curious audiences." },
+  { id: "tablenine", name: "Table Nine", community: "Supper Club", description: "Intimate dining experiences celebrating West African ingredients and hospitality." },
+  { id: "sessions", name: "Sessions NG", community: "Ibadan Music", description: "Live sessions and community shows built around emerging Nigerian music." },
+  { id: "afterdark", name: "Lagos After Dark", community: "Party Series", description: "High-energy Lagos parties designed around music, movement, and community." },
+  { id: "kanoarts", name: "Kano Arts Circle", community: "Northern Creatives", description: "Supporting northern creatives through markets, exhibitions, and cultural gatherings." },
+  { id: "enugutech", name: "Enugu Tech Hub", community: "Coal City Devs", description: "A practical community for developers and product builders in the South East." },
+  { id: "ceremony", name: "Ceremony NG", community: "Culture & Heritage", description: "Modern experiences rooted in Nigerian culture, comedy, and celebration." },
+  { id: "hoopsng", name: "Hoops Lagos", community: "Street Basketball", description: "Building community through street basketball, leagues, and open play." },
+  { id: "pepperclub", name: "Pepper Club", community: "Food Lovers", description: "Food-led gatherings for people who love bold flavours and shared tables." },
 ];
 
 const organizerById = new Map(ORGANIZERS.map((o) => [o.id, o]));
@@ -452,6 +475,61 @@ export const EVENTS: OutrazoEvent[] = [
   },
 ];
 
+const EVENT_DETAILS: Record<string, { summary: string; description: string; venue: EventVenue; ticketTiers?: TicketTier[] }> = {
+  "lagos-night-market": { summary: "An after-dark celebration of Lagos food, music, and community.", description: "Move through an open-air night market filled with independent kitchens, live percussion, DJ sets, and local makers. Come hungry, bring friends, and settle into a warm evening at one of Lagos Island’s most loved cultural spaces.", venue: { name: "Freedom Park", address: "1 Hospital Road, Lagos Island", city: "Lagos", latitude: 6.4499, longitude: 3.3958 }, ticketTiers: [{ id: "regular", name: "Regular", price: 12000, description: "General admission" }, { id: "vip", name: "VIP", price: 25000, description: "Priority entry and reserved lounge" }] },
+  "build-week-ai": { summary: "A practical day for teams shipping useful AI products.", description: "Join product leaders, engineers, and founders for focused talks, live product critiques, and hands-on sessions about taking AI ideas from prototype to production.", venue: { name: "Ikeja Tech Hub", address: "12 Isaac John Street, GRA Ikeja", city: "Lagos", latitude: 6.5833, longitude: 3.35 } },
+  "sunrise-run-club": { summary: "An easy-paced community run through Lekki at sunrise.", description: "Start the morning with a welcoming five-kilometre loop, warm-up drills, hydration, and post-run conversation. Every pace is welcome.", venue: { name: "Lekki Phase 1 Gate", address: "Admiralty Way, Lekki Phase 1", city: "Lagos", latitude: 6.4474, longitude: 3.4723 } },
+  "rnb-and-vibes": { summary: "A close-up live R&B session above the Lagos skyline.", description: "Settle in for intimate performances from rising vocalists, a live house band, and a late-night DJ set in a relaxed rooftop setting.", venue: { name: "The Grand Rooftop", address: "Ozumba Mbadiwe Avenue, Victoria Island", city: "Lagos", latitude: 6.4281, longitude: 3.4219 }, ticketTiers: [{ id: "regular", name: "Regular", price: 8500 }, { id: "vip", name: "VIP", price: 18000, description: "Reserved seating and welcome drink" }] },
+};
+
+const CITY_COORDINATES: Record<string, { latitude: number; longitude: number }> = {
+  Lagos: { latitude: 6.5244, longitude: 3.3792 }, Abuja: { latitude: 9.0765, longitude: 7.3986 },
+  "Port Harcourt": { latitude: 4.8156, longitude: 7.0498 }, Ibadan: { latitude: 7.3775, longitude: 3.947 },
+  Enugu: { latitude: 6.4584, longitude: 7.5464 }, Kano: { latitude: 12.0022, longitude: 8.592 },
+};
+
+export interface EventDetails extends OutrazoEvent {
+  summary: string;
+  description: string;
+  venue: EventVenue;
+  ticketTiers: TicketTier[];
+  organizer: Organizer;
+  attendees: Attendee[];
+}
+
+export function getEvent(id: string): EventDetails | undefined {
+  const event = EVENTS.find((item) => item.id === id);
+  if (!event) return undefined;
+  const details = EVENT_DETAILS[id];
+  const coordinates = CITY_COORDINATES[event.city] ?? CITY_COORDINATES.Lagos;
+  const venue = details?.venue ?? {
+    name: event.location.split(",")[0] ?? event.location,
+    address: event.location,
+    city: event.city,
+    latitude: coordinates.latitude,
+    longitude: coordinates.longitude,
+  };
+  const basePrice = event.price ? Number(event.price.replace(/[^0-9]/g, "")) : 0;
+  return {
+    ...event,
+    summary: details?.summary ?? `A memorable ${event.category} experience bringing people together in ${event.city}.`,
+    description: details?.description ?? `Discover ${event.title}, hosted by ${getOrganizer(event.organizerId).name}. Expect a welcoming crowd, thoughtful programming, and a memorable experience in ${event.city}.`,
+    venue,
+    ticketTiers: details?.ticketTiers ?? (basePrice ? [{ id: "regular", name: "Regular", price: basePrice, description: "General admission" }, { id: "vip", name: "VIP", price: Math.round(basePrice * 2), description: "Priority access" }] : []),
+    organizer: getOrganizer(event.organizerId),
+    attendees: getAttendees(event.attendeeIds),
+    status: event.status ?? "upcoming",
+  };
+}
+
+export const getOrganizerEvents = (organizerId: string) => EVENTS.filter((event) => event.organizerId === organizerId);
+
+export function getRelatedEvents(event: OutrazoEvent, limit = 4) {
+  return EVENTS.filter((item) => item.id !== event.id)
+    .sort((a, b) => Number(b.category === event.category) + Number(b.city === event.city) - Number(a.category === event.category) - Number(a.city === event.city))
+    .slice(0, limit);
+}
+
 /** Demo count of people attending tonight's events. */
 export const TONIGHT_ATTENDING = EVENTS.filter((e) => e.tonight).reduce(
   (total, event) => total + event.attendeeCount,
@@ -482,6 +560,7 @@ export const CITIES = Object.entries(cityMeta).map(([name, meta]) => {
 export function toEventCardProps(event: OutrazoEvent) {
   const organizer = getOrganizer(event.organizerId);
   return {
+    eventId: event.id,
     id: event.id,
     title: event.title,
     imageSrc: event.imageSrc,

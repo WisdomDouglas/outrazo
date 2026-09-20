@@ -1,4 +1,5 @@
 import { Bookmark, CalendarDays, MapPin } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { forwardRef, type HTMLAttributes } from "react";
 
 import { Avatar } from "./Avatar";
@@ -36,6 +37,8 @@ export interface EventCardProps extends HTMLAttributes<HTMLElement> {
   onSelect?: () => void;
   /** Destination for the card's title link. */
   href?: string;
+  /** Event identifier used for type-safe detail navigation. */
+  eventId?: string;
 }
 
 /** Core discovery unit: scannable summary of one event. */
@@ -60,16 +63,29 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
       onToggleSave,
       onSelect,
       href = "#",
+      eventId,
       ...props
     },
     ref,
-  ) => (
+  ) => {
+    const navigate = useNavigate();
+    const selectEvent = onSelect ?? (eventId ? () => navigate({ to: "/events/$eventId", params: { eventId } }) : undefined);
+
+    return (
     <article
       ref={ref}
-      onClick={onSelect}
+      onClick={selectEvent}
+      onKeyDown={(event) => {
+        if (selectEvent && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          selectEvent();
+        }
+      }}
+      tabIndex={selectEvent ? 0 : undefined}
+      role={selectEvent ? "link" : undefined}
       className={cn(
         "group flex h-full flex-col gap-md rounded-lg border border-line bg-card p-md shadow-card transition-all duration-200 hover:-translate-y-[3px] hover:border-accent/40 hover:shadow-glow",
-        onSelect && "cursor-pointer",
+        selectEvent && "cursor-pointer",
         className,
       )}
       {...props}
@@ -114,18 +130,18 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
 
       <div className="flex flex-col gap-sm">
         <h3 className="type-h3 min-h-2xl lg:min-h-3xl">
-          <a
-            href={href}
-            onClick={(event) => {
-              if (onSelect) {
-                event.preventDefault();
-                onSelect();
-              }
-            }}
-            className="focus-ring line-clamp-2 rounded-sm transition-colors hover:text-accent"
-          >
-            {title}
-          </a>
+          {eventId ? (
+            <Link
+              to="/events/$eventId"
+              params={{ eventId }}
+              onClick={(event) => event.stopPropagation()}
+              className="focus-ring line-clamp-2 rounded-sm transition-colors hover:text-accent"
+            >
+              {title}
+            </Link>
+          ) : (
+            <a href={href} className="focus-ring line-clamp-2 rounded-sm transition-colors hover:text-accent">{title}</a>
+          )}
         </h3>
         <p className="type-body flex items-center gap-xs text-muted-text">
           <MapPin aria-hidden className="size-4 shrink-0 text-accent" />
@@ -150,6 +166,7 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
         <AvatarStack people={attendees} totalCount={attendeeCount} className="text-subtle-text" />
       ) : null}
     </article>
-  ),
+    );
+  },
 );
 EventCard.displayName = "EventCard";

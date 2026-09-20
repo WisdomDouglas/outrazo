@@ -20,12 +20,12 @@
 - [x] Refine the Explore heading and selectable demo location context.
 - [x] Add responsive date, location, and price filters using the existing mock events.
 - [x] Polish shared EventCard hierarchy and distinct loading, empty, and error states.
-- [ ] Verify Explore search, categories, filters, states, and responsiveness on desktop, tablet, and mobile.
+- [x] Verify Explore search, categories, filters, states, and responsiveness on desktop, tablet, and mobile.
 
 ## Event Details V1
 
-- [ ] Extend centralized mock events and organizers with structured detail fields and ticket tiers.
-- [ ] Connect Explore and shared EventCards to dynamic event detail routes.
-- [ ] Build responsive event details, share, save, RSVP/ticket, success, and demo voucher states.
-- [ ] Build the minimal organizer destination with reusable EventCards.
-- [ ] Verify the full desktop/mobile flow, direct URLs, invalid IDs, persistence, and Explore regressions.
+- [x] Extend centralized mock events and organizers with structured detail fields and ticket tiers.
+- [x] Connect Explore and shared EventCards to dynamic event detail routes.
+- [x] Build responsive event details, share, save, RSVP/ticket, success, and demo voucher states.
+- [x] Build the minimal organizer destination with reusable EventCards.
+- [x] Verify the full desktop/mobile flow, direct URLs, invalid IDs, persistence, and Explore regressions.
