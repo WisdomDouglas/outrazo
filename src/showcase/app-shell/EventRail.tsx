@@ -6,7 +6,7 @@ import { toEventCardProps, type OutrazoEvent } from "@/showcase/sample-data";
 export function EventRail({ events }: { events: OutrazoEvent[] }) {
   const { isSaved, toggle } = useSavedItems();
   return (
-    <div className="-mx-md overflow-x-auto px-md pb-xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="-mx-md w-[calc(100%+2*var(--spacing-md))] min-w-0 overflow-x-auto px-md pb-xs [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <ul className="flex snap-x snap-mandatory gap-lg">
         {events.map((event) => (
           <li
