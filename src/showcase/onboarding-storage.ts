@@ -38,6 +38,26 @@ export function loadOnboardingDraft(): OnboardingDraft {
   }
 }
 
+export function loadOnboardingRecord(): OnboardingRecord | null {
+  try {
+    const raw = window.localStorage.getItem(ONBOARDING_STORAGE_KEY);
+    if (!raw) return null;
+    const value = JSON.parse(raw) as Partial<OnboardingRecord>;
+    if (value.version !== 1 || !Array.isArray(value.interests) || typeof value.location !== "string") {
+      return null;
+    }
+    return {
+      version: 1,
+      completedAt: typeof value.completedAt === "string" ? value.completedAt : "",
+      interests: value.interests,
+      location: value.location,
+      preferences: Array.isArray(value.preferences) ? value.preferences : [],
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function saveOnboardingDraft(draft: OnboardingDraft) {
   try {
     window.localStorage.setItem(ONBOARDING_DRAFT_STORAGE_KEY, JSON.stringify(draft));
@@ -57,7 +77,7 @@ export function completeOnboarding(selections: OnboardingSelections) {
     window.localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(record));
     window.localStorage.removeItem(ONBOARDING_DRAFT_STORAGE_KEY);
   } catch {
-    // Completion still navigates to Explore when storage is unavailable.
+    // Completion still navigates to the app when storage is unavailable.
   }
 
   return record;

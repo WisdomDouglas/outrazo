@@ -36,3 +36,10 @@
 - [x] Preserve draft selections and save a versioned completion record locally.
 - [x] Connect completion to Explore without changing existing pages.
 - [x] Verify validation, Back, persistence, completion, themes, and responsive layouts.
+
+## App Shell V1
+
+- [ ] Build the shared desktop sidebar, app header, notifications, and mobile bottom navigation.
+- [ ] Add the app home, explore, saved, tickets, profile, create-event, and settings destinations.
+- [ ] Connect onboarding completion and app search to the requested destinations.
+- [ ] Verify public flows and app navigation on desktop, tablet, and mobile.

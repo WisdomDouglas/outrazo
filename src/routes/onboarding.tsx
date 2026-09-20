@@ -150,10 +150,7 @@ function OnboardingPage() {
       location: draft.location,
       preferences: draft.preferences,
     });
-    navigate({
-      to: "/events",
-      search: draft.location === "Lagos" ? {} : { q: draft.location },
-    });
+    navigate({ to: "/app" });
   };
 
   if (!ready) return <OnboardingSkeleton />;
