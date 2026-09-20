@@ -215,16 +215,16 @@ body {
   will-change: filter, letter-spacing;
 }
 
-/* --- CTA invitation stream: one stack following a broken circular path --- */
+/* --- CTA invitations: one precise, synchronized editorial orbit --- */
 @keyframes cta-circle-flow {
   0% {
     offset-distance: 0%;
     opacity: 0;
   }
-  10% { opacity: 0; }
-  14% { opacity: 1; }
-  86% { opacity: 1; }
-  90% { opacity: 0; }
+  6% { opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  94% { opacity: 0; }
   100% {
     offset-distance: 100%;
     opacity: 0;
@@ -233,6 +233,7 @@ body {
 
 .cta-flow-window {
   isolation: isolate;
+  contain: layout style;
 }
 
 .cta-flow-track {
@@ -250,41 +251,88 @@ body {
   top: 0;
   left: 0;
   z-index: var(--card-layer, 1);
-  width: clamp(7.75rem, 31vw, 9.25rem);
+  width: clamp(7.5rem, 30vw, 8.75rem);
   aspect-ratio: 4 / 5;
-  offset-path: path("M -110 260 Q 215 65 540 260");
+  offset-path: path("M -130 270 Q 215 72 560 270");
   offset-anchor: center;
   offset-rotate: 0deg;
   transform: rotate(var(--card-rotation, 0deg));
-  transform-origin: 50% 100%;
+  transform-origin: center;
   animation: cta-circle-flow 28s linear infinite;
   animation-delay: calc((var(--card-position) - 1) * -2.8s);
   will-change: offset-distance, opacity;
 }
 
 .cta-flow-card-art {
+  position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid color-mix(in srgb, var(--color-primary-text) 12%, transparent);
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  border: 1px solid color-mix(in srgb, var(--color-primary-text) 14%, transparent);
+  padding: var(--space-xs);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-primary-text) 9%, transparent),
+    0 18px 38px color-mix(in srgb, var(--color-canvas) 56%, transparent);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 240ms ease;
+}
+
+.cta-flow-card-image {
+  border-radius: calc(var(--radius-md) - var(--space-xs));
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cta-flow-card-caption {
+  position: absolute;
+  right: var(--space-xs);
+  bottom: var(--space-xs);
+  left: var(--space-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-sm);
+  border-radius: calc(var(--radius-md) - var(--space-sm));
+  color: var(--color-primary-text);
+  background: color-mix(in srgb, var(--color-card) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary-text) 10%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.cta-flow-card-title,
+.cta-flow-card-meta {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cta-flow-card-title {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.cta-flow-card-meta {
+  color: var(--color-muted-text);
+  font-size: 0.625rem;
+  font-weight: 500;
 }
 
 .cta-flow-card:hover { z-index: 30; }
 .cta-flow-card:hover .cta-flow-card-art {
-  transform: translate3d(0, -0.5rem, 0) scale(1.025);
+  transform: translate3d(0, -0.5rem, 0) scale(1.035);
   box-shadow: var(--shadow-glow);
 }
+.cta-flow-card:hover .cta-flow-card-image { transform: scale(1.025); }
 
-.cta-flow-card-1 { --card-position: 1; --card-rotation: -10deg; }
-.cta-flow-card-2 { --card-position: 2; --card-rotation: -7deg; }
-.cta-flow-card-3 { --card-position: 3; --card-rotation: -5deg; }
+.cta-flow-card-1 { --card-position: 1; --card-rotation: -8deg; }
+.cta-flow-card-2 { --card-position: 2; --card-rotation: -6deg; }
+.cta-flow-card-3 { --card-position: 3; --card-rotation: -4deg; }
 .cta-flow-card-4 { --card-position: 4; --card-rotation: -2deg; }
 .cta-flow-card-5 { --card-position: 5; --card-rotation: 0deg; }
 .cta-flow-card-6 { --card-position: 6; --card-rotation: 0deg; }
 .cta-flow-card-7 { --card-position: 7; --card-rotation: 2deg; }
-.cta-flow-card-8 { --card-position: 8; --card-rotation: 5deg; }
-.cta-flow-card-9 { --card-position: 9; --card-rotation: 7deg; }
-.cta-flow-card-10 { --card-position: 10; --card-rotation: 10deg; }
+.cta-flow-card-8 { --card-position: 8; --card-rotation: 4deg; }
+.cta-flow-card-9 { --card-position: 9; --card-rotation: 6deg; }
+.cta-flow-card-10 { --card-position: 10; --card-rotation: 8deg; }
 
 .cta-flow-window:hover .cta-flow-card {
   animation-play-state: paused;
@@ -292,15 +340,15 @@ body {
 
 @media (min-width: 1024px) {
   .cta-flow-window {
-    margin-right: -28%;
+    margin-right: -32%;
   }
 
   .cta-flow-card {
     position: absolute;
     top: 0;
     left: 0;
-    width: clamp(8.5rem, 11vw, 10.5rem);
-    offset-path: ellipse(37% 43% at 69% 50%);
+    width: clamp(9.25rem, 11vw, 10.75rem);
+    offset-path: ellipse(42% 43% at 68% 50%);
   }
 }
 
