@@ -150,7 +150,7 @@ function OrganizerPage() {
               {organizer.verified ? <Badge variant="accent">Verified</Badge> : null}
             </div>
             <p className="type-caption text-accent">{organizer.community}</p>
-            <p className="type-body-lg max-w-2xl text-muted-text">{bio}</p>
+            <p className="type-body-lg w-full max-w-[60ch] text-muted-text">{bio}</p>
             {organizer.location ? (
               <p className="type-body inline-flex items-center gap-xs text-muted-text">
                 <MapPin aria-hidden className="size-4 text-accent" />
@@ -230,7 +230,7 @@ function OrganizerPage() {
 
         <section className="pt-section">
           <h2 className="type-h2 mb-md">About</h2>
-          <p className="type-body-lg max-w-2xl text-muted-text">{bio}</p>
+          <p className="type-body-lg w-full max-w-[60ch] text-muted-text">{bio}</p>
           {organizer.location ? (
             <p className="type-body mt-md text-muted-text">Based in {organizer.location}.</p>
           ) : null}
