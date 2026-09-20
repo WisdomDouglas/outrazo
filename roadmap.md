@@ -9,3 +9,5 @@
 - [x] Refine the organizer cards and circular flow into a premium, organized treatment that works in both themes.
 - [x] Match the organizer card stage to the uploaded broken-orbit desktop composition and mobile arc.
 - [x] Verify the revised static spacing and animated path at 1440px, 1280px, 430px, and 390px.
+- [ ] Match the six-card broken orbit and mobile arc shown in the latest annotated reference.
+- [ ] Verify the final organizer section in dark and light themes at desktop and mobile sizes.
