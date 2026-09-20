@@ -12,6 +12,7 @@ import {
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { cn } from "@/design-system/lib/utils";
+import { useAuth } from "@/showcase/auth/auth-context";
 
 interface NavItem {
   label: string;
@@ -52,6 +53,7 @@ function SidebarLink({ item, emphasis = false }: { item: NavItem; emphasis?: boo
 }
 
 export function AppSidebar() {
+  const { displayName, profile } = useAuth();
   return (
     <aside className="hidden h-dvh w-section shrink-0 flex-col border-r border-line bg-card md:flex xl:w-[calc(var(--spacing-section)*2.5)]">
       <div className="flex min-h-20 items-center px-lg md:justify-center md:px-sm xl:justify-start xl:px-lg">
@@ -74,9 +76,9 @@ export function AppSidebar() {
           to="/app/profile"
           className="focus-ring mt-sm flex min-h-14 items-center gap-sm rounded-md bg-elevated px-sm md:justify-center xl:justify-start"
         >
-          <Avatar name="Demo User" size="md" />
+          <Avatar name={displayName} src={profile?.avatar_url ?? undefined} size="md" />
           <span className="min-w-0 md:hidden xl:block">
-            <strong className="type-body block truncate">Demo User</strong>
+            <strong className="type-body block truncate">{displayName}</strong>
             <span className="type-caption block truncate text-muted-text">View profile</span>
           </span>
         </Link>

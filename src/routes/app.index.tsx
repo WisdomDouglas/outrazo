@@ -40,7 +40,7 @@ function AppHome() {
   const popular = useMemo(() => EVENTS.filter((event) => !record || event.city === record.location).sort((a, b) => b.attendeeCount - a.attendeeCount).slice(0, 3), [record]);
 
   return <div className="mx-auto flex w-full max-w-[1320px] flex-col gap-section px-md py-xl lg:px-xl lg:py-2xl">
-    <section><p className="type-body mb-xs text-accent">Good evening, Demo User</p><h1 className="type-h1">Discover what&apos;s happening</h1><p className="type-body-lg mt-md flex items-center gap-xs text-muted-text"><MapPin aria-hidden className="size-5 text-accent" />{record?.location ?? "Lagos"}</p></section>
+    <section><p className="type-body mb-xs text-accent">Welcome to Outrazo, {displayName}</p><h1 className="type-h1">Discover what&apos;s happening around you.</h1><p className="type-body-lg mt-md flex items-center gap-xs text-muted-text"><MapPin aria-hidden className="size-5 text-accent" />{record?.location ?? profile?.location ?? "Lagos"}</p></section>
     <Section title="Recommended for you" events={recommended} to="/app/explore" />
     <Section title="Happening soon" events={soon} />
     <Section title="Popular near you" events={popular.length ? popular : EVENTS.slice(0, 3)} />
