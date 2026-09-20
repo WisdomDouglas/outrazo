@@ -11,7 +11,7 @@ import { mockupPreviewPlugin } from "./mockupPreviewPlugin";
 export default defineConfig(({ command, mode }) => {
   // Cloudflare Workers plugin only on build (produces the worker output);
   // the workerd runtime isn't available for the dev server.
-  const useCloudflare = command === "build";
+  const useCloudflare = command === "build" && !process.env.VERCEL;
 
   return {
     server: {
