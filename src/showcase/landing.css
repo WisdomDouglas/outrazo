@@ -316,7 +316,7 @@ body {
 
 .cta-flow-track {
   position: absolute;
-  inset: 0;
+  inset: calc(var(--spacing-xl) * -1) 0 0;
 }
 
 .cta-flow-group {
@@ -416,6 +416,10 @@ body {
     margin-right: calc(var(--spacing-section) * -1.15);
   }
 
+  .cta-flow-track {
+    inset: 0;
+  }
+
   .cta-flow-card {
     width: clamp(calc(var(--spacing-section) * 1.45), 12vw, calc(var(--spacing-section) * 1.75));
     animation-name: cta-circle-flow;
@@ -435,6 +439,8 @@ body {
     animation: none;
   }
   .cta-flow-card {
-    animation-play-state: paused;
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: both;
   }
 }
