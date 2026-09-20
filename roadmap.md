@@ -29,3 +29,10 @@
 - [x] Build responsive event details, share, save, RSVP/ticket, success, and demo voucher states.
 - [x] Build the minimal organizer destination with reusable EventCards.
 - [x] Verify the full desktop/mobile flow, direct URLs, invalid IDs, persistence, and Explore regressions.
+
+## User Onboarding V1
+
+- [x] Build the three-step interests, location, and preferences flow.
+- [x] Preserve draft selections and save a versioned completion record locally.
+- [x] Connect completion to Explore without changing existing pages.
+- [x] Verify validation, Back, persistence, completion, themes, and responsive layouts.
