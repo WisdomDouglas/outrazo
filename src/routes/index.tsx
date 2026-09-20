@@ -215,10 +215,9 @@ function Landing() {
 
             <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-6 text-center lg:gap-lg">
               <div className="flex flex-col items-center gap-3">
-                <span className="outrazo-badge-enter type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
-                  <span className="relative inline-grid size-4 place-items-center">
+                <span className="outrazo-badge-enter type-caption inline-flex w-fit items-center gap-xs rounded-full bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
+                  <span className="inline-grid size-4 place-items-center">
                     <Flame aria-hidden className="outrazo-flame size-4" strokeWidth={2.5} />
-                    <span aria-hidden className="outrazo-sonar" />
                   </span>
                   <span className="outrazo-badge-text">Trending around you</span>
                 </span>
