@@ -136,7 +136,7 @@ function Landing() {
             <Button
               size="sm"
               className="hidden sm:inline-flex"
-              onClick={() => navigate({ to: "/create" })}
+              onClick={() => navigate({ to: "/auth" })}
             >
               Get Started
             </Button>
