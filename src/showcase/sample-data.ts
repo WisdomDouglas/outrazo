@@ -9,6 +9,12 @@ import type { AvatarStackPerson } from "@/design-system/components/AvatarStack";
  * are the contract the UI depends on.
  */
 
+export interface OrganizerSocialLink {
+  /** Platform label, e.g. "Instagram". */
+  label: string;
+  url: string;
+}
+
 export interface Organizer {
   id: string;
   name: string;
@@ -17,6 +23,10 @@ export interface Organizer {
   verified?: boolean;
   description?: string;
   avatarSrc?: string;
+  /** Home city for the organizer, e.g. "Lagos, Nigeria". */
+  location?: string;
+  website?: string;
+  socialLinks?: OrganizerSocialLink[];
 }
 
 export interface Attendee extends AvatarStackPerson {
