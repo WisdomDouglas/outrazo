@@ -3,6 +3,7 @@ import { ArrowRight, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
+import { useAuth } from "@/showcase/auth/auth-context";
 import { loadOnboardingRecord, type OnboardingRecord } from "@/showcase/onboarding-storage";
 import { EVENTS, type OutrazoEvent } from "@/showcase/sample-data";
 
@@ -33,6 +34,7 @@ function Section({ title, events, to }: { title: string; events: OutrazoEvent[];
 }
 
 function AppHome() {
+  const { displayName, profile } = useAuth();
   const [record, setRecord] = useState<OnboardingRecord | null>(null);
   useEffect(() => setRecord(loadOnboardingRecord()), []);
   const recommended = useMemo(() => [...EVENTS].sort((a, b) => scoreEvent(b, record) - scoreEvent(a, record)).slice(0, 3), [record]);
