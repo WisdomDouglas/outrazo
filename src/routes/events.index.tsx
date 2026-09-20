@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, MapPin, SearchX, SlidersHorizontal } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
@@ -23,6 +23,7 @@ import {
   CITIES,
   getOrganizer,
   toEventCardProps,
+  type CategoryId,
   type OutrazoEvent,
 } from "@/showcase/sample-data";
 
@@ -70,8 +71,9 @@ function filterEvents(events: OutrazoEvent[], filters: EventFilters, city: strin
 }
 
 export const Route = createFileRoute("/events/")({
-  validateSearch: (search: Record<string, unknown>): { q?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { q?: string; category?: string } => ({
     q: typeof search.q === "string" ? search.q : undefined,
+    category: typeof search.category === "string" ? search.category : undefined,
   }),
   head: () => ({
     meta: [
@@ -94,7 +96,7 @@ export const Route = createFileRoute("/events/")({
 });
 
 function ExploreEvents() {
-  const { q } = Route.useSearch();
+  const { q, category: categoryParam } = Route.useSearch();
   const navigate = useNavigate();
   const [query, setQuery] = useState(q ?? "");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -102,6 +104,14 @@ function ExploreEvents() {
   const [draftFilters, setDraftFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const discovery = useDiscovery();
+  const setCategory = discovery.setCategory;
+
+  // Deep links such as /events?category=music preselect the category rail.
+  useEffect(() => {
+    if (categoryParam && CATEGORIES.some((item) => item.id === categoryParam)) {
+      setCategory(categoryParam as CategoryId);
+    }
+  }, [categoryParam, setCategory]);
 
   const filteredEvents = useMemo(
     () => filterEvents(discovery.events, appliedFilters, discovery.city),
