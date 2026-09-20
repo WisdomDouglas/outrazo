@@ -110,6 +110,7 @@ function OnboardingPage() {
   });
   const [ready, setReady] = useState(false);
   const [validation, setValidation] = useState("");
+  const [locationPickerOpen, setLocationPickerOpen] = useState(false);
 
   useEffect(() => {
     setDraft(loadOnboardingDraft());
@@ -170,7 +171,7 @@ function OnboardingPage() {
         </header>
 
         <div className="grid flex-1 items-stretch gap-2xl pb-[112px] lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.72fr)] lg:pb-xl">
-          <section className="flex min-w-0 flex-col justify-center py-xl lg:py-3xl">
+          <section className="flex min-w-0 flex-col justify-start py-xl lg:justify-center lg:py-3xl">
             <div className="mb-2xl flex gap-sm" aria-hidden>
               {[1, 2, 3].map((step) => (
                 <span
@@ -198,7 +199,12 @@ function OnboardingPage() {
                 {draft.step === 2 ? (
                   <LocationStep
                     location={draft.location}
-                    onSelect={(location) => updateDraft({ location })}
+                    open={locationPickerOpen}
+                    onOpen={() => setLocationPickerOpen(true)}
+                    onSelect={(location) => {
+                      updateDraft({ location });
+                      setLocationPickerOpen(false);
+                    }}
                   />
                 ) : null}
 
@@ -211,7 +217,11 @@ function OnboardingPage() {
               </div>
 
               <div aria-live="polite" className="mt-md min-h-5">
-                {validation ? <p className="type-caption text-transactional">{validation}</p> : null}
+                {validation || (draft.step === 1 && draft.interests.length === 0) ? (
+                  <p className="type-caption text-transactional">
+                    {validation || "Choose at least one interest."}
+                  </p>
+                ) : null}
               </div>
 
               <div className="mt-lg hidden items-center gap-md lg:flex">
@@ -296,35 +306,52 @@ function InterestStep({ selected, onToggle }: { selected: string[]; onToggle: (i
   );
 }
 
-function LocationStep({ location, onSelect }: { location: string; onSelect: (value: string) => void }) {
+function LocationStep({
+  location,
+  open,
+  onOpen,
+  onSelect,
+}: {
+  location: string;
+  open: boolean;
+  onOpen: () => void;
+  onSelect: (value: string) => void;
+}) {
   return (
     <fieldset>
       <legend className="sr-only">Choose a location</legend>
-      <div className="mb-lg flex items-center gap-sm text-accent">
-        <MapPin aria-hidden className="size-5" />
-        <span className="type-h3 text-primary-text">{location}</span>
+      <div className="mb-lg flex flex-wrap items-center justify-between gap-md rounded-md border border-line bg-card p-md">
+        <span className="inline-flex items-center gap-sm text-accent">
+          <MapPin aria-hidden className="size-5" />
+          <span className="type-h3 text-primary-text">{location}</span>
+        </span>
+        <Button type="button" variant="ghost" size="sm" onClick={onOpen}>
+          Change location
+        </Button>
       </div>
-      <div className="grid gap-sm sm:grid-cols-2">
-        {LOCATIONS.map((city) => {
-          const active = city === location;
-          return (
-            <Button
-              key={city}
-              type="button"
-              variant={active ? "primary" : "outline"}
-              className="w-full justify-between"
-              aria-pressed={active}
-              onClick={() => onSelect(city)}
-            >
-              <span className="inline-flex items-center gap-sm">
-                <MapPin aria-hidden className="size-4" />
-                {city}
-              </span>
-              {active ? <Check aria-hidden className="size-4" /> : null}
-            </Button>
-          );
-        })}
-      </div>
+      {open ? (
+        <div className="grid gap-sm sm:grid-cols-2">
+          {LOCATIONS.map((city) => {
+            const active = city === location;
+            return (
+              <Button
+                key={city}
+                type="button"
+                variant={active ? "primary" : "outline"}
+                className="w-full justify-between"
+                aria-pressed={active}
+                onClick={() => onSelect(city)}
+              >
+                <span className="inline-flex items-center gap-sm">
+                  <MapPin aria-hidden className="size-4" />
+                  {city}
+                </span>
+                {active ? <Check aria-hidden className="size-4" /> : null}
+              </Button>
+            );
+          })}
+        </div>
+      ) : null}
       <p className="type-caption mt-md text-muted-text">Mock locations for now. No location access is requested.</p>
     </fieldset>
   );
