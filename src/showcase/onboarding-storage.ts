@@ -58,6 +58,24 @@ export function loadOnboardingRecord(): OnboardingRecord | null {
   }
 }
 
+/** Updates only the saved discovery location. Returns the stored record. */
+export function saveOnboardingLocation(location: string): OnboardingRecord {
+  const existing = loadOnboardingRecord();
+  const record: OnboardingRecord = {
+    version: 1,
+    completedAt: existing?.completedAt ?? new Date().toISOString(),
+    interests: existing?.interests ?? [],
+    preferences: existing?.preferences ?? [],
+    location,
+  };
+  try {
+    window.localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(record));
+  } catch {
+    // The selection still applies for this session when storage is unavailable.
+  }
+  return record;
+}
+
 export function saveOnboardingDraft(draft: OnboardingDraft) {
   try {
     window.localStorage.setItem(ONBOARDING_DRAFT_STORAGE_KEY, JSON.stringify(draft));
