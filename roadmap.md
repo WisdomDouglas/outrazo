@@ -32,6 +32,6 @@
 
 ## Landing hero refinement
 
-- [ ] Tighten and reorganize the hero content rhythm on mobile and desktop.
-- [ ] Refine the event-card and social-proof cluster without changing hero content or functionality.
-- [ ] Verify the hero in both themes across mobile, tablet, and desktop sizes.
+- [x] Tighten and reorganize the hero content rhythm on mobile and desktop.
+- [x] Refine the event-card and social-proof cluster without changing hero content or functionality.
+- [x] Verify the hero in both themes across mobile, tablet, and desktop sizes.
