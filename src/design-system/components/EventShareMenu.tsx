@@ -1,4 +1,4 @@
-import { Check, Copy, Facebook, Share2 } from "lucide-react";
+import { Check, Copy, Share2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "./Button";
@@ -45,7 +45,7 @@ export function EventShareMenu({ title }: { title: string }) {
           </button>
           <a role="menuitem" target="_blank" rel="noreferrer" href={`https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`} className="focus-ring type-body flex min-h-11 items-center gap-sm rounded-sm px-md hover:bg-primary-text/8">WhatsApp</a>
           <a role="menuitem" target="_blank" rel="noreferrer" href={`https://x.com/intent/post?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`} className="focus-ring type-body flex min-h-11 items-center gap-sm rounded-sm px-md hover:bg-primary-text/8">X</a>
-          <a role="menuitem" target="_blank" rel="noreferrer" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`} className="focus-ring type-body flex min-h-11 items-center gap-sm rounded-sm px-md hover:bg-primary-text/8"><Facebook aria-hidden className="size-4" />Facebook</a>
+          <a role="menuitem" target="_blank" rel="noreferrer" href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`} className="focus-ring type-body flex min-h-11 items-center gap-sm rounded-sm px-md hover:bg-primary-text/8">Facebook</a>
         </div>
       ) : null}
       <span className="sr-only" aria-live="polite">{copied ? "Event link copied" : ""}</span>
