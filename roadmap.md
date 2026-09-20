@@ -43,3 +43,12 @@
 - [x] Add the app home, explore, saved, tickets, profile, create-event, and settings destinations.
 - [x] Connect onboarding completion and app search to the requested destinations.
 - [x] Verify public flows and app navigation on desktop, tablet, and mobile.
+
+## Product Foundation V1
+
+- [x] Audit existing routes and confirm one shared event data source.
+- [x] Add /explore alias to the existing Explore page.
+- [x] Enable the backend and create profiles, organizers, events, event_attendees, saved_events, ticket_orders, ticket_items with row-level security.
+- [x] Add email/password and Google sign-in with a shared session provider.
+- [x] Keep /app open in clearly marked demo mode until sign-in is required.
+- [x] Verify Landing → Explore → Event Details → Organizer → /app still work.
