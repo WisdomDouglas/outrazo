@@ -16,3 +16,8 @@
 - [x] Animate the centered mobile card stage as one synchronized curved flow without scroll effects.
 - [x] Refine desktop card spacing and depth so the orbit moves as one coordinated system.
 - [x] Verify the synchronized card flow on desktop and mobile in both themes.
+
+- [ ] Refine the Explore heading and selectable demo location context.
+- [ ] Add responsive date, location, and price filters using the existing mock events.
+- [ ] Polish shared EventCard hierarchy and distinct loading, empty, and error states.
+- [ ] Verify Explore search, categories, filters, states, and responsiveness on desktop, tablet, and mobile.
