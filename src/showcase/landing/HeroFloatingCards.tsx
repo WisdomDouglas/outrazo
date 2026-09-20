@@ -221,10 +221,11 @@ export function HeroVectorArt() {
 /** Two tilted, drifting event cards shown beneath the hero copy on all viewports. */
 export function HeroCardStrip() {
   return (
-    <div className="relative z-10 flex w-full flex-col items-center gap-sm lg:gap-md">
-      <div className="flex w-full items-end justify-center gap-sm lg:gap-lg">
+    <div className="relative z-10 mt-xs flex w-full items-end justify-center pb-lg pt-sm sm:mt-sm sm:pb-xl lg:mt-0 lg:pt-md">
+      <div aria-hidden className="absolute inset-x-[12%] top-1/2 border-t border-dashed border-accent/35 sm:inset-x-[18%]" />
+      <div className="relative z-10 flex w-full items-end justify-center -space-x-md sm:-space-x-sm lg:space-x-md">
         <div
-          className="outrazo-float w-[46%] max-w-[158px] lg:max-w-[210px]"
+          className="outrazo-float w-[42%] max-w-[146px] -translate-y-xs sm:w-[38%] sm:max-w-[168px] lg:w-[32%] lg:max-w-[190px]"
           style={{ ["--tilt" as string]: "-6deg" }}
         >
           <PhotoCard
@@ -236,7 +237,7 @@ export function HeroCardStrip() {
           />
         </div>
         <div
-          className="outrazo-float w-[46%] max-w-[158px] lg:max-w-[210px]"
+          className="outrazo-float w-[42%] max-w-[146px] translate-y-xs sm:w-[38%] sm:max-w-[168px] lg:w-[32%] lg:max-w-[190px]"
           style={{ ["--tilt" as string]: "7deg", animationDelay: "-2.2s" }}
         >
           <PhotoCard
@@ -248,7 +249,7 @@ export function HeroCardStrip() {
         </div>
       </div>
 
-      <div className="outrazo-pop flex items-center gap-sm rounded-full border border-line bg-card/95 px-md py-sm shadow-floating backdrop-blur-md">
+      <div className="outrazo-pop absolute bottom-0 z-20 flex items-center gap-sm rounded-full border border-line bg-card/95 px-md py-sm shadow-floating backdrop-blur-md">
         <AvatarStack people={ATTENDEES.slice(0, 4)} />
         <span className="type-caption text-muted-text">
           <span className="font-semibold text-primary-text">{tonightCount}</span> going tonight

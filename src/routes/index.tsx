@@ -201,7 +201,7 @@ function Landing() {
         <section className="relative isolate flex min-h-[calc(100svh-4.125rem)] flex-col overflow-hidden lg:min-h-[calc(100svh-4.75rem)]">
           <HeroBackdrop />
 
-          <div className="relative mx-auto flex w-full max-w-[1100px] flex-1 flex-col px-md pb-lg pt-lg sm:pb-xl sm:pt-xl lg:px-xl lg:py-xl">
+          <div className="relative mx-auto flex w-full max-w-[1100px] flex-1 flex-col px-md pb-sm pt-md sm:px-xl sm:pb-md sm:pt-lg lg:justify-center lg:py-lg">
             {/* Readability layers: a vertical canvas wash plus a soft radial glow keep
                 the copy legible while letting the artwork show through */}
             <div
@@ -213,8 +213,8 @@ function Landing() {
               className="pointer-events-none absolute inset-x-0 top-1/2 h-[92%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_68%)] opacity-60 lg:opacity-40"
             />
 
-            <div className="relative z-10 mx-auto flex w-full max-w-[600px] flex-1 flex-col items-center justify-between gap-md text-center sm:gap-lg">
-              <div className="flex flex-col items-center gap-3">
+            <div className="relative z-10 mx-auto flex w-full max-w-[680px] flex-1 flex-col items-center justify-center gap-sm text-center sm:gap-md lg:flex-none lg:gap-md">
+              <div className="flex flex-col items-center gap-sm sm:gap-md">
                 <span className="outrazo-badge-enter type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
                   <span className="relative inline-grid size-4 place-items-center">
                     <Flame aria-hidden className="outrazo-flame size-4" strokeWidth={2.5} />
@@ -222,18 +222,18 @@ function Landing() {
                   </span>
                   <span className="outrazo-badge-text">Trending around you</span>
                 </span>
-                <h1 className="type-h1 text-balance text-[30px] leading-[1.15] sm:text-[40px] lg:text-[56px]">
+                <h1 className="type-h1 max-w-[13ch] text-balance text-[30px] leading-[1.12] sm:max-w-none sm:text-[40px] lg:text-[56px]">
                   Your city. Your people.{" "}
                   <span className="text-accent">Your experiences.</span>
                 </h1>
-                <p className="type-body max-w-[40ch] text-[14px] text-muted-text sm:text-[15px] lg:text-[16px]">
+                <p className="type-body max-w-[42ch] text-[14px] text-muted-text sm:text-[15px] lg:text-[16px]">
                   Discover events, experiences and communities worth showing up for — from
                   rooftop parties to tech meetups, all happening around you.
                 </p>
               </div>
 
               <form
-                className="mt-1 w-full max-w-[460px] lg:mt-2"
+                className="w-full max-w-[480px]"
                 onSubmit={(event) => {
                   event.preventDefault();
                   submitSearch();
@@ -247,7 +247,7 @@ function Landing() {
                 />
               </form>
 
-              <div className="flex w-full max-w-[460px] flex-col items-center gap-xs sm:w-auto sm:flex-row sm:justify-center sm:gap-sm">
+              <div className="flex w-full max-w-[480px] flex-col items-center gap-xs sm:w-auto sm:flex-row sm:justify-center sm:gap-sm">
                 <Button
                   size="md"
                   className="w-full sm:w-auto"
