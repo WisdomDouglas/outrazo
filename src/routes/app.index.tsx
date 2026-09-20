@@ -200,7 +200,7 @@ function AppHome() {
 
       <section>
         <SectionHeader title="Happening soon" icon={CalendarClock} />
-        <EventRail events={soon} />
+        <EventRail events={soon} label="Events happening soon" />
       </section>
 
       <section>
