@@ -13,3 +13,6 @@
 - [x] Verify the final organizer section in dark and light themes at desktop and mobile sizes.
 - [x] Center the mobile organizer cards in a polished five-card editorial cluster.
 - [x] Verify the centered mobile composition at 390px and 430px in both themes.
+- [x] Animate the centered mobile card stage as one synchronized curved flow without scroll effects.
+- [x] Refine desktop card spacing and depth so the orbit moves as one coordinated system.
+- [x] Verify the synchronized card flow on desktop and mobile in both themes.
