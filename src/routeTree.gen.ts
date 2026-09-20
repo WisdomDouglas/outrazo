@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as OrganizersOrganizerIdRouteImport } from './routes/organizers.$organizerId'
 import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
 import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
@@ -31,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const EventsIndexRoute = EventsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EventsRoute,
 } as any)
 const OrganizersOrganizerIdRoute = OrganizersOrganizerIdRouteImport.update({
   id: '/organizers/$organizerId',
@@ -61,15 +67,16 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRouteWithChildren
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
-  '/events': typeof EventsRouteWithChildren
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/events': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
 }
@@ -80,6 +87,7 @@ export interface FileRoutesById {
   '/events': typeof EventsRouteWithChildren
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
 }
@@ -91,15 +99,16 @@ export interface FileRouteTypes {
     | '/events'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/events/'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/create'
-    | '/events'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/events'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
   id:
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/events/'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
   fileRoutesById: FileRoutesById
@@ -145,6 +155,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events/': {
+      id: '/events/'
+      path: '/'
+      fullPath: '/events/'
+      preLoaderRoute: typeof EventsIndexRouteImport
+      parentRoute: typeof EventsRoute
+    }
     '/organizers/$organizerId': {
       id: '/organizers/$organizerId'
       path: '/organizers/$organizerId'
@@ -178,10 +195,12 @@ declare module '@tanstack/react-router' {
 
 interface EventsRouteChildren {
   EventsEventIdRoute: typeof EventsEventIdRoute
+  EventsIndexRoute: typeof EventsIndexRoute
 }
 
 const EventsRouteChildren: EventsRouteChildren = {
   EventsEventIdRoute: EventsEventIdRoute,
+  EventsIndexRoute: EventsIndexRoute,
 }
 
 const EventsRouteWithChildren =

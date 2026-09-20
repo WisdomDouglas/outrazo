@@ -1,11 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
+  Link,
   Outlet,
   createRootRouteWithContext,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { Button } from "@/design-system/components/Button";
 
 import { useTheme } from "@/design-system/lib/use-theme";
 import appCss from "../styles.css?url";
@@ -43,6 +45,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   }),
   shellComponent: RootShell,
   component: RootComponent,
+  notFoundComponent: RootNotFound,
 });
 
 function RootShell({ children }: { children: ReactNode }) {
@@ -71,5 +74,18 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
     </QueryClientProvider>
+  );
+}
+
+function RootNotFound() {
+  return (
+    <main className="grid min-h-screen place-items-center bg-canvas px-md text-center text-primary-text">
+      <div>
+        <p className="type-caption text-accent">404</p>
+        <h1 className="type-h1 mt-sm">Page not found.</h1>
+        <p className="type-body-lg mt-md text-muted-text">The page you’re looking for is unavailable.</p>
+        <Link to="/" className="focus-ring mt-lg inline-flex rounded-full"><Button>Back home</Button></Link>
+      </div>
+    </main>
   );
 }
