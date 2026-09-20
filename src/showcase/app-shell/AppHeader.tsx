@@ -5,10 +5,12 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Avatar } from "@/design-system/components/Avatar";
 import { Button } from "@/design-system/components/Button";
 import { SearchField } from "@/design-system/components/SearchField";
+import { useAuth } from "@/showcase/auth/auth-context";
 import { NotificationPanel } from "./NotificationPanel";
 
 export function AppHeader({ title }: { title: string }) {
   const navigate = useNavigate();
+  const { displayName, profile } = useAuth();
   const [query, setQuery] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -42,7 +44,7 @@ export function AppHeader({ title }: { title: string }) {
           </Button>
           {notificationsOpen ? <NotificationPanel /> : null}
         </div>
-        <Link to="/app/profile" className="focus-ring rounded-full" aria-label="Open profile"><Avatar name="Demo User" size="md" /></Link>
+        <Link to="/app/profile" className="focus-ring rounded-full" aria-label="Open profile"><Avatar name={displayName} src={profile?.avatar_url ?? undefined} size="md" /></Link>
       </div>
       <form onSubmit={submit} className="px-md pb-md sm:hidden" role="search">
         <SearchField value={query} onChange={(event) => setQuery(event.target.value)} onClear={() => setQuery("")} placeholder="Search events" />
