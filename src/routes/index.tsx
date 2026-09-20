@@ -388,7 +388,6 @@ function Landing() {
                     {...toEventCardProps(event)}
                     saved={discovery.isSaved(event.id)}
                     onToggleSave={() => discovery.toggleSave(event.id)}
-                    onSelect={() => navigate({ to: "/events", search: {} })}
                   />
                 ))}
               </Carousel>
@@ -400,7 +399,6 @@ function Landing() {
                       {...toEventCardProps(event)}
                       saved={discovery.isSaved(event.id)}
                       onToggleSave={() => discovery.toggleSave(event.id)}
-                      onSelect={() => navigate({ to: "/events", search: {} })}
                     />
                   </Reveal>
                 ))}

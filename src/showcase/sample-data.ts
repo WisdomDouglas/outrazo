@@ -560,6 +560,7 @@ export const CITIES = Object.entries(cityMeta).map(([name, meta]) => {
 export function toEventCardProps(event: OutrazoEvent) {
   const organizer = getOrganizer(event.organizerId);
   return {
+    eventId: event.id,
     id: event.id,
     title: event.title,
     imageSrc: event.imageSrc,
