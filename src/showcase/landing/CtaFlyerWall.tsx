@@ -40,7 +40,7 @@ export function CtaFlyerWall() {
   return (
     <div
       aria-hidden
-      className="cta-flow-window relative -mx-md h-[390px] overflow-visible sm:mx-0 sm:h-[440px] lg:h-[600px]"
+      className="cta-flow-window relative -mx-md h-[calc(var(--spacing-section)*4)] overflow-visible sm:mx-0 sm:h-[calc(var(--spacing-section)*5)] lg:h-[calc(var(--spacing-section)*6)]"
     >
       <div className="cta-flow-track">
         <FlyerGroup />
