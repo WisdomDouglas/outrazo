@@ -1,8 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { UserRound } from "lucide-react";
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { Badge } from "@/design-system/components/Badge";
+import { Button } from "@/design-system/components/Button";
+import { useAuth } from "@/showcase/auth/auth-context";
 
 export const Route = createFileRoute("/app/profile")({
   head: () => ({ meta: [
@@ -12,4 +14,39 @@ export const Route = createFileRoute("/app/profile")({
   ] }), component: ProfilePage,
 });
 
-function ProfilePage() { return <div className="mx-auto w-full max-w-[760px] px-md py-xl lg:px-xl lg:py-2xl"><div className="flex items-center gap-lg"><Avatar name="Demo User" size="lg" /><div><h1 className="type-h1">Profile</h1><p className="type-body-lg mt-xs text-muted-text">Your profile and preferences</p></div></div><div className="mt-xl flex min-h-[240px] flex-col items-center justify-center gap-md rounded-lg border border-line bg-card p-xl text-center"><span className="grid size-12 place-items-center rounded-full bg-accent/12 text-accent"><UserRound aria-hidden className="size-5" /></span><Badge variant="outline">Coming next</Badge></div></div>; }
+function ProfilePage() {
+  const navigate = useNavigate();
+  const { user, profile, displayName, isDemoMode, signOut } = useAuth();
+
+  return (
+    <div className="mx-auto w-full max-w-[760px] px-md py-xl lg:px-xl lg:py-2xl">
+      <div className="flex items-center gap-lg">
+        <Avatar name={displayName} src={profile?.avatar_url ?? undefined} size="lg" />
+        <div>
+          <h1 className="type-h1">{displayName}</h1>
+          <p className="type-body-lg mt-xs text-muted-text">
+            {user?.email ?? "Your profile and preferences"}
+          </p>
+        </div>
+      </div>
+
+      <dl className="mt-xl grid gap-md rounded-lg border border-line bg-card p-lg sm:grid-cols-2">
+        <div><dt className="type-caption text-muted-text">Name</dt><dd className="type-body mt-xs">{profile?.name ?? displayName}</dd></div>
+        <div><dt className="type-caption text-muted-text">Email</dt><dd className="type-body mt-xs">{user?.email ?? "Not signed in"}</dd></div>
+        <div><dt className="type-caption text-muted-text">Location</dt><dd className="type-body mt-xs">{profile?.location ?? "Lagos"}</dd></div>
+        <div><dt className="type-caption text-muted-text">Onboarding</dt><dd className="type-body mt-xs">{profile?.onboarding_completed ? "Completed" : "Not completed"}</dd></div>
+      </dl>
+
+      <div className="mt-xl flex min-h-[200px] flex-col items-center justify-center gap-md rounded-lg border border-line bg-card p-xl text-center">
+        <span className="grid size-12 place-items-center rounded-full bg-accent/12 text-accent"><UserRound aria-hidden className="size-5" /></span>
+        <Badge variant="outline">Coming next</Badge>
+        <p className="type-body text-muted-text">Profile editing and saved preferences arrive with the next release.</p>
+        {isDemoMode ? (
+          <Link to="/auth" className="focus-ring rounded-full"><Button>Sign in</Button></Link>
+        ) : (
+          <Button variant="outline" onClick={async () => { await signOut(); await navigate({ to: "/", replace: true }); }}>Sign out</Button>
+        )}
+      </div>
+    </div>
+  );
+}

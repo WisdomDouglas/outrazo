@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as CreateRouteImport } from './routes/create'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
@@ -32,6 +34,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
@@ -40,6 +47,11 @@ const EventsRoute = EventsRouteImport.update({
 const CreateRoute = CreateRouteImport.update({
   id: '/create',
   path: '/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -118,8 +130,10 @@ const Char91__componentChar93PreviewSplatRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
   '/create': typeof CreateRoute
   '/events': typeof EventsRouteWithChildren
+  '/explore': typeof ExploreRoute
   '/onboarding': typeof OnboardingRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
@@ -136,7 +150,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/create': typeof CreateRoute
+  '/explore': typeof ExploreRoute
   '/onboarding': typeof OnboardingRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
@@ -155,8 +171,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
   '/create': typeof CreateRoute
   '/events': typeof EventsRouteWithChildren
+  '/explore': typeof ExploreRoute
   '/onboarding': typeof OnboardingRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
@@ -176,8 +194,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/auth'
     | '/create'
     | '/events'
+    | '/explore'
     | '/onboarding'
     | '/app/create-event'
     | '/app/explore'
@@ -194,7 +214,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/create'
+    | '/explore'
     | '/onboarding'
     | '/app/create-event'
     | '/app/explore'
@@ -212,8 +234,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/auth'
     | '/create'
     | '/events'
+    | '/explore'
     | '/onboarding'
     | '/app/create-event'
     | '/app/explore'
@@ -232,8 +256,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  AuthRoute: typeof AuthRoute
   CreateRoute: typeof CreateRoute
   EventsRoute: typeof EventsRouteWithChildren
+  ExploreRoute: typeof ExploreRoute
   OnboardingRoute: typeof OnboardingRoute
   OrganizersOrganizerIdRoute: typeof OrganizersOrganizerIdRoute
   Char91__componentChar93PreviewSplatRoute: typeof Char91__componentChar93PreviewSplatRoute
@@ -249,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events': {
       id: '/events'
       path: '/events'
@@ -261,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/create'
       fullPath: '/create'
       preLoaderRoute: typeof CreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -402,8 +442,10 @@ const EventsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  AuthRoute: AuthRoute,
   CreateRoute: CreateRoute,
   EventsRoute: EventsRouteWithChildren,
+  ExploreRoute: ExploreRoute,
   OnboardingRoute: OnboardingRoute,
   OrganizersOrganizerIdRoute: OrganizersOrganizerIdRoute,
   Char91__componentChar93PreviewSplatRoute:
