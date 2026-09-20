@@ -12,10 +12,18 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as CreateRouteImport } from './routes/create'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as OrganizersOrganizerIdRouteImport } from './routes/organizers.$organizerId'
 import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
+import { Route as AppTicketsRouteImport } from './routes/app.tickets'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppSavedRouteImport } from './routes/app.saved'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppExploreRouteImport } from './routes/app.explore'
+import { Route as AppCreateEventRouteImport } from './routes/app.create-event'
 import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
 import { Route as Char91__componentChar93PreviewSplatRouteImport } from './routes/[__component].preview.$'
 
@@ -34,6 +42,11 @@ const CreateRoute = CreateRouteImport.update({
   path: '/create',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -44,6 +57,11 @@ const EventsIndexRoute = EventsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => EventsRoute,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
 const OrganizersOrganizerIdRoute = OrganizersOrganizerIdRouteImport.update({
   id: '/organizers/$organizerId',
   path: '/organizers/$organizerId',
@@ -53,6 +71,36 @@ const EventsEventIdRoute = EventsEventIdRouteImport.update({
   id: '/$eventId',
   path: '/$eventId',
   getParentRoute: () => EventsRoute,
+} as any)
+const AppTicketsRoute = AppTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSavedRoute = AppSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppExploreRoute = AppExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCreateEventRoute = AppCreateEventRouteImport.update({
+  id: '/create-event',
+  path: '/create-event',
+  getParentRoute: () => AppRoute,
 } as any)
 const Char91__mockupChar93PreviewSplatRoute =
   Char91__mockupChar93PreviewSplatRouteImport.update({
@@ -69,11 +117,19 @@ const Char91__componentChar93PreviewSplatRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
   '/create': typeof CreateRoute
   '/events': typeof EventsRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/app/create-event': typeof AppCreateEventRoute
+  '/app/explore': typeof AppExploreRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/saved': typeof AppSavedRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/tickets': typeof AppTicketsRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/app/': typeof AppIndexRoute
   '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
@@ -82,8 +138,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
   '/onboarding': typeof OnboardingRoute
+  '/app/create-event': typeof AppCreateEventRoute
+  '/app/explore': typeof AppExploreRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/saved': typeof AppSavedRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/tickets': typeof AppTicketsRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/app': typeof AppIndexRoute
   '/events': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
@@ -91,11 +154,19 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
   '/create': typeof CreateRoute
   '/events': typeof EventsRouteWithChildren
   '/onboarding': typeof OnboardingRoute
+  '/app/create-event': typeof AppCreateEventRoute
+  '/app/explore': typeof AppExploreRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/saved': typeof AppSavedRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/tickets': typeof AppTicketsRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/app/': typeof AppIndexRoute
   '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
@@ -104,11 +175,19 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/app'
     | '/create'
     | '/events'
     | '/onboarding'
+    | '/app/create-event'
+    | '/app/explore'
+    | '/app/profile'
+    | '/app/saved'
+    | '/app/settings'
+    | '/app/tickets'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/app/'
     | '/events/'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
@@ -117,19 +196,34 @@ export interface FileRouteTypes {
     | '/'
     | '/create'
     | '/onboarding'
+    | '/app/create-event'
+    | '/app/explore'
+    | '/app/profile'
+    | '/app/saved'
+    | '/app/settings'
+    | '/app/tickets'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/app'
     | '/events'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
   id:
     | '__root__'
     | '/'
+    | '/app'
     | '/create'
     | '/events'
     | '/onboarding'
+    | '/app/create-event'
+    | '/app/explore'
+    | '/app/profile'
+    | '/app/saved'
+    | '/app/settings'
+    | '/app/tickets'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/app/'
     | '/events/'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
@@ -137,6 +231,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
   CreateRoute: typeof CreateRoute
   EventsRoute: typeof EventsRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
@@ -168,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -182,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsIndexRouteImport
       parentRoute: typeof EventsRoute
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/organizers/$organizerId': {
       id: '/organizers/$organizerId'
       path: '/organizers/$organizerId'
@@ -195,6 +304,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/events/$eventId'
       preLoaderRoute: typeof EventsEventIdRouteImport
       parentRoute: typeof EventsRoute
+    }
+    '/app/tickets': {
+      id: '/app/tickets'
+      path: '/tickets'
+      fullPath: '/app/tickets'
+      preLoaderRoute: typeof AppTicketsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/saved': {
+      id: '/app/saved'
+      path: '/saved'
+      fullPath: '/app/saved'
+      preLoaderRoute: typeof AppSavedRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/explore': {
+      id: '/app/explore'
+      path: '/explore'
+      fullPath: '/app/explore'
+      preLoaderRoute: typeof AppExploreRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/create-event': {
+      id: '/app/create-event'
+      path: '/create-event'
+      fullPath: '/app/create-event'
+      preLoaderRoute: typeof AppCreateEventRouteImport
+      parentRoute: typeof AppRoute
     }
     '/__mockup/preview/$': {
       id: '/__mockup/preview/$'
@@ -213,6 +364,28 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AppRouteChildren {
+  AppCreateEventRoute: typeof AppCreateEventRoute
+  AppExploreRoute: typeof AppExploreRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppSavedRoute: typeof AppSavedRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppTicketsRoute: typeof AppTicketsRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppCreateEventRoute: AppCreateEventRoute,
+  AppExploreRoute: AppExploreRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppSavedRoute: AppSavedRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppTicketsRoute: AppTicketsRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 interface EventsRouteChildren {
   EventsEventIdRoute: typeof EventsEventIdRoute
   EventsIndexRoute: typeof EventsIndexRoute
@@ -228,6 +401,7 @@ const EventsRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   CreateRoute: CreateRoute,
   EventsRoute: EventsRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
