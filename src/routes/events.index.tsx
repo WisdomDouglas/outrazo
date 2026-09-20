@@ -23,6 +23,7 @@ import {
   CITIES,
   getOrganizer,
   toEventCardProps,
+  type CategoryId,
   type OutrazoEvent,
 } from "@/showcase/sample-data";
 
