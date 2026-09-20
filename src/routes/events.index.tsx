@@ -95,7 +95,7 @@ export const Route = createFileRoute("/events/")({
 });
 
 function ExploreEvents() {
-  const { q } = Route.useSearch();
+  const { q, category: categoryParam } = Route.useSearch();
   const navigate = useNavigate();
   const [query, setQuery] = useState(q ?? "");
   const [filtersOpen, setFiltersOpen] = useState(false);
