@@ -32,7 +32,7 @@
 
 ## User Onboarding V1
 
-- [ ] Build the three-step interests, location, and preferences flow.
-- [ ] Preserve draft selections and save a versioned completion record locally.
-- [ ] Connect completion to Explore without changing existing pages.
-- [ ] Verify validation, Back, persistence, completion, themes, and responsive layouts.
+- [x] Build the three-step interests, location, and preferences flow.
+- [x] Preserve draft selections and save a versioned completion record locally.
+- [x] Connect completion to Explore without changing existing pages.
+- [x] Verify validation, Back, persistence, completion, themes, and responsive layouts.
