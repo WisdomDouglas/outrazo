@@ -198,10 +198,10 @@ function Landing() {
 
       <main>
         {/* Hero */}
-        <section className="relative isolate flex min-h-[85vh] flex-col overflow-hidden lg:min-h-[720px]">
+        <section className="relative isolate flex min-h-[calc(100svh-4.125rem)] flex-col overflow-hidden lg:min-h-[calc(100svh-4.75rem)]">
           <HeroBackdrop />
 
-          <div className="relative mx-auto flex w-full max-w-[1100px] flex-1 flex-col justify-center px-md pb-16 pt-20 lg:min-h-[720px] lg:px-xl lg:py-2xl">
+          <div className="relative mx-auto flex w-full max-w-[1100px] flex-1 flex-col px-md pb-lg pt-lg sm:pb-xl sm:pt-xl lg:px-xl lg:py-xl">
             {/* Readability layers: a vertical canvas wash plus a soft radial glow keep
                 the copy legible while letting the artwork show through */}
             <div
@@ -213,7 +213,7 @@ function Landing() {
               className="pointer-events-none absolute inset-x-0 top-1/2 h-[92%] -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--color-canvas)_0%,transparent_68%)] opacity-60 lg:opacity-40"
             />
 
-            <div className="relative z-10 mx-auto flex max-w-[600px] flex-col items-center gap-6 text-center lg:gap-lg">
+            <div className="relative z-10 mx-auto flex w-full max-w-[600px] flex-1 flex-col items-center justify-between gap-md text-center sm:gap-lg">
               <div className="flex flex-col items-center gap-3">
                 <span className="outrazo-badge-enter type-caption inline-flex w-fit items-center gap-xs rounded-full border border-line bg-card/70 px-md py-xs font-semibold text-accent backdrop-blur-md">
                   <span className="relative inline-grid size-4 place-items-center">
