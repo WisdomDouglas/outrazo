@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, MapPin, SearchX } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowLeft, MapPin, SearchX, SlidersHorizontal } from "lucide-react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
@@ -13,8 +13,61 @@ import { EventCard } from "@/design-system/components/EventCard";
 import { Reveal } from "@/design-system/components/Reveal";
 import { SearchField } from "@/design-system/components/SearchField";
 import { CATEGORIES } from "@/showcase/discovery/categories";
+import {
+  DEFAULT_EVENT_FILTERS,
+  EventFiltersPanel,
+  type EventFilters,
+} from "@/showcase/discovery/EventFiltersPanel";
 import { useDiscovery } from "@/showcase/discovery/use-discovery";
-import { CITIES, getOrganizer, toEventCardProps } from "@/showcase/sample-data";
+import {
+  CITIES,
+  getOrganizer,
+  toEventCardProps,
+  type OutrazoEvent,
+} from "@/showcase/sample-data";
+
+const DEMO_LOCATION = "Lagos";
+const DEMO_TODAY = new Date("2026-09-20T12:00:00Z");
+const INITIAL_FILTERS: EventFilters = { ...DEFAULT_EVENT_FILTERS, location: "near" };
+
+function matchesDate(event: OutrazoEvent, dateFilter: EventFilters["date"]) {
+  if (dateFilter === "any") return true;
+  const eventDate = new Date(event.startsAt);
+  const dayStart = new Date(DEMO_TODAY);
+  dayStart.setUTCHours(0, 0, 0, 0);
+  const dayEnd = new Date(dayStart);
+  dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+
+  if (dateFilter === "today") return eventDate >= dayStart && eventDate < dayEnd;
+
+  const weekStart = new Date(dayStart);
+  const daysSinceMonday = (weekStart.getUTCDay() + 6) % 7;
+  weekStart.setUTCDate(weekStart.getUTCDate() - daysSinceMonday);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setUTCDate(weekEnd.getUTCDate() + 7);
+
+  if (dateFilter === "week") return eventDate >= weekStart && eventDate < weekEnd;
+
+  const weekendStart = new Date(weekStart);
+  weekendStart.setUTCDate(weekendStart.getUTCDate() + 5);
+  return eventDate >= weekendStart && eventDate < weekEnd;
+}
+
+function filterEvents(events: OutrazoEvent[], filters: EventFilters, city: string | null) {
+  return events.filter((event) => {
+    const matchesLocation = city
+      ? event.city === city
+      : filters.location === "any"
+        ? true
+        : filters.location === "other"
+          ? event.city !== DEMO_LOCATION
+          : event.city === DEMO_LOCATION;
+    const matchesPrice =
+      filters.price === "any" ||
+      (filters.price === "free" ? !event.price : Boolean(event.price));
+    return matchesLocation && matchesPrice && matchesDate(event, filters.date);
+  });
+}
 
 export const Route = createFileRoute("/events")({
   validateSearch: (search: Record<string, unknown>): { q?: string } => ({
@@ -44,17 +97,87 @@ function ExploreEvents() {
   const { q } = Route.useSearch();
   const navigate = useNavigate();
   const [query, setQuery] = useState(q ?? "");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<EventFilters>(INITIAL_FILTERS);
+  const [draftFilters, setDraftFilters] = useState<EventFilters>(INITIAL_FILTERS);
+  const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const discovery = useDiscovery();
+
+  const filteredEvents = useMemo(
+    () => filterEvents(discovery.events, appliedFilters, discovery.city),
+    [appliedFilters, discovery.city, discovery.events],
+  );
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    if (!needle) return discovery.events;
-    return discovery.events.filter((event) =>
+    if (!needle) return filteredEvents;
+    return filteredEvents.filter((event) =>
       `${event.title} ${event.location} ${event.city} ${getOrganizer(event.organizerId).name}`
         .toLowerCase()
         .includes(needle),
     );
-  }, [discovery.events, query]);
+  }, [filteredEvents, query]);
+
+  const draftResultCount = useMemo(
+    () => filterEvents(discovery.events, draftFilters, discovery.city).length,
+    [discovery.city, discovery.events, draftFilters],
+  );
+
+  const activeFilterCount = [appliedFilters.date, appliedFilters.price].filter(
+    (value) => value !== "any",
+  ).length + (appliedFilters.location === "near" ? 0 : 1);
+
+  const displayedLocation = discovery.city
+    ?? (appliedFilters.location === "other"
+      ? "Other locations"
+      : appliedFilters.location === "any"
+        ? "All locations"
+        : DEMO_LOCATION);
+
+  const closeFilters = useCallback(() => {
+    setFiltersOpen(false);
+    window.setTimeout(() => filterTriggerRef.current?.focus(), 0);
+  }, []);
+
+  const openFilters = useCallback(() => {
+    setDraftFilters(appliedFilters);
+    setFiltersOpen(true);
+  }, [appliedFilters]);
+
+  const resetAll = useCallback(() => {
+    setQuery("");
+    setAppliedFilters(INITIAL_FILTERS);
+    setDraftFilters(INITIAL_FILTERS);
+    discovery.reset();
+    navigate({ to: "/events", search: {} });
+  }, [discovery, navigate]);
+
+  const emptyState = query.trim()
+    ? {
+        title: "Nothing matches your search.",
+        description: "Try a different keyword or explore another category.",
+        label: "Clear search",
+        action: () => {
+          setQuery("");
+          navigate({ to: "/events", search: {} });
+        },
+      }
+    : discovery.city || appliedFilters.location !== "any"
+      ? {
+          title: "No events found in this location yet.",
+          description: "Try another location or explore events across Nigeria.",
+          label: "Explore other locations",
+          action: () => {
+            discovery.setCity(null);
+            setAppliedFilters({ ...appliedFilters, location: "any" });
+          },
+        }
+      : {
+          title: "Nothing happening here yet.",
+          description: "Try another category or explore all events.",
+          label: "Explore all events",
+          action: resetAll,
+        };
 
   return (
     <div className="min-h-screen bg-canvas text-primary-text">
@@ -77,12 +200,30 @@ function ExploreEvents() {
             </Link>
           </div>
 
-          <div className="flex flex-col gap-xs">
-            <h1 className="type-h1 text-[28px] lg:text-[40px]">Explore events</h1>
-            <p className="type-body text-muted-text">
-              {results.length} {results.length === 1 ? "event" : "events"} matching your
-              filters.
-            </p>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-md sm:flex sm:flex-wrap sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="type-h1">Explore events</h1>
+              <p className="type-body mt-xs text-muted-text">Discover what's happening near you.</p>
+            </div>
+            <div className="flex shrink-0 items-center gap-sm">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                leadingIcon={<MapPin aria-hidden className="size-4 text-accent" />}
+                className="border border-line bg-card px-md"
+                onClick={openFilters}
+              >
+                {displayedLocation}
+              </Button>
+              <button
+                type="button"
+                onClick={openFilters}
+                className="focus-ring type-caption hidden rounded-full text-accent hover:text-accent-hover sm:inline-flex"
+              >
+                Change
+              </button>
+            </div>
           </div>
 
           <form
@@ -100,18 +241,32 @@ function ExploreEvents() {
             />
           </form>
 
-          <div className="ds-rail -mx-md flex gap-sm overflow-x-auto px-md pb-xs lg:mx-0 lg:flex-wrap lg:px-0">
-            {CATEGORIES.map(({ id, label, icon: Icon }) => (
-              <CategoryChip
-                key={id}
-                icon={<Icon aria-hidden className="size-4" />}
-                active={discovery.category === id}
-                onClick={() => discovery.setCategory(id)}
-                className="shrink-0"
-              >
-                {label}
-              </CategoryChip>
-            ))}
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-sm">
+            <div className="ds-rail -ml-md flex min-w-0 gap-sm overflow-x-auto px-md pb-xs lg:ml-0 lg:px-0">
+              {CATEGORIES.map(({ id, label, icon: Icon }) => (
+                <CategoryChip
+                  key={id}
+                  icon={<Icon aria-hidden className="size-4" />}
+                  active={discovery.category === id}
+                  onClick={() => discovery.setCategory(id)}
+                  className="shrink-0"
+                >
+                  {label}
+                </CategoryChip>
+              ))}
+            </div>
+            <Button
+              ref={filterTriggerRef}
+              type="button"
+              variant="outline"
+              size="sm"
+              leadingIcon={<SlidersHorizontal aria-hidden className="size-4" />}
+              className="shrink-0 px-md"
+              aria-expanded={filtersOpen}
+              onClick={openFilters}
+            >
+              Filters{activeFilterCount ? ` (${activeFilterCount})` : ""}
+            </Button>
           </div>
         </div>
       </header>
@@ -156,18 +311,11 @@ function ExploreEvents() {
         ) : (
           <EmptyState
             icon={<SearchX aria-hidden className="size-5" strokeWidth={2} />}
-            title="Nothing happening here yet."
-            description="Try another location or explore another category."
+            title={emptyState.title}
+            description={emptyState.description}
             action={
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setQuery("");
-                  discovery.reset();
-                  navigate({ to: "/events", search: {} });
-                }}
-              >
-                Reset filters
+              <Button variant="outline" onClick={emptyState.action}>
+                {emptyState.label}
               </Button>
             }
           />
@@ -184,14 +332,29 @@ function ExploreEvents() {
                 meta={city.count}
                 distance={city.distance}
                 active={discovery.city === city.name}
-                onClick={() =>
-                  discovery.setCity(discovery.city === city.name ? null : city.name)
-                }
+                onClick={() => {
+                  discovery.setCity(discovery.city === city.name ? null : city.name);
+                  setAppliedFilters({ ...appliedFilters, location: "any" });
+                }}
               />
             ))}
           </div>
         </section>
       </main>
+
+      <EventFiltersPanel
+        open={filtersOpen}
+        value={draftFilters}
+        resultCount={draftResultCount}
+        onChange={setDraftFilters}
+        onClear={() => setDraftFilters(DEFAULT_EVENT_FILTERS)}
+        onClose={closeFilters}
+        onApply={() => {
+          discovery.setCity(null);
+          setAppliedFilters(draftFilters);
+          closeFilters();
+        }}
+      />
     </div>
   );
 }
