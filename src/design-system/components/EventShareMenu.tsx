@@ -3,7 +3,17 @@ import { useEffect, useRef, useState } from "react";
 
 import { Button } from "./Button";
 
-export function EventShareMenu({ title }: { title: string }) {
+export function EventShareMenu({
+  title,
+  copiedLabel = "Event link copied",
+  menuLabel = "Share event",
+}: {
+  title: string;
+  /** Confirmation copy shown after the link is copied. */
+  copiedLabel?: string;
+  /** Accessible name for the share menu. */
+  menuLabel?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
