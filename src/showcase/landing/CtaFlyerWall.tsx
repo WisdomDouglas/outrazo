@@ -1,7 +1,7 @@
 import { ArrowUpRight, MapPin } from "lucide-react";
 import { EVENTS } from "@/showcase/sample-data";
 
-const COLLAGE_EVENT_INDEXES = [1, 20, 16, 4, 13, 12];
+const COLLAGE_EVENT_INDEXES = [16, 13, 20, 1, 4, 12];
 
 function Flyer({ eventIndex, position }: { eventIndex: number; position: number }) {
   const event = EVENTS[eventIndex % EVENTS.length];
