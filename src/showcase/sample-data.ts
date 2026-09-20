@@ -108,20 +108,20 @@ export const ATTENDEES: Attendee[] = [
 ];
 
 export const ORGANIZERS: Organizer[] = [
-  { id: "nocturne", name: "Nocturne Collective", community: "Lagos Nightlife", verified: true, description: "Curating unforgettable nightlife, food, and sound experiences across Lagos." },
-  { id: "builders", name: "Outrazo Builders", community: "Tech Community", verified: true, description: "A community helping ambitious Nigerian builders learn, connect, and ship together." },
-  { id: "morning", name: "Morning People", community: "Run Club", description: "An inclusive movement making early mornings active, social, and joyful." },
-  { id: "soundhouse", name: "Soundhouse Lagos", community: "Live Music", description: "Independent live music experiences spotlighting Nigeria’s most exciting sounds." },
-  { id: "growth", name: "Growth Circle", community: "Founders Network", verified: true, description: "A trusted gathering place for founders, operators, and investors building in Africa." },
-  { id: "nok", name: "Nok Gallery", community: "Abuja Arts", description: "Thoughtful art encounters connecting contemporary artists with curious audiences." },
-  { id: "tablenine", name: "Table Nine", community: "Supper Club", description: "Intimate dining experiences celebrating West African ingredients and hospitality." },
-  { id: "sessions", name: "Sessions NG", community: "Ibadan Music", description: "Live sessions and community shows built around emerging Nigerian music." },
-  { id: "afterdark", name: "Lagos After Dark", community: "Party Series", description: "High-energy Lagos parties designed around music, movement, and community." },
-  { id: "kanoarts", name: "Kano Arts Circle", community: "Northern Creatives", description: "Supporting northern creatives through markets, exhibitions, and cultural gatherings." },
-  { id: "enugutech", name: "Enugu Tech Hub", community: "Coal City Devs", description: "A practical community for developers and product builders in the South East." },
-  { id: "ceremony", name: "Ceremony NG", community: "Culture & Heritage", description: "Modern experiences rooted in Nigerian culture, comedy, and celebration." },
-  { id: "hoopsng", name: "Hoops Lagos", community: "Street Basketball", description: "Building community through street basketball, leagues, and open play." },
-  { id: "pepperclub", name: "Pepper Club", community: "Food Lovers", description: "Food-led gatherings for people who love bold flavours and shared tables." },
+  { id: "nocturne", name: "Nocturne Collective", community: "Lagos Nightlife", verified: true, description: "Curating unforgettable nightlife, food, and sound experiences across Lagos.", location: "Lagos, Nigeria", website: "https://nocturne.example.com", socialLinks: [{ label: "Instagram", url: "https://instagram.com/nocturne" }, { label: "X", url: "https://x.com/nocturne" }] },
+  { id: "builders", name: "Outrazo Builders", community: "Tech Community", verified: true, description: "A community helping ambitious Nigerian builders learn, connect, and ship together.", location: "Lagos, Nigeria", website: "https://builders.example.com", socialLinks: [{ label: "X", url: "https://x.com/outrazobuilders" }] },
+  { id: "morning", name: "Morning People", community: "Run Club", description: "An inclusive movement making early mornings active, social, and joyful.", location: "Lagos, Nigeria", socialLinks: [{ label: "Instagram", url: "https://instagram.com/morningpeople" }] },
+  { id: "soundhouse", name: "Soundhouse Lagos", community: "Live Music", description: "Independent live music experiences spotlighting Nigeria’s most exciting sounds.", location: "Lagos, Nigeria", website: "https://soundhouse.example.com" },
+  { id: "growth", name: "Growth Circle", community: "Founders Network", verified: true, description: "A trusted gathering place for founders, operators, and investors building in Africa.", location: "Lagos, Nigeria", website: "https://growthcircle.example.com", socialLinks: [{ label: "LinkedIn", url: "https://linkedin.com/company/growthcircle" }] },
+  { id: "nok", name: "Nok Gallery", community: "Abuja Arts", description: "Thoughtful art encounters connecting contemporary artists with curious audiences.", location: "Abuja, Nigeria", socialLinks: [{ label: "Instagram", url: "https://instagram.com/nokgallery" }] },
+  { id: "tablenine", name: "Table Nine", community: "Supper Club", description: "Intimate dining experiences celebrating West African ingredients and hospitality.", location: "Lagos, Nigeria" },
+  { id: "sessions", name: "Sessions NG", community: "Ibadan Music", description: "Live sessions and community shows built around emerging Nigerian music.", location: "Ibadan, Nigeria", socialLinks: [{ label: "Instagram", url: "https://instagram.com/sessionsng" }] },
+  { id: "afterdark", name: "Lagos After Dark", community: "Party Series", description: "High-energy Lagos parties designed around music, movement, and community.", location: "Lagos, Nigeria" },
+  { id: "kanoarts", name: "Kano Arts Circle", community: "Northern Creatives", description: "Supporting northern creatives through markets, exhibitions, and cultural gatherings.", location: "Kano, Nigeria" },
+  { id: "enugutech", name: "Enugu Tech Hub", community: "Coal City Devs", description: "A practical community for developers and product builders in the South East.", location: "Enugu, Nigeria", website: "https://enugutech.example.com" },
+  { id: "ceremony", name: "Ceremony NG", community: "Culture & Heritage", description: "Modern experiences rooted in Nigerian culture, comedy, and celebration.", location: "Lagos, Nigeria" },
+  { id: "hoopsng", name: "Hoops Lagos", community: "Street Basketball", description: "Building community through street basketball, leagues, and open play.", location: "Lagos, Nigeria" },
+  { id: "pepperclub", name: "Pepper Club", community: "Food Lovers", description: "Food-led gatherings for people who love bold flavours and shared tables.", location: "Port Harcourt, Nigeria" },
 ];
 
 const organizerById = new Map(ORGANIZERS.map((o) => [o.id, o]));
