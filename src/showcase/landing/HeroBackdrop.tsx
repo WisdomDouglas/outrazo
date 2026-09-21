@@ -1,7 +1,7 @@
-import desktopDark from "@/assets/hero-desktop-dark.png.asset.json";
-import desktopLight from "@/assets/hero-desktop-light.png.asset.json";
-import mobileDark from "@/assets/hero-mobile-dark.png.asset.json";
-import mobileLight from "@/assets/hero-mobile-light.png.asset.json";
+import desktopDark from "@/assets/hero-desktop-dark.png";
+import desktopLight from "@/assets/hero-desktop-light.png";
+import mobileDark from "@/assets/hero-mobile-dark.png";
+import mobileLight from "@/assets/hero-mobile-light.png";
 
 /**
  * Hero background: the four supplied artworks, swapped by theme (dark/light)
