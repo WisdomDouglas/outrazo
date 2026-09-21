@@ -52,3 +52,5 @@
 - [x] Add email/password and Google sign-in with a shared session provider.
 - [x] Keep /app open in clearly marked demo mode until sign-in is required.
 - [x] Verify Landing → Explore → Event Details → Organizer → /app still work.
+
+- [x] Bundle the hero background artwork (desktop and mobile, both themes) into the codebase so it ships with every deployment.

@@ -1,7 +1,7 @@
-import desktopDark from "@/assets/hero-desktop-dark.png.asset.json";
-import desktopLight from "@/assets/hero-desktop-light.png.asset.json";
-import mobileDark from "@/assets/hero-mobile-dark.png.asset.json";
-import mobileLight from "@/assets/hero-mobile-light.png.asset.json";
+import desktopDark from "@/assets/hero-desktop-dark.png";
+import desktopLight from "@/assets/hero-desktop-light.png";
+import mobileDark from "@/assets/hero-mobile-dark.png";
+import mobileLight from "@/assets/hero-mobile-light.png";
 
 /**
  * Hero background: the four supplied artworks, swapped by theme (dark/light)
@@ -18,22 +18,22 @@ export function HeroBackdrop() {
       {/* Desktop dark */}
       <div
         className="hero-bg hero-bg-desktop-dark absolute inset-0 bg-cover bg-bottom bg-no-repeat"
-        style={{ backgroundImage: `url(${desktopDark.url})` }}
+        style={{ backgroundImage: `url(${desktopDark})` }}
       />
       {/* Desktop light */}
       <div
         className="hero-bg hero-bg-desktop-light absolute inset-0 bg-cover bg-bottom bg-no-repeat"
-        style={{ backgroundImage: `url(${desktopLight.url})` }}
+        style={{ backgroundImage: `url(${desktopLight})` }}
       />
       {/* Mobile dark — centered crop with a safe aspect frame */}
       <div
         className="hero-bg hero-bg-mobile-dark absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${mobileDark.url})` }}
+        style={{ backgroundImage: `url(${mobileDark})` }}
       />
       {/* Mobile light */}
       <div
         className="hero-bg hero-bg-mobile-light absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${mobileLight.url})` }}
+        style={{ backgroundImage: `url(${mobileLight})` }}
       />
 
       {/* Lightly calms the artwork so hero copy stays legible while it shows through */}
