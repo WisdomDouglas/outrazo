@@ -1,4 +1,4 @@
-import { CalendarDays, MapPin, Sparkles, Ticket, TicketCheck, UsersRound } from "lucide-react";
+import { CalendarCheck, CalendarDays, MapPin, Ticket, TicketCheck, UsersRound } from "lucide-react";
 
 export function CtaFlyerWall() {
   return (
@@ -42,7 +42,7 @@ export function CtaFlyerWall() {
         <span className="cta-mascot-foot cta-mascot-foot-left" />
         <span className="cta-mascot-foot cta-mascot-foot-right" />
       </div>
-      <div className="cta-mascot-sparkle cta-mascot-sparkle-a"><Sparkles aria-hidden /></div>
+      <div className="cta-mascot-sparkle cta-mascot-sparkle-a"><CalendarCheck aria-hidden /></div>
       <div className="cta-mascot-sparkle cta-mascot-sparkle-b"><TicketCheck aria-hidden /></div>
       <div className="cta-mascot-sparkle cta-mascot-sparkle-c"><UsersRound aria-hidden /></div>
       <div className="cta-mascot-caption">
