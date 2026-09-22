@@ -1,4 +1,4 @@
-import { CalendarCheck, MapPin, TicketCheck, Ticket, UsersRound } from "lucide-react";
+import { CalendarCheck, CalendarDays, MapPin, Ticket, TicketCheck, UsersRound } from "lucide-react";
 
 export function CtaFlyerWall() {
   return (
