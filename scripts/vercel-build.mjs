@@ -19,9 +19,54 @@ await mkdir(`${out}/functions`, { recursive: true });
 await cp("dist/client", `${out}/static`, { recursive: true });
 await cp("dist/server", fn, { recursive: true });
 
+// Vercel invokes serverless functions with Node's (req, res) API, where
+// req.url is a relative path. TanStack Start expects a Web standard Request,
+// so adapt the incoming request and stream the Web Response back.
 await writeFile(
   `${fn}/entry-src.mjs`,
-  `import app from './server.js';\nexport default (request) => app.fetch(request);\n`,
+  [
+    `import { Readable } from "node:stream";`,
+    `import app from "./server.js";`,
+    ``,
+    `const readBody = (req) =>`,
+    `  new Promise((resolve, reject) => {`,
+    `    const chunks = [];`,
+    `    req.on("data", (c) => chunks.push(c));`,
+    `    req.on("end", () => resolve(Buffer.concat(chunks)));`,
+    `    req.on("error", reject);`,
+    `  });`,
+    ``,
+    `export default async function handler(req, res) {`,
+    `  const proto = req.headers["x-forwarded-proto"] || "https";`,
+    `  const host = req.headers["x-forwarded-host"] || req.headers.host || "localhost";`,
+    `  const url = new URL(req.url || "/", \`\${proto}://\${host}\`);`,
+    ``,
+    `  const headers = new Headers();`,
+    `  for (const [key, value] of Object.entries(req.headers)) {`,
+    `    if (value === undefined) continue;`,
+    `    headers.set(key, Array.isArray(value) ? value.join(", ") : value);`,
+    `  }`,
+    ``,
+    `  const method = (req.method || "GET").toUpperCase();`,
+    `  const hasBody = method !== "GET" && method !== "HEAD";`,
+    `  const body = hasBody ? await readBody(req) : undefined;`,
+    ``,
+    `  const request = new Request(url, { method, headers, body: body?.length ? body : undefined });`,
+    `  const webRes = await app.fetch(request);`,
+    ``,
+    `  res.statusCode = webRes.status;`,
+    `  webRes.headers.forEach((value, key) => {`,
+    `    if (key.toLowerCase() !== "content-encoding") res.setHeader(key, value);`,
+    `  });`,
+    ``,
+    `  if (webRes.body) {`,
+    `    Readable.fromWeb(webRes.body).pipe(res);`,
+    `  } else {`,
+    `    res.end();`,
+    `  }`,
+    `}`,
+    ``,
+  ].join("\n"),
 );
 
 // Vite leaves node_modules imports (react, react-dom, ...) external in the SSR
