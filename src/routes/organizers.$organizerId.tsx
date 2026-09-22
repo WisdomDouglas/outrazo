@@ -3,6 +3,7 @@ import { ArrowLeft, Globe, MapPin, UserCheck, UserPlus } from "lucide-react";
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { Badge } from "@/design-system/components/Badge";
+import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { ErrorState } from "@/design-system/components/ErrorState";
@@ -135,8 +136,8 @@ function OrganizerPage() {
             <span className="hidden sm:inline">Back to Explore</span>
             <span className="sm:hidden">Organizer</span>
           </Link>
-          <Link to="/" className="focus-ring type-h3 rounded-sm text-accent">
-            OUTRAZO
+          <Link to="/" className="focus-ring type-h3 rounded-sm text-accent" aria-label="Outrazo home">
+            <BrandLogo />
           </Link>
         </div>
       </header>

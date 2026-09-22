@@ -16,6 +16,7 @@ import {
 import { useState } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
+import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Button } from "@/design-system/components/Button";
 import { Carousel } from "@/design-system/components/Carousel";
 import { CategoryCard } from "@/design-system/components/CategoryCard";
@@ -113,8 +114,8 @@ function Landing() {
       <header className="sticky top-0 z-40 px-md pt-sm lg:pt-md">
         <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-primary-text/10 bg-canvas/25 px-md py-sm shadow-[0_10px_30px_-18px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-primary-text/5 backdrop-blur-xl backdrop-saturate-150 transition-colors lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
 
-          <Link to="/" className="focus-ring type-h3 min-w-0 truncate rounded-full tracking-tight">
-            OUTRAZO<span className="text-accent">.</span>
+          <Link to="/" className="focus-ring type-h3 min-w-0 rounded-full" aria-label="Outrazo home">
+            <BrandLogo />
           </Link>
           <nav
             aria-label="Primary"
@@ -562,8 +563,8 @@ function Landing() {
         <div className="outrazo-footer-inner mx-auto max-w-[1200px] px-md lg:px-xl">
           <div className="outrazo-footer-main">
             <div className="outrazo-footer-brand">
-              <Link to="/" className="focus-ring type-h3 rounded-sm">
-                OUTRAZO<span className="text-accent">.</span>
+              <Link to="/" className="focus-ring type-h3 rounded-sm" aria-label="Outrazo home">
+                <BrandLogo />
               </Link>
               <p className="type-body text-muted-text">{FOOTER_CONTENT.description}</p>
               <p className="outrazo-footer-location type-caption">

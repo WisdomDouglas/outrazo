@@ -3,6 +3,7 @@ import { Bell } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Avatar } from "@/design-system/components/Avatar";
+import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Button } from "@/design-system/components/Button";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useAuth } from "@/showcase/auth/auth-context";
@@ -32,7 +33,7 @@ export function AppHeader({ title }: { title: string }) {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-canvas/95 backdrop-blur-md">
       <div className="flex min-h-20 items-center gap-md px-md lg:px-xl">
-        <Link to="/app" className="focus-ring type-h3 shrink-0 rounded-sm md:hidden">OUTRAZO<span className="text-accent">.</span></Link>
+        <Link to="/app" className="focus-ring type-h3 shrink-0 rounded-sm md:hidden" aria-label="Outrazo home"><BrandLogo /></Link>
         <h1 className="type-h2 hidden shrink-0 md:block">{title}</h1>
         <form onSubmit={submit} className="ml-auto hidden w-full max-w-[440px] sm:block" role="search">
           <SearchField value={query} onChange={(event) => setQuery(event.target.value)} onClear={() => setQuery("")} placeholder="Search events" />

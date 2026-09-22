@@ -1,11 +1,12 @@
 import { Check, QrCode } from "lucide-react";
+import { BrandLogo } from "./BrandLogo";
 import type { EventDetails } from "@/showcase/sample-data";
 
 export function DemoTicket({ event, ticketType }: { event: EventDetails; ticketType: string }) {
   return (
     <section className="overflow-hidden rounded-lg border border-line bg-card shadow-card" aria-label="Demo event ticket">
       <div className="flex items-center justify-between border-b border-line bg-accent/10 px-lg py-md">
-        <strong className="type-h3 text-accent">OUTRAZO</strong>
+        <strong className="type-h3 text-accent"><BrandLogo /></strong>
         <span className="type-caption inline-flex items-center gap-xs rounded-full bg-accent px-sm py-xs font-semibold text-on-accent"><Check aria-hidden className="size-3.5" />CONFIRMED</span>
       </div>
       <div className="grid gap-lg p-lg sm:grid-cols-[1fr_auto] sm:items-center">
