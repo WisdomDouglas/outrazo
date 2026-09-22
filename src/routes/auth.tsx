@@ -70,15 +70,16 @@ function AuthPage() {
   const googleSignIn = async () => {
     setError(null);
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) {
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/app` },
+    });
+    if (oauthError) {
       setError("Unable to continue with Google right now.");
       setBusy(false);
-      return;
     }
-    if (result.redirected) return;
-    setBusy(false);
   };
+
 
   return (
     <main className="min-h-dvh bg-canvas px-md py-xl text-primary-text">
