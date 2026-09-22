@@ -1,0 +1,55 @@
+{
+  "name": "custom_design_system_tanstack",
+  "private": true,
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "vercel-build": "node scripts/vercel-build.mjs"
+  },
+  "dependencies": {
+    "@lovable.dev/cloud-auth-js": "^1.1.2",
+    "@supabase/supabase-js": "^2.116.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.35.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "tailwind-merge": "3.6.0",
+    "tailwindcss": "4.3.3"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.25.5",
+    "@eslint/js": "^9.32.0",
+    "@tailwindcss/vite": "4.3.3",
+    "@tanstack/react-query": "^5.101.1",
+    "@tanstack/react-router": "^1.170.16",
+    "@tanstack/react-start": "^1.168.26",
+    "@tanstack/router-plugin": "^1.168.18",
+    "@types/node": "^22.16.5",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "date-fns": "^4.1.0",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2",
+    "eslint": "^9.32.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^15.15.0",
+    "lovable-tagger": "^1.2.0",
+    "postgres": "^3.4.9",
+    "recharts": "^2.15.4",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.56.1",
+    "vite": "^8.0.16",
+    "vite-tsconfig-paths": "6.0.2",
+    "zod": "^3.24.2"
+  }
+}

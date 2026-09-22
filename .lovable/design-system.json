@@ -1,0 +1,672 @@
+{
+  "meta": {
+    "name": "My Little Library",
+    "package": "@ws-4hutpagaanrcygcldpya/49851e5c-65c1-40ce-a6d3-b9bd74ef975f",
+    "version": "1.4.0",
+    "framework": "react",
+    "css_framework": "tailwind",
+    "starter_template": "custom_design_system",
+    "theme_files": [
+      "src/design-system/styles/theme.css"
+    ],
+    "source_type": "local",
+    "source_manifest": {
+      "#enrichment": "96717643617ef0e04981fbc9e2894127aac85b5be8e2ca5cc8ed4e54a2c1144f",
+      ".dsignore": "2c7d76468c15bc0f1499420154f01ae3",
+      ".gitignore": "6059213806e442947666752f3db6bfdc",
+      ".lovable/meta.yaml": "8794970d6049858cc148d2b86f7a2b22",
+      ".lovable/plan/outrazo-design-system-starter-tokens-components-2026-08-28.md": "f92a47a616dd92b17d1c3587715d17ea",
+      ".lovable/sources.yaml": "1b62005cb01c2413aacc02b0f9500c65",
+      ".lovable/system.md": "fd1507b066603f74d44a19952e55eacb",
+      "README.md": "d19675c449605f23c7cfa133c69b398b",
+      "bunfig.toml": "25f4c8696b22b0943db7191e0cdf7942",
+      "eslint.config.js": "07a67437fb1a45ab36d6de0145ff09de",
+      "lovable.toml": "9636c1bf32f9901bfba4eabb92981217",
+      "mockupPreviewPlugin.ts": "08be2d15337c9b4145cc506cdf63a04e",
+      "package.json": "3d1b0ed2d7dde39378a1e28a18ab54b7",
+      "public/favicon.ico": "9f504444f85a5af2eef9264b02ae40be",
+      "src/assets/hero-desktop-dark.png.asset.json": "14f99ec00fc7b7381363e5ee72f76a8c",
+      "src/assets/hero-desktop-light.png.asset.json": "6bc4ab18f1f8023680c2d25877f5a690",
+      "src/assets/hero-lines.jpg.asset.json": "7b558d48a21de4106a6fe4f770bc08c4",
+      "src/assets/hero-mobile-dark.png.asset.json": "81cc45c30cf2bb94354e06e4f95f2b08",
+      "src/assets/hero-mobile-light.png.asset.json": "2f631e96d061541e3380ba1e61974b2e",
+      "src/design-system/components/Avatar.tsx": "df22d03d11cf6e3eba54398f65e4be7c",
+      "src/design-system/components/AvatarStack.tsx": "428215c60d8234bf2638deb8be858bf4",
+      "src/design-system/components/Badge.tsx": "5f87eef8f53ecf6063f8cead20e37152",
+      "src/design-system/components/Button.tsx": "16baf8553e1c1981e1233c6b109cf616",
+      "src/design-system/components/Carousel.tsx": "7359129af39c85e361c19c7fe89ce08f",
+      "src/design-system/components/CategoryCard.tsx": "c32834c9ef1c6a54db582be103fb5081",
+      "src/design-system/components/CategoryChip.tsx": "c9ba7e17e9c9a7f063e7fbf5ca3d338e",
+      "src/design-system/components/CityCard.tsx": "4ac07df9ab94d36f966fbf527e7ace32",
+      "src/design-system/components/EventCard.tsx": "dbb68f7b4f8b9ead7de987725d8d07fb",
+      "src/design-system/components/Input.tsx": "5d12263a4a17da646f2383cd97fcf0c2",
+      "src/design-system/components/Reveal.tsx": "7341e2603d48e2c8db4523dd9c17844a",
+      "src/design-system/components/SearchField.tsx": "05aca26877151aed3ca27dfe19ee79a9",
+      "src/design-system/components/Skeleton.tsx": "0a74eb467b341292795d3beef2c71dba",
+      "src/design-system/index.ts": "178e2d5234b94043accdf3b449278da1",
+      "src/design-system/lib/use-reveal.ts": "34af87f446bdf34fc09f91f7cb60e62c",
+      "src/design-system/lib/use-saved-items.ts": "fcbffec4b794eceecf47701758833d2e",
+      "src/design-system/lib/use-theme.ts": "1bbea86e5cf84c4d6535f3fc3b22eed6",
+      "src/design-system/lib/utils.ts": "53176bde4b744ac6c1fff0b8db2ae9b8",
+      "src/design-system/styles/theme.css": "86c16cb914b500c405c2b8cea0bd3ca8",
+      "src/index.ts": "ab35d8f1c11e0b18cc3bb7f06af3d665",
+      "src/mockup-preview.d.ts": "38969839f35ce2966e32a9f01a5c09ea",
+      "src/routeTree.gen.ts": "cb7fee78e26d6e67b1f138bb1bd243a6",
+      "src/router.tsx": "8f905e713b0eba7fa8148b7995a708c9",
+      "src/routes/[__component].preview.$.tsx": "3a40af1fe37daff2e891175a6e6d4f99",
+      "src/routes/[__mockup].preview.$.tsx": "5d9f42470848aa60148f20f9580e240e",
+      "src/routes/__root.tsx": "fb359cfb6776e7383dc1b5c0e9117ed3",
+      "src/routes/create.tsx": "1cb21a8c0f0c3fd37cb1d3df51576191",
+      "src/routes/events.tsx": "f6fee20441d26a249c8e6686a8be727d",
+      "src/routes/index.tsx": "a3547aa7a1e2ed6e89300e9744b64e49",
+      "src/showcase/discovery/categories.ts": "ecec01dbf3736e158a990b84deb41704",
+      "src/showcase/discovery/use-discovery.ts": "e4da677a5fcc71350c5232407237e830",
+      "src/showcase/landing.css": "01b189992e119b268f8aa298c794972e",
+      "src/showcase/landing/HeroBackdrop.tsx": "5adf6ffdbbd2169a5b12d0ff3e739989",
+      "src/showcase/landing/HeroFloatingCards.tsx": "d4c7b944dd296d0391a68a8c915f1e63",
+      "src/showcase/sample-data.ts": "3ac2516df8b6fa6e4dcb066190384319",
+      "src/styles.css": "77fbbd692908328dc4e56e2c1f75d8ba",
+      "tsconfig.json": "994abf64c2b9f78b568879f80ed0170e",
+      "vite.config.ts": "7c640e4b2b5a19f5894c64cd9e0e86e3",
+      "wrangler.jsonc": "680b897d48e44bcc65fe437c29b38f3b"
+    },
+    "pipeline_version": 8
+  },
+  "tokens": {
+    "color": [
+      {
+        "name": "--outrazo-bg-canvas",
+        "raw": "#07140e",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-bg-card",
+        "raw": "#0e2219",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-bg-elevated",
+        "raw": "#143024",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-border",
+        "raw": "rgba(226, 236, 233, 0.1)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-border-strong",
+        "raw": "rgba(226, 236, 233, 0.2)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-accent-primary",
+        "raw": "#10b981",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-accent-primary-hover",
+        "raw": "#34d399",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-on-accent-primary",
+        "raw": "#07140e",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-accent-secondary",
+        "raw": "#fb7185",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-accent-secondary-hover",
+        "raw": "#fda4af",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-on-accent-secondary",
+        "raw": "#07140e",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ],
+    "spacing": [
+      {
+        "name": "--spacing-xs",
+        "raw": "4px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-sm",
+        "raw": "8px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-md",
+        "raw": "16px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-lg",
+        "raw": "24px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-xl",
+        "raw": "32px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-2xl",
+        "raw": "48px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-3xl",
+        "raw": "64px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--spacing-section",
+        "raw": "96px",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ],
+    "typography": [
+      {
+        "name": "--outrazo-text-primary",
+        "raw": "#e2ece9",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-text-muted",
+        "raw": "rgba(226, 236, 233, 0.62)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-text-subtle",
+        "raw": "rgba(226, 236, 233, 0.42)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-font-display",
+        "raw": "\"Plus Jakarta Sans\", \"Syne\", system-ui, sans-serif",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-font-body",
+        "raw": "\"Inter\", \"DM Sans\", system-ui, sans-serif",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-hero",
+        "raw": "48px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-h1",
+        "raw": "32px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-h2",
+        "raw": "24px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-h3",
+        "raw": "18px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-body-lg",
+        "raw": "16px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-body",
+        "raw": "14px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--text-caption",
+        "raw": "12px",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ],
+    "radius": [
+      {
+        "name": "--outrazo-radius-sm",
+        "raw": "8px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-radius-md",
+        "raw": "12px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-radius-lg",
+        "raw": "20px",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-radius-full",
+        "raw": "9999px",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ],
+    "shadow": [
+      {
+        "name": "--outrazo-shadow-card",
+        "raw": "0px 4px 20px rgba(0, 0, 0, 0.4)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-shadow-floating",
+        "raw": "0px 12px 32px rgba(0, 0, 0, 0.55)",
+        "source": "src/design-system/styles/theme.css"
+      },
+      {
+        "name": "--outrazo-shadow-glow",
+        "raw": "0px 0px 24px rgba(16, 185, 129, 0.25)",
+        "source": "src/design-system/styles/theme.css"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Button",
+      "file": "src/design-system/components/Button",
+      "import_path": "",
+      "props": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "primary",
+            "transactional",
+            "outline",
+            "ghost"
+          ],
+          "default": "primary"
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ],
+          "default": "md"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "leadingIcon",
+          "type": "any"
+        }
+      ]
+    },
+    {
+      "name": "Input",
+      "file": "src/design-system/components/Input",
+      "import_path": "",
+      "props": [
+        {
+          "name": "label",
+          "type": "string"
+        },
+        {
+          "name": "hint",
+          "type": "string"
+        },
+        {
+          "name": "error",
+          "type": "string"
+        },
+        {
+          "name": "leadingIcon",
+          "type": "any"
+        }
+      ]
+    },
+    {
+      "name": "SearchField",
+      "file": "src/design-system/components/SearchField",
+      "import_path": "",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "default": "Search events"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "onClear",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "name": "Badge",
+      "file": "src/design-system/components/Badge",
+      "import_path": "",
+      "props": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "neutral",
+            "accent",
+            "transactional",
+            "outline"
+          ],
+          "default": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "CategoryChip",
+      "file": "src/design-system/components/CategoryChip",
+      "import_path": "",
+      "props": [
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "icon",
+          "type": "any"
+        }
+      ]
+    },
+    {
+      "name": "CategoryCard",
+      "file": "src/design-system/components/CategoryCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "icon",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "meta",
+          "type": "string"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "name": "CityCard",
+      "file": "src/design-system/components/CityCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "imageSrc",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "meta",
+          "type": "string"
+        },
+        {
+          "name": "distance",
+          "type": "string"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "name": "Carousel",
+      "file": "src/design-system/components/Carousel",
+      "import_path": "",
+      "props": [
+        {
+          "name": "children",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "controls",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "slideClassName",
+          "type": "string"
+        },
+        {
+          "name": "trackClassName",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "Reveal",
+      "file": "src/design-system/components/Reveal",
+      "import_path": "",
+      "props": [
+        {
+          "name": "as",
+          "type": "any"
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "default": "0"
+        },
+        {
+          "name": "repeat",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "name": "Avatar",
+      "file": "src/design-system/components/Avatar",
+      "import_path": "",
+      "props": [
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "sm",
+            "md",
+            "lg"
+          ],
+          "default": "md"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "src",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AvatarStack",
+      "file": "src/design-system/components/AvatarStack",
+      "import_path": "",
+      "props": [
+        {
+          "name": "people",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "max",
+          "type": "number",
+          "default": "4"
+        },
+        {
+          "name": "size",
+          "type": "any",
+          "default": "sm"
+        }
+      ]
+    },
+    {
+      "name": "Skeleton",
+      "file": "src/design-system/components/Skeleton",
+      "import_path": ""
+    },
+    {
+      "name": "EventCard",
+      "file": "src/design-system/components/EventCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "imageSrc",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "time",
+          "type": "string"
+        },
+        {
+          "name": "location",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "price",
+          "type": "string"
+        },
+        {
+          "name": "host",
+          "type": "object",
+          "required": true
+        },
+        {
+          "name": "attendees",
+          "type": "any"
+        },
+        {
+          "name": "tag",
+          "type": "string"
+        },
+        {
+          "name": "tagVariant",
+          "type": "enum",
+          "values": [
+            "accent",
+            "transactional",
+            "neutral",
+            "outline"
+          ],
+          "default": "accent"
+        },
+        {
+          "name": "aspect",
+          "type": "enum",
+          "values": [
+            "16/9",
+            "1/1"
+          ],
+          "default": "16/9"
+        },
+        {
+          "name": "saved",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "onToggleSave",
+          "type": "function"
+        },
+        {
+          "name": "onSelect",
+          "type": "function"
+        },
+        {
+          "name": "href",
+          "type": "string",
+          "default": "#"
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "file": "src/assets/hero-desktop-dark.png.asset.json",
+      "kind": "image",
+      "format": "png",
+      "pointer": true
+    },
+    {
+      "file": "src/assets/hero-desktop-light.png.asset.json",
+      "kind": "image",
+      "format": "png",
+      "pointer": true
+    },
+    {
+      "file": "src/assets/hero-lines.jpg.asset.json",
+      "kind": "image",
+      "format": "jpg",
+      "pointer": true
+    },
+    {
+      "file": "src/assets/hero-mobile-dark.png.asset.json",
+      "kind": "image",
+      "format": "png",
+      "pointer": true
+    },
+    {
+      "file": "src/assets/hero-mobile-light.png.asset.json",
+      "kind": "image",
+      "format": "png",
+      "pointer": true
+    }
+  ]
+}
