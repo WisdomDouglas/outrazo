@@ -5,7 +5,6 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
 import { supabase } from "@/integrations/supabase/external-client";
-import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/showcase/auth/auth-context";
 
 export const Route = createFileRoute("/auth")({
