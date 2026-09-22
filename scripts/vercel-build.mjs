@@ -20,9 +20,33 @@ await cp("dist/client", `${out}/static`, { recursive: true });
 await cp("dist/server", fn, { recursive: true });
 
 await writeFile(
-  `${fn}/entry.mjs`,
+  `${fn}/entry-src.mjs`,
   `import app from './server.js';\nexport default (request) => app.fetch(request);\n`,
 );
+
+// Vite leaves node_modules imports (react, react-dom, ...) external in the SSR
+// output, but Vercel only ships the .func folder — bundle them in with esbuild.
+const { build } = await import("esbuild");
+await build({
+  entryPoints: [`${fn}/entry-src.mjs`],
+  outfile: `${fn}/entry.mjs`,
+  bundle: true,
+  format: "esm",
+  platform: "node",
+  target: "node22",
+  banner: {
+    js: [
+      "import { createRequire as __vcCreateRequire } from 'node:module';",
+      "import { fileURLToPath as __vcFileURLToPath } from 'node:url';",
+      "import { dirname as __vcDirname } from 'node:path';",
+      "const require = __vcCreateRequire(import.meta.url);",
+      "const __filename = __vcFileURLToPath(import.meta.url);",
+      "const __dirname = __vcDirname(__filename);",
+    ].join("\n"),
+  },
+  logLevel: "info",
+});
+await rm(`${fn}/entry-src.mjs`, { force: true });
 await writeFile(`${fn}/package.json`, JSON.stringify({ type: "module" }, null, 2));
 await writeFile(
   `${fn}/.vc-config.json`,
