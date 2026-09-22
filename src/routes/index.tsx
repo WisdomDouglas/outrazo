@@ -81,14 +81,14 @@ const FOOTER_CONTENT = {
   organizers: [
     { label: "Post an event", href: "/create" as const },
     { label: "Organizer tools", href: "/create" as const },
-    { label: "Ticketing help", href: "/tickets" as const },
+    { label: "Ticketing help", href: "/app/tickets" as const },
   ],
   newsletter: {
     title: "Keep your plans interesting.",
     description: "Occasional event picks, new drops, and reasons to leave the house.",
     placeholder: "Your email address",
   },
-};
+} as const;
 
 function Landing() {
   const { theme, toggleTheme } = useTheme();
@@ -576,7 +576,7 @@ function Landing() {
               <h2 className="outrazo-footer-heading">Discover</h2>
               {FOOTER_CONTENT.discovery.map((item) =>
                 "href" in item ? (
-                  <Link key={item.label} to={item.href} search={{}} className="focus-ring rounded-sm">
+                  <Link key={item.label} to={item.href} className="focus-ring rounded-sm">
                     {item.label}
                   </Link>
                 ) : (
