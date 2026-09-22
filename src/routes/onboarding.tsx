@@ -20,6 +20,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/design-system/components/Button";
+import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { Skeleton } from "@/design-system/components/Skeleton";
 import {
@@ -159,8 +160,8 @@ function OnboardingPage() {
     <main className="min-h-screen overflow-x-hidden bg-canvas text-primary-text">
       <div className="mx-auto flex min-h-screen w-full max-w-[1200px] flex-col px-md lg:px-xl">
         <header className="flex h-20 items-center justify-between gap-md">
-          <Link to="/" className="focus-ring rounded-full font-display text-lg font-extrabold">
-            OUTRAZO
+          <Link to="/" className="focus-ring rounded-full" aria-label="Outrazo home">
+            <BrandLogo />
           </Link>
           <span className="type-caption text-muted-text" aria-label={`Step ${progressLabel}`}>
             {progressLabel}

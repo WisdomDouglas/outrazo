@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { Avatar } from "@/design-system/components/Avatar";
+import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { cn } from "@/design-system/lib/utils";
 import { useAuth } from "@/showcase/auth/auth-context";
 
@@ -58,9 +59,8 @@ export function AppSidebar() {
     <aside className="hidden h-dvh w-section shrink-0 flex-col border-r border-line bg-card md:flex xl:w-[calc(var(--spacing-section)*2.5)]">
       <div className="flex min-h-20 items-center px-lg md:justify-center md:px-sm xl:justify-start xl:px-lg">
         <Link to="/app" className="focus-ring type-h3 rounded-sm text-primary-text" aria-label="Outrazo home">
-          <span className="md:hidden xl:inline">OUTRAZO</span>
-          <span className="text-accent md:inline xl:hidden">O.</span>
-          <span className="text-accent md:hidden xl:inline">.</span>
+          <span className="xl:hidden"><BrandLogo compact /></span>
+          <span className="hidden xl:inline-flex"><BrandLogo /></span>
         </Link>
       </div>
 

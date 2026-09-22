@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Avatar } from "@/design-system/components/Avatar";
 import { AvatarStack } from "@/design-system/components/AvatarStack";
 import { Badge } from "@/design-system/components/Badge";
+import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Button } from "@/design-system/components/Button";
 import { Carousel } from "@/design-system/components/Carousel";
 import { ErrorState } from "@/design-system/components/ErrorState";
@@ -87,7 +88,7 @@ function EventDetailsPage() {
       <header className="border-b border-line bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex min-h-16 max-w-[1200px] items-center justify-between px-md lg:px-xl">
           <Link to="/events" search={{}} className="focus-ring grid size-11 place-items-center rounded-full text-muted-text hover:text-primary-text sm:hidden" aria-label="Back to Explore"><ArrowLeft aria-hidden className="size-5" /></Link>
-          <Link to="/" className="focus-ring type-h3 hidden rounded-sm text-accent sm:inline-flex">OUTRAZO</Link>
+          <Link to="/" className="focus-ring type-h3 hidden rounded-sm text-accent sm:inline-flex" aria-label="Outrazo home"><BrandLogo /></Link>
           <nav className="flex items-center gap-sm" aria-label="Event actions">
             <button type="button" className="focus-ring grid size-11 place-items-center rounded-full border border-line sm:hidden" aria-label={saved ? "Remove from saved" : "Save event"} onClick={() => toggle(event.id)}><Heart aria-hidden className={saved ? "size-5 fill-accent text-accent" : "size-5"} /></button>
             <div className="hidden sm:block"><EventShareMenu title={event.title} /></div>
