@@ -11,17 +11,19 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   /** Icon rendered inside the field, before the value. */
   leadingIcon?: ReactNode;
+  /** Compact field density for constrained surfaces such as auth forms. */
+  compact?: boolean;
 }
 
 /** 48px token-styled text field with label, hint, and field-level error. */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, hint, error, leadingIcon, id, ...props }, ref) => {
+  ({ className, label, hint, error, leadingIcon, id, compact = false, ...props }, ref) => {
     const generatedId = useId();
     const inputId = id ?? generatedId;
     const describedBy = error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined;
 
     return (
-      <div className="flex w-full flex-col gap-sm">
+      <div className={cn("flex w-full flex-col gap-sm", compact && "gap-xs")}>
         {label ? (
           <label htmlFor={inputId} className="type-caption text-muted-text">
             {label}
@@ -30,6 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <div
           className={cn(
             "flex h-12 items-center gap-sm rounded-md border border-line bg-card px-md transition-colors",
+            compact && "h-10 px-sm",
             "focus-within:border-accent",
             error && "border-transactional focus-within:border-transactional",
           )}

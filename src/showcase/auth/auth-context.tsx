@@ -16,6 +16,7 @@ export interface UserProfile {
   avatar_url: string | null;
   location: string | null;
   onboarding_completed: boolean;
+  preferences: Record<string, unknown> | null;
 }
 
 interface AuthContextValue {
@@ -39,13 +40,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setLoading(true);
       setSession(nextSession);
       if (!nextSession) setProfile(null);
     });
 
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
-      setLoading(false);
     });
 
     return () => subscription.subscription.unsubscribe();
@@ -60,10 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const { data } = await supabase
       .from("profiles")
-      .select("id, name, email, avatar_url, location, onboarding_completed")
+      .select("id, name, email, avatar_url, location, onboarding_completed, preferences")
       .eq("id", userId)
       .maybeSingle();
     setProfile((data as UserProfile | null) ?? null);
+    setLoading(false);
   }, [userId]);
 
   useEffect(() => {

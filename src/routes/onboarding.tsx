@@ -30,6 +30,8 @@ import {
   type OnboardingDraft,
 } from "@/showcase/onboarding-storage";
 import { EVENTS } from "@/showcase/sample-data";
+import { supabase } from "@/integrations/supabase/external-client";
+import { useAuth } from "@/showcase/auth/auth-context";
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -103,6 +105,7 @@ function toggleItem(items: string[], id: string) {
 
 function OnboardingPage() {
   const navigate = useNavigate({ from: "/onboarding" });
+  const { session, profile, loading: authLoading, refreshProfile } = useAuth();
   const [draft, setDraft] = useState<OnboardingDraft>({
     interests: [],
     location: "Lagos",
@@ -112,6 +115,11 @@ function OnboardingPage() {
   const [ready, setReady] = useState(false);
   const [validation, setValidation] = useState("");
   const [locationPickerOpen, setLocationPickerOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && session && profile?.onboarding_completed) void navigate({ to: "/app", replace: true });
+  }, [authLoading, navigate, profile?.onboarding_completed, session]);
 
   useEffect(() => {
     setDraft(loadOnboardingDraft());
@@ -134,7 +142,7 @@ function OnboardingPage() {
     setDraft((current) => ({ ...current, ...next }));
   };
 
-  const continueFlow = () => {
+  const continueFlow = async () => {
     if (draft.step === 1 && draft.interests.length === 0) {
       setValidation("Choose at least one interest.");
       return;
@@ -146,47 +154,75 @@ function OnboardingPage() {
       return;
     }
 
-    completeOnboarding({
+    const selections = {
       interests: draft.interests,
       location: draft.location,
       preferences: draft.preferences,
-    });
-    navigate({ to: "/app" });
+    };
+    setSaving(true);
+    try {
+      if (session?.user) {
+        const { error } = await supabase.from("profiles").upsert({
+          id: session.user.id,
+          name: profile?.name ?? (session.user.user_metadata["name"] as string | undefined) ?? null,
+          email: session.user.email ?? null,
+          location: selections.location,
+          preferences: selections,
+          onboarding_completed: true,
+        });
+        if (error) throw error;
+        await refreshProfile();
+      }
+      completeOnboarding(selections);
+      await navigate({ to: "/app" });
+    } catch (caught) {
+      setValidation(caught instanceof Error ? caught.message : "We could not save your preferences. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!ready) return <OnboardingSkeleton />;
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-canvas text-primary-text">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1200px] flex-col px-md lg:px-xl">
-        <header className="flex h-20 items-center justify-between gap-md">
+    <main className="onboarding-page min-h-dvh overflow-x-hidden bg-canvas text-primary-text">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[1280px] flex-col px-md sm:px-lg lg:px-xl">
+        <header className="onboarding-header flex min-h-16 items-center justify-between gap-md py-sm sm:min-h-20">
           <Link to="/" className="focus-ring rounded-full" aria-label="Outrazo home">
             <BrandLogo />
           </Link>
-          <span className="type-caption text-muted-text" aria-label={`Step ${progressLabel}`}>
-            {progressLabel}
-          </span>
+          <div className="flex items-center gap-md">
+            <span className="hidden type-caption text-muted-text sm:inline" aria-label={`Step ${progressLabel}`}>
+              {progressLabel}
+            </span>
+            {[1, 2, 3].map((step) => (
+              <span key={step} className={`onboarding-progress-dot ${step <= draft.step ? "bg-accent" : "bg-primary-text/15"}`} />
+            ))}
+          </div>
         </header>
 
-        <div className="grid flex-1 items-stretch gap-2xl pb-[112px] lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.72fr)] lg:pb-xl">
-          <section className="flex min-w-0 flex-col justify-start py-xl lg:justify-center lg:py-3xl">
-            <div className="mb-2xl flex gap-sm" aria-hidden>
+        <div className="onboarding-layout grid flex-1 items-center gap-lg pb-md lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.78fr)] lg:gap-2xl lg:pb-xl">
+          <section className="flex min-w-0 flex-col justify-center py-md sm:py-lg lg:py-xl">
+            <div className="mb-lg flex gap-xs sm:mb-xl sm:gap-sm" aria-hidden>
               {[1, 2, 3].map((step) => (
                 <span
                   key={step}
-                  className={`h-1 flex-1 rounded-full transition-colors ${
+                  className={`onboarding-progress-bar h-1 flex-1 rounded-full transition-colors ${
                     step <= draft.step ? "bg-accent" : "bg-primary-text/10"
                   }`}
                 />
               ))}
             </div>
 
-            <div key={draft.step} className="max-w-[680px]">
-              <p className="type-caption mb-sm text-accent">STEP {draft.step}</p>
-              <h1 className="type-h1">{stepCopy.title}</h1>
-              <p className="type-body-lg mt-md max-w-[560px] text-muted-text">{stepCopy.subtitle}</p>
+            <div key={draft.step} className="onboarding-step max-w-[720px]">
+              <div className="flex items-center gap-sm">
+                <span className="onboarding-step-number">0{draft.step}</span>
+                <p className="type-caption text-accent">YOUR OUTRAZO VIBE</p>
+              </div>
+              <h1 className="type-h1 mt-sm max-w-[650px] text-balance">{stepCopy.title}</h1>
+              <p className="type-body-lg mt-sm max-w-[560px] text-muted-text sm:mt-md">{stepCopy.subtitle}</p>
 
-              <div className="mt-xl lg:mt-2xl">
+              <div className="onboarding-options mt-lg sm:mt-xl">
                 {draft.step === 1 ? (
                   <InterestStep
                     selected={draft.interests}
@@ -214,7 +250,7 @@ function OnboardingPage() {
                 ) : null}
               </div>
 
-              <div aria-live="polite" className="mt-md min-h-5">
+              <div aria-live="polite" className="mt-sm min-h-5">
                 {validation || (draft.step === 1 && draft.interests.length === 0) ? (
                   <p className="type-caption text-transactional">
                     {validation || "Choose at least one interest."}
@@ -236,8 +272,8 @@ function OnboardingPage() {
                 <Button
                   type="button"
                   size="lg"
-                  disabled={draft.step === 1 && draft.interests.length === 0}
-                  onClick={continueFlow}
+                  onClick={() => void continueFlow()}
+                  disabled={saving || (draft.step === 1 && draft.interests.length === 0)}
                 >
                   {draft.step === 3 ? "Start exploring" : "Continue"}
                   <ArrowRight aria-hidden className="size-4" />
@@ -254,8 +290,8 @@ function OnboardingPage() {
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-canvas/95 px-md py-md backdrop-blur lg:hidden">
-        <div className="mx-auto flex max-w-[680px] items-center gap-sm">
+      <div className="onboarding-mobile-actions border-t border-line bg-canvas/95 px-md py-sm backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-[720px] items-center gap-sm">
           {draft.step > 1 ? (
             <Button
               type="button"
@@ -272,8 +308,8 @@ function OnboardingPage() {
             type="button"
             size="lg"
             className="w-full"
-            disabled={draft.step === 1 && draft.interests.length === 0}
-            onClick={continueFlow}
+            onClick={() => void continueFlow()}
+            disabled={saving || (draft.step === 1 && draft.interests.length === 0)}
           >
             {draft.step === 3 ? "Start exploring" : "Continue"}
             <ArrowRight aria-hidden className="size-4" />
@@ -391,17 +427,21 @@ function OnboardingVisual({
     : step === 2 ? `Discover ${location}` : "Made for your mood";
 
   return (
-    <aside className="relative hidden min-h-[640px] overflow-hidden rounded-lg border border-line bg-card lg:block" aria-label="Event inspiration">
+    <aside className="onboarding-visual relative hidden min-h-[520px] overflow-hidden rounded-[24px] border border-line bg-card lg:block" aria-label="Event inspiration">
       <img
         src={featured[0].imageSrc}
         alt="Crowd enjoying an Outrazo event"
         className="absolute inset-0 size-full object-cover opacity-70"
       />
-      <div className="absolute inset-0 bg-canvas/35" />
-      <div className="absolute inset-x-0 bottom-0 bg-canvas/85 p-xl backdrop-blur-sm">
-        <p className="type-caption text-accent">DISCOVER WHAT MOVES YOU</p>
-        <p className="type-h2 mt-sm">{caption}</p>
-        <div className="mt-lg flex gap-sm">
+      <div className="onboarding-visual-wash absolute inset-0" />
+      <div className="onboarding-visual-orbit absolute right-8 top-8 size-24 rounded-full border border-primary-text/20" />
+      <div className="absolute inset-x-0 bottom-0 bg-canvas/88 p-lg backdrop-blur-md lg:p-xl">
+        <div className="flex items-center justify-between gap-md">
+          <p className="type-caption text-accent">DISCOVER WHAT MOVES YOU</p>
+          <span className="type-caption text-muted-text">{draftLabel(step)}</span>
+        </div>
+        <p className="type-h2 mt-sm text-balance">{caption}</p>
+        <div className="mt-md flex gap-sm lg:mt-lg">
           {featured.slice(1).map((event) => (
             <img
               key={event.id}
@@ -435,4 +475,8 @@ function OnboardingSkeleton() {
       </div>
     </main>
   );
+}
+
+function draftLabel(step: number) {
+  return step === 1 ? "INTERESTS" : step === 2 ? "YOUR CITY" : "YOUR MOOD";
 }

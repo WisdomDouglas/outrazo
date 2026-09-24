@@ -1,0 +1,2 @@
+ALTER TABLE public.profiles
+ADD COLUMN IF NOT EXISTS preferences jsonb NOT NULL DEFAULT '{"interests": [], "preferences": []}'::jsonb;

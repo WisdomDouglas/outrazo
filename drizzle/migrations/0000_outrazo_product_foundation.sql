@@ -5,6 +5,7 @@ CREATE TABLE public.profiles (
   email text,
   avatar_url text,
   location text,
+  preferences jsonb NOT NULL DEFAULT '{"interests": [], "preferences": []}'::jsonb,
   onboarding_completed boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()

@@ -157,13 +157,9 @@ function Landing() {
                 <Moon aria-hidden className="size-4" />
               )}
             </button>
-            <Button
-              size="sm"
-              className="hidden sm:inline-flex"
-              onClick={() => navigate({ to: "/auth" })}
-            >
-              Get Started
-            </Button>
+            <Link to="/signup" className="focus-ring hidden rounded-full sm:inline-flex">
+              <Button size="sm">Get Started</Button>
+            </Link>
             <button
               type="button"
               aria-label={menuOpen ? "Close menu" : "Open menu"}

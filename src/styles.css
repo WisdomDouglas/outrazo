@@ -5,3 +5,118 @@
 .brand-logo-light { display: none; }
 html.light .brand-logo-dark { display: none; }
 html.light .brand-logo-light { display: block; }
+
+/* Auth is intentionally viewport-locked; the form owns its compact spacing. */
+html:has(.auth-page),
+body:has(.auth-page) {
+	overflow: hidden;
+}
+
+.auth-page {
+	min-height: 100dvh;
+	height: 100dvh;
+	overflow: hidden;
+}
+
+.auth-scene {
+	isolation: isolate;
+	background:
+		linear-gradient(145deg, color-mix(in srgb, var(--outrazo-bg-card) 94%, var(--outrazo-accent-primary)), var(--outrazo-bg-card));
+}
+
+.auth-scene::before,
+.auth-scene::after {
+	position: absolute;
+	content: "";
+	border: 1px solid color-mix(in srgb, var(--outrazo-accent-primary) 22%, transparent);
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+.auth-scene::before { inset: 12% 20%; transform: rotate(-18deg); }
+.auth-scene::after { inset: 24% 8%; transform: rotate(26deg); }
+
+.auth-character {
+	transform-origin: 50% 88%;
+	animation: auth-breathe 4.8s ease-in-out infinite;
+}
+
+.auth-character__arm { transform-origin: 68% 48%; animation: auth-arm 4.8s ease-in-out infinite; }
+.auth-character__eye { transform-origin: center; animation: auth-blink 5.5s ease-in-out infinite; }
+.auth-particle { animation: auth-float 5s ease-in-out infinite; }
+.auth-particle:nth-child(2n) { animation-delay: -1.8s; }
+.auth-particle:nth-child(3n) { animation-delay: -3.2s; }
+.auth-tag { animation: auth-drift 6s ease-in-out infinite; }
+.auth-tag--location { animation-delay: -2s; }
+.auth-tag--time { animation-delay: -4s; }
+.auth-mobile-brand { display: none; }
+
+.auth-character.is-email .auth-character__head { transform: rotate(8deg) translateY(6px); }
+.auth-character.is-email .auth-character__eye { transform: scaleY(.65) translateY(4px); }
+.auth-character.is-password .auth-character__arm { animation: auth-cover-eyes .7s ease forwards; }
+.auth-character.is-visible .auth-character__eye { transform: scale(1.35); }
+.auth-character.is-loading { animation: auth-celebrate .65s ease-in-out infinite alternate; }
+.auth-character.is-loading .auth-character__arm { animation: auth-thumb 1s ease-in-out infinite alternate; }
+
+@keyframes auth-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes auth-arm { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-4deg); } }
+@keyframes auth-blink { 0%, 44%, 48%, 100% { transform: scaleY(1); } 46% { transform: scaleY(.08); } }
+@keyframes auth-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes auth-drift { 0%, 100% { transform: translate(0, 0) rotate(-2deg); } 50% { transform: translate(8px, -12px) rotate(3deg); } }
+@keyframes auth-cover-eyes { to { transform: rotate(-18deg) translate(-18px, -16px); } }
+@keyframes auth-thumb { to { transform: rotate(-28deg) translate(-12px, -20px); } }
+@keyframes auth-celebrate { to { transform: translateY(-10px) rotate(2deg); } }
+
+@media (max-width: 767px) {
+	.auth-scene { min-height: 58px; height: 58px; border-radius: 16px; background: linear-gradient(100deg, color-mix(in srgb, var(--outrazo-bg-card) 96%, var(--outrazo-accent-primary)), var(--outrazo-bg-card)); }
+	.auth-scene__copy { display: none; }
+	.auth-mobile-brand { display: block; }
+	.auth-scene__art { position: absolute; right: 10px; bottom: 0; width: 112px; height: 58px; }
+	.auth-scene__art .auth-character { height: 78px; max-height: none; width: 98px; transform: translateY(12px); }
+	.auth-scene__art .auth-particle { display: none; }
+	.auth-scene__art .auth-tag { display: none; }
+	.auth-form-card { min-height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.auth-character, .auth-character__arm, .auth-character__eye, .auth-particle, .auth-tag { animation: none; }
+}
+
+/* Onboarding motion and responsive composition. */
+.onboarding-page { display: flex; flex-direction: column; overflow: hidden; }
+.onboarding-page > div:first-child { min-height: 0; flex: 1; }
+.onboarding-progress-dot { width: 7px; height: 7px; border-radius: 50%; transition: background-color 300ms ease, transform 300ms ease; }
+.onboarding-progress-dot.bg-accent { transform: scale(1.25); }
+.onboarding-progress-bar { transform-origin: left; }
+.onboarding-step { animation: onboarding-step-in 420ms cubic-bezier(.22, 1, .36, 1) both; }
+.onboarding-step-number { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid color-mix(in srgb, var(--outrazo-accent-primary) 36%, transparent); border-radius: 50%; color: var(--outrazo-accent-primary); font: 600 11px/1 var(--outrazo-font-body); }
+.onboarding-options { min-height: 172px; }
+.onboarding-mobile-actions { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+.onboarding-visual { isolation: isolate; box-shadow: var(--outrazo-shadow-card); }
+.onboarding-visual > img { transform: scale(1.04); transition: transform 900ms cubic-bezier(.22, 1, .36, 1); }
+.onboarding-visual:hover > img { transform: scale(1.08); }
+.onboarding-visual-wash { background: linear-gradient(180deg, color-mix(in srgb, var(--outrazo-bg-canvas) 8%, transparent) 35%, color-mix(in srgb, var(--outrazo-bg-canvas) 82%, transparent) 100%); }
+.onboarding-visual-orbit { animation: onboarding-orbit 9s linear infinite; }
+
+@keyframes onboarding-step-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes onboarding-orbit { from { transform: rotate(0deg) translateX(8px) rotate(0deg); } to { transform: rotate(360deg) translateX(8px) rotate(-360deg); } }
+
+@media (max-width: 1023px) {
+	.onboarding-page { overflow: auto; }
+	.onboarding-page > div:first-child { min-height: 0; }
+	.onboarding-layout { align-items: start; }
+	.onboarding-options { min-height: 0; }
+}
+
+@media (max-width: 639px) {
+	.onboarding-header .brand-logo-dark,
+	.onboarding-header .brand-logo-light { height: 24px; }
+	.onboarding-header { min-height: 56px; }
+	.onboarding-layout { padding-bottom: 8px; }
+	.onboarding-step-number { width: 24px; height: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.onboarding-step, .onboarding-visual-orbit { animation: none; }
+	.onboarding-visual > img { transition: none; }
+}

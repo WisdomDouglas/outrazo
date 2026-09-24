@@ -42,7 +42,7 @@ function ProfilePage() {
         <Badge variant="outline">Coming next</Badge>
         <p className="type-body text-muted-text">Profile editing and saved preferences arrive with the next release.</p>
         {isDemoMode ? (
-          <Link to="/auth" className="focus-ring rounded-full"><Button>Sign in</Button></Link>
+          <Link to="/login" className="focus-ring rounded-full"><Button>Sign in</Button></Link>
         ) : (
           <Button variant="outline" onClick={async () => { await signOut(); await navigate({ to: "/", replace: true }); }}>Sign out</Button>
         )}

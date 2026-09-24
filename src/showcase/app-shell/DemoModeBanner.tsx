@@ -17,7 +17,7 @@ export function DemoModeBanner() {
       <p className="type-caption">
         Demo mode — you&apos;re browsing sample events without an account.
       </p>
-      <Link to="/auth" className="focus-ring type-caption ml-auto rounded-full font-semibold text-accent">
+      <Link to="/login" className="focus-ring type-caption ml-auto rounded-full font-semibold text-accent">
         Sign in
       </Link>
     </div>
