@@ -72,6 +72,18 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
     else setNotice("Check your email for a password reset link.");
   };
 
+  const signInWithGoogle = async () => {
+    setError(null);
+    setNotice(null);
+    setBusy(true);
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/onboarding` },
+    });
+    setBusy(false);
+    if (oauthError) setError(authErrorMessage(oauthError));
+  };
+
   const isSignup = initialMode === "signup";
   return (
     <main className="auth-page bg-canvas text-primary-text">
