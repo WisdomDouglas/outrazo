@@ -8,7 +8,7 @@ html.light .brand-logo-light { display: block; }
 
 /* Reference-inspired sign-in stage: the art stays an actual part of the experience on small screens. */
 .auth-page { min-height: 100dvh; overflow-x: clip; }
-.auth-layout { min-height: 100dvh; }
+.auth-layout { min-height: 100dvh; align-items: center; }
 .auth-scene { min-height: 620px; isolation: isolate; background: var(--outrazo-bg-card); }
 .auth-scene::before { position: absolute; inset: 0; content: ""; pointer-events: none; background: linear-gradient(150deg, color-mix(in srgb, var(--outrazo-bg-card) 72%, var(--outrazo-bg-canvas)), var(--outrazo-bg-canvas)); }
 .auth-scene::after { position: absolute; bottom: -24%; left: -28%; width: 70%; aspect-ratio: 1; content: ""; pointer-events: none; border-radius: 50%; background: color-mix(in srgb, var(--outrazo-accent-primary) 18%, transparent); filter: blur(48px); }
@@ -16,7 +16,7 @@ html.light .brand-logo-light { display: block; }
 .auth-scene__copy { animation: auth-enter 700ms cubic-bezier(.22, 1, .36, 1) both; }
 .auth-art-stage { min-height: 330px; }
 .auth-orbit { position: absolute; z-index: 1; bottom: 8%; left: 10%; width: 80%; height: 24%; border: 1px solid color-mix(in srgb, var(--outrazo-accent-primary) 70%, transparent); border-radius: 50%; transform: rotate(-13deg); }
-.auth-explorer { position: absolute; z-index: 2; bottom: -17%; left: 50%; width: min(90%, 540px); height: auto; max-height: 120%; object-fit: contain; object-position: bottom; transform: translateX(-50%); animation: auth-breathe 6s ease-in-out infinite; filter: drop-shadow(0 24px 30px color-mix(in srgb, var(--outrazo-bg-canvas) 55%, transparent)); }
+.auth-explorer { position: absolute; z-index: 2; bottom: -7%; left: 50%; width: min(98%, 540px); height: auto; max-height: 115%; object-fit: contain; object-position: bottom; transform: translateX(-50%); animation: auth-breathe 6s ease-in-out infinite; filter: drop-shadow(0 24px 30px color-mix(in srgb, var(--outrazo-bg-canvas) 55%, transparent)); }
 .auth-float { position: absolute; z-index: 3; display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); border: 1px solid var(--outrazo-border-strong); border-radius: var(--outrazo-radius-md); background: color-mix(in srgb, var(--outrazo-bg-card) 88%, transparent); color: var(--outrazo-text-primary); font: 500 var(--text-caption)/1.4 var(--outrazo-font-body); box-shadow: var(--outrazo-shadow-card); backdrop-filter: blur(12px); animation: auth-float 5s ease-in-out infinite; }
 .auth-float--music { top: 13%; left: 1%; transform: rotate(-8deg); }
 .auth-float--place { top: 31%; right: 0; animation-delay: -1.6s; }
@@ -27,7 +27,7 @@ html.light .brand-logo-light { display: block; }
 @keyframes auth-enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes auth-breathe { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -9px); } }
 @keyframes auth-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -9px; } }
-@media (min-width: 1024px) { .auth-scene, .auth-form-panel { min-height: calc(100dvh - 48px); } }
+@media (min-width: 1024px) { .auth-scene, .auth-form-panel { height: clamp(680px, calc(100dvh - 48px), 900px); } }
 @media (max-width: 1023px) {
   .auth-scene { min-height: 300px; }
   .auth-art-stage { position: absolute; inset: 0 0 0 44%; min-height: 0; margin: 0; opacity: .9; }
