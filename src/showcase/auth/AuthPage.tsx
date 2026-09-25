@@ -77,7 +77,7 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
     <main className="auth-page bg-canvas text-primary-text">
       <div className="auth-layout mx-auto grid w-full max-w-[1440px] gap-md p-sm sm:p-md lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:p-lg">
         <section className="auth-scene relative flex min-w-0 flex-col overflow-hidden rounded-lg p-lg sm:p-xl lg:p-2xl">
-          <Link to="/" className="focus-ring relative z-20 w-fit rounded-sm" aria-label="Otrazo home"><BrandLogo /></Link>
+          <Link to="/" className="focus-ring relative z-20 w-fit rounded-sm" aria-label="Outrazo home"><BrandLogo /></Link>
           <div className="auth-scene__copy relative z-10 mt-lg max-w-[560px] lg:mt-2xl">
             <p className="type-caption font-semibold text-accent">{isSignup ? "MAKE ROOM FOR MORE" : "GOOD TO HAVE YOU BACK"}</p>
             <h1 className="type-h1 mt-sm text-balance">Find your people.<br /><span className="text-accent">Show up for more.</span></h1>
