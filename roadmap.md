@@ -54,3 +54,7 @@
 - [x] Verify Landing → Explore → Event Details → Organizer → /app still work.
 
 - [x] Bundle the hero background artwork (desktop and mobile, both themes) into the codebase so it ships with every deployment.
+
+- [ ] Refresh sign-in and signup with the reference-inspired illustrated stage and responsive experience.
+- [ ] Carry the visual language through onboarding without changing its three-step behavior.
+- [ ] Verify both themes and desktop/mobile layouts and interactions.
