@@ -32,6 +32,7 @@ import {
 import { EVENTS } from "@/showcase/sample-data";
 import { supabase } from "@/integrations/supabase/external-client";
 import { useAuth } from "@/showcase/auth/auth-context";
+import explorer from "@/assets/auth-explorer.png";
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -428,30 +429,20 @@ function OnboardingVisual({
     : step === 2 ? `Discover ${location}` : "Made for your mood";
 
   return (
-    <aside className="onboarding-visual relative block min-h-[112px] overflow-hidden rounded-[20px] border border-line bg-card lg:min-h-[520px] lg:rounded-[24px]" aria-label="Event inspiration">
-      <img
-        src={featured[0].imageSrc}
-        alt="Crowd enjoying an Outrazo event"
-        className="absolute inset-0 size-full object-cover opacity-70"
-      />
-      <div className="onboarding-visual-wash absolute inset-0" />
-      <div className="onboarding-visual-orbit absolute right-8 top-8 size-24 rounded-full border border-primary-text/20" />
-      <div className="absolute inset-x-0 bottom-0 bg-canvas/88 p-lg backdrop-blur-md lg:p-xl">
-        <div className="flex items-center justify-between gap-md">
-          <p className="type-caption text-accent">DISCOVER WHAT MOVES YOU</p>
-          <span className="type-caption text-muted-text">{draftLabel(step)}</span>
-        </div>
-        <p className="type-h2 mt-sm text-balance">{caption}</p>
-        <div className="mt-md flex gap-sm lg:mt-lg">
-          {featured.slice(1).map((event) => (
-            <img
-              key={event.id}
-              src={event.imageSrc}
-              alt=""
-              className="aspect-square min-w-0 flex-1 rounded-md border border-line object-cover"
-            />
-          ))}
-        </div>
+    <aside className="onboarding-visual relative flex min-h-[190px] flex-col justify-between overflow-hidden rounded-lg border border-line bg-card p-lg lg:min-h-[520px] lg:p-xl" aria-label="Event inspiration">
+      <div className="relative z-10 flex items-center justify-between gap-md">
+        <p className="type-caption font-semibold text-accent">DISCOVER WHAT MOVES YOU</p>
+        <span className="type-caption text-muted-text">{draftLabel(step)}</span>
+      </div>
+      <div className="onboarding-art-stage relative min-h-0 flex-1" aria-hidden="true">
+        <div className="onboarding-art-ring" />
+        <img src={explorer} alt="" width={1024} height={1024} className="onboarding-art-character" />
+        <img src={featured[0].imageSrc} alt="" className="onboarding-art-event onboarding-art-event--first" />
+        <img src={featured[1].imageSrc} alt="" className="onboarding-art-event onboarding-art-event--second" />
+      </div>
+      <div className="relative z-10 border-t border-line pt-md lg:pt-lg">
+        <p key={caption} className="onboarding-step type-h2 text-balance">{caption}</p>
+        <p className="type-caption mt-sm text-muted-text">A city full of moments, made yours.</p>
       </div>
     </aside>
   );
