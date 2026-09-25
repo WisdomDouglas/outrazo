@@ -1,13 +1,12 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Eye, EyeOff, Lock, Mail, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Eye, EyeOff, Lock, Mail, MapPin, Music2, Users, UserRound } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { Button } from "@/design-system/components/Button";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Input } from "@/design-system/components/Input";
 import { supabase } from "@/integrations/supabase/external-client";
-import heroBackdrop from "@/assets/hero-desktop-dark.png";
-import heroBackdropLight from "@/assets/hero-desktop-light.png";
+import explorer from "@/assets/auth-explorer.png";
 import { useAuth } from "./auth-context";
 
 export type AuthMode = "signin" | "signup";
@@ -23,7 +22,6 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [focusField, setFocusField] = useState<"email" | "password" | "visible" | "idle">("idle");
 
   useEffect(() => {
     if (!authLoading && session) void navigate({ to: profile?.onboarding_completed ? "/app" : "/onboarding", replace: true });
@@ -74,123 +72,54 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
     else setNotice("Check your email for a password reset link.");
   };
 
-  const continueWithGoogle = async () => {
-    setError(null);
-    setNotice(null);
-    setBusy(true);
-    const { error: googleError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/login` },
-    });
-    if (googleError) {
-      setError(authErrorMessage(googleError));
-      setBusy(false);
-    }
-  };
-
   const isSignup = initialMode === "signup";
-  const characterState = [
-    focusField === "email" ? "is-email" : "",
-    focusField === "password" ? "is-password" : "",
-    focusField === "visible" ? "is-visible" : "",
-    busy ? "is-loading" : "",
-  ].filter(Boolean).join(" ");
   return (
-    <main className="auth-page bg-canvas p-3 text-primary-text sm:p-4 lg:p-6">
-      <div className="mx-auto grid h-full w-full max-w-[1280px] gap-3 sm:gap-4 lg:grid-cols-[minmax(0,0.92fr)_minmax(400px,1.08fr)] lg:gap-6">
-        <section className="auth-scene relative flex min-h-0 flex-col justify-between overflow-hidden rounded-[20px] border border-line p-4 sm:p-5 lg:p-8">
-          <img src={heroBackdrop} alt="" aria-hidden className="auth-scene__backdrop absolute inset-0 size-full object-cover" />
-          <img src={heroBackdropLight} alt="" aria-hidden className="auth-scene__backdrop auth-scene__backdrop--light absolute inset-0 size-full object-cover" />
-          <div className="auth-mobile-brand absolute left-4 top-1/2 z-20 -translate-y-1/2">
-            <BrandLogo compact />
+    <main className="auth-page bg-canvas text-primary-text">
+      <div className="auth-layout mx-auto grid w-full max-w-[1440px] gap-md p-sm sm:p-md lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:p-lg">
+        <section className="auth-scene relative flex min-w-0 flex-col overflow-hidden rounded-lg p-lg sm:p-xl lg:p-2xl">
+          <Link to="/" className="focus-ring relative z-20 w-fit rounded-sm" aria-label="Otrazo home"><BrandLogo /></Link>
+          <div className="auth-scene__copy relative z-10 mt-lg max-w-[560px] lg:mt-2xl">
+            <p className="type-caption font-semibold text-accent">{isSignup ? "MAKE ROOM FOR MORE" : "GOOD TO HAVE YOU BACK"}</p>
+            <h1 className="type-h1 mt-sm text-balance">Find your people.<br /><span className="text-accent">Show up for more.</span></h1>
+            <p className="type-body-lg mt-md max-w-[440px] text-muted-text">The best moments aren't on your feed. They're happening around you.</p>
           </div>
-          <div className="auth-scene__copy relative z-10 max-w-[560px]">
-            <p className="type-caption text-accent">{isSignup ? "MAKE ROOM FOR MORE" : "WELCOME BACK"}</p>
-            <h1 className="type-h1 mt-2 max-w-[540px] text-balance">Find the people, places and moments worth showing up for.</h1>
-            <p className="type-body-lg mt-3 max-w-[440px] text-muted-text">Your city is full of stories. Start with the ones that feel like yours.</p>
+          <div className="auth-art-stage relative mt-md min-h-0 flex-1" aria-hidden="true">
+            <div className="auth-orbit" />
+            <div className="auth-float auth-float--music"><Music2 className="size-5 text-accent" /><span>Live music</span></div>
+            <div className="auth-float auth-float--place"><MapPin className="size-5 text-accent" /><span>Lagos</span></div>
+            <div className="auth-float auth-float--people"><Users className="size-5 text-accent" /><span>Your people</span></div>
+            <div className="auth-float auth-float--date"><CalendarDays className="size-5 text-accent" /><span>This weekend</span></div>
+            <img src={explorer} alt="" width={1024} height={1024} className="auth-explorer" />
           </div>
-          <CharacterScene state={characterState} />
-          <div className="auth-scene__copy relative z-10 hidden items-center gap-sm text-muted-text lg:flex">
-            <span className="size-2 rounded-full bg-accent" /> <span className="type-caption">Discover with intention</span>
-          </div>
+          <div className="auth-scene__foot relative z-10 inline-flex w-fit items-center gap-sm rounded-full bg-canvas/70 px-md py-sm type-caption text-primary-text"><span className="size-sm rounded-full bg-accent" />Discover with intention</div>
         </section>
 
-        <section className="auth-form-panel flex min-h-0 flex-col justify-center overflow-hidden rounded-[20px] border border-line bg-card px-4 py-3 sm:px-8 sm:py-5 lg:px-12 lg:py-8">
+        <section className="auth-form-panel flex min-w-0 flex-col justify-center rounded-lg bg-card px-lg py-xl sm:px-2xl lg:px-3xl">
           <div className="flex items-center justify-between gap-md">
-            <Link to="/" className="auth-back-link focus-ring type-caption inline-flex min-h-9 items-center gap-xs rounded-full text-muted-text"><ArrowLeft aria-hidden className="size-4" /> Back to Outrazo</Link>
-            <span className="auth-step-label type-caption text-muted-text">{isSignup ? "01 / JOIN" : "01 / RETURN"}</span>
+            <Link to="/" className="focus-ring type-caption inline-flex min-h-11 items-center gap-sm rounded-full text-muted-text hover:text-primary-text"><ArrowLeft aria-hidden className="size-4" /> Back to Outrazo</Link>
+            <span className="type-caption text-muted-text">{isSignup ? "01 / JOIN" : "01 / RETURN"}</span>
           </div>
-          <div className="auth-form-card mt-3 sm:mt-5">
-            <p className="auth-eyebrow type-caption text-accent">{isSignup ? "JOIN OUTRAZO" : "SIGN IN TO OUTRAZO"}</p>
-            <h2 className="auth-title type-h2 mt-1">{isSignup ? "Create your account" : "Welcome back"}</h2>
-            <p className="type-body mt-1 text-muted-text">{isSignup ? "Save events and make discovery feel like yours." : "Pick up where you left off."}</p>
-            <form onSubmit={submit} className="mt-4 flex flex-col gap-2 sm:mt-5 sm:gap-3" noValidate>
+          <div className="auth-form-card mx-auto my-auto w-full max-w-[520px] py-lg">
+            <p className="type-caption font-semibold text-accent">{isSignup ? "JOIN OUTRAZO" : "SIGN IN TO OUTRAZO"}</p>
+            <h2 className="type-h2 mt-sm">{isSignup ? "Create your account" : "Welcome back"}</h2>
+            <p className="type-body-lg mt-sm text-muted-text">{isSignup ? "Save events and make discovery feel like yours." : "Your next great moment is waiting."}</p>
+            <form onSubmit={submit} className="mt-xl flex flex-col gap-md" noValidate>
               {isSignup ? <Input compact label="Full name" required value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" leadingIcon={<UserRound aria-hidden className="size-4" />} placeholder="Your name" /> : null}
-              <Input compact label="Email address" type="email" required value={email} onFocus={() => setFocusField("email")} onChange={(event) => setEmail(event.target.value)} autoComplete="email" leadingIcon={<Mail aria-hidden className="size-4" />} placeholder="you@example.com" />
-              <Input compact label="Password" type={showPassword ? "text" : "password"} required minLength={6} value={password} onFocus={() => setFocusField(showPassword ? "visible" : "password")} onChange={(event) => { setPassword(event.target.value); setFocusField(showPassword ? "visible" : "password"); }} autoComplete={isSignup ? "new-password" : "current-password"} leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="At least 6 characters" />
-              {isSignup ? <Input compact label="Confirm password" type={showPassword ? "text" : "password"} required minLength={6} value={confirmPassword} onFocus={() => setFocusField(showPassword ? "visible" : "password")} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="Repeat your password" /> : null}
-              <button type="button" className="focus-ring inline-flex min-h-8 items-center gap-xs self-start rounded-sm type-caption text-muted-text hover:text-primary-text" onClick={() => { setShowPassword((visible) => !visible); setFocusField(showPassword ? "password" : "visible"); }}><span className="grid size-4 place-items-center rounded-[4px] border border-line-strong">{showPassword ? <EyeOff aria-hidden className="size-3" /> : <Eye aria-hidden className="size-3" />}</span>{showPassword ? "Hide password" : "Show password"}</button>
+              <Input compact label="Email address" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" leadingIcon={<Mail aria-hidden className="size-4" />} placeholder="you@example.com" />
+              <Input compact label="Password" type={showPassword ? "text" : "password"} required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isSignup ? "new-password" : "current-password"} leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="At least 6 characters" />
+              {isSignup ? <Input compact label="Confirm password" type={showPassword ? "text" : "password"} required minLength={6} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="Repeat your password" /> : null}
+              <Button type="button" variant="ghost" size="sm" className="self-start px-sm" onClick={() => setShowPassword((visible) => !visible)} leadingIcon={showPassword ? <EyeOff aria-hidden className="size-4" /> : <Eye aria-hidden className="size-4" />}>{showPassword ? "Hide password" : "Show password"}</Button>
               {error ? <p role="alert" className="type-caption text-transactional">{error}</p> : null}
               {notice ? <p role="status" className="type-caption text-accent">{notice}</p> : null}
-              <Button type="submit" loading={busy} size="md" className="w-full">{isSignup ? "Create account" : "Log in"}</Button>
+              <Button type="submit" loading={busy} size="lg" className="w-full">{isSignup ? "Create account" : "Log in"}<ArrowRight aria-hidden className="size-4" /></Button>
             </form>
-            {!isSignup ? <button type="button" className="focus-ring mt-2 rounded-sm type-caption text-accent" onClick={resetPassword} disabled={busy}>Forgot password?</button> : null}
-            <div className="my-3 flex items-center gap-sm sm:my-4">
-              <span className="h-px flex-1 bg-line" />
-              <span className="type-caption text-muted-text">or</span>
-              <span className="h-px flex-1 bg-line" />
-            </div>
-            <Button type="button" variant="outline" size="md" className="auth-google-button w-full" onClick={() => void continueWithGoogle()} disabled={busy}>
-              <GoogleMark />
-              Continue with Google
-            </Button>
-            <p className="type-caption mt-3 text-center text-muted-text sm:mt-5">{isSignup ? "Already have an account?" : "New to Outrazo?"}{" "}<Link className="focus-ring rounded-sm font-semibold text-accent" to={isSignup ? "/login" : "/signup"}>{isSignup ? "Log in" : "Sign up"}</Link></p>
+            {!isSignup ? <Button type="button" variant="ghost" size="sm" className="mt-sm px-sm text-accent" onClick={resetPassword} disabled={busy}>Forgot password?</Button> : null}
+            <div className="mt-xl border-t border-line pt-lg text-center"><p className="type-body text-muted-text">{isSignup ? "Already have an account?" : "New to Outrazo?"}{" "}<Link className="focus-ring rounded-sm font-semibold text-accent" to={isSignup ? "/login" : "/signup"}>{isSignup ? "Log in" : "Create an account"}</Link></p></div>
           </div>
-          <p className="mt-3 text-center type-caption text-subtle-text">You can browse public events without an account.</p>
+          <p className="text-center type-caption text-subtle-text">You can browse public events without an account.</p>
         </section>
       </div>
     </main>
-  );
-}
-
-function GoogleMark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 48 48" className="size-[18px] shrink-0">
-      <path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.6c3.9-3.6 6.1-8.9 6.1-15Z" />
-      <path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.6-5.1c-1.8 1.2-4.1 2-6.9 2-5.3 0-9.8-3.6-11.4-8.4H5.8v5.3A20 20 0 0 0 24 44Z" />
-      <path fill="#FBBC05" d="M12.6 27.7a12 12 0 0 1 0-7.4V15H5.8a20 20 0 0 0 0 17.9l6.8-5.2Z" />
-      <path fill="#EA4335" d="M24 11.9c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.9 29.5 4 24 4A20 20 0 0 0 5.8 15l6.8 5.3c1.6-4.8 6.1-8.4 11.4-8.4Z" />
-    </svg>
-  );
-}
-
-function CharacterScene({ state }: { state: string }) {
-  return (
-    <div className="auth-scene__art relative mx-auto flex min-h-0 w-full flex-1 items-center justify-center" aria-label="Animated event discovery character">
-      <span className="auth-particle absolute left-[16%] top-[18%] size-2 rounded-full bg-accent" />
-      <span className="auth-particle absolute right-[18%] top-[28%] size-1.5 rounded-full bg-transactional" />
-      <span className="auth-particle absolute bottom-[25%] left-[22%] size-1.5 rounded-full bg-primary-text/60" />
-      <span className="auth-tag auth-tag--live absolute left-[12%] top-[34%] rounded-md border border-line bg-card px-2 py-1 type-caption text-accent">LIVE</span>
-      <span className="auth-tag auth-tag--location absolute right-[13%] top-[42%] rounded-md border border-line bg-card px-2 py-1 type-caption text-primary-text">LAGOS</span>
-      <span className="auth-tag auth-tag--time absolute bottom-[24%] right-[22%] rounded-md border border-line bg-card px-2 py-1 type-caption text-transactional">8 PM</span>
-      <svg className={`auth-character relative z-10 h-full max-h-[380px] w-full max-w-[480px] ${state}`} viewBox="0 0 480 380" role="img" aria-label="A character discovering events">
-        <g className="auth-character__head" transform="translate(0 0)">
-          <path d="M180 102c0-57 39-82 78-82s78 25 78 82v59c0 48-35 80-78 80s-78-32-78-80v-59Z" fill="var(--outrazo-accent-primary)" opacity=".92" />
-          <path d="M185 99c13-58 118-70 151-3-28-15-54-19-80-12-21 6-45 16-71 15Z" fill="var(--outrazo-bg-card)" />
-          <ellipse className="auth-character__eye" cx="229" cy="132" rx="7" ry="9" fill="var(--outrazo-bg-canvas)" />
-          <ellipse className="auth-character__eye" cx="287" cy="132" rx="7" ry="9" fill="var(--outrazo-bg-canvas)" />
-          <path d="M244 169c12 10 24 10 36 0" fill="none" stroke="var(--outrazo-bg-canvas)" strokeLinecap="round" strokeWidth="6" />
-        </g>
-        <path d="M184 236c28-19 118-19 146 0l25 112H159l25-112Z" fill="var(--outrazo-accent-secondary)" />
-        <path d="M191 243c-38 14-48 56-63 83" fill="none" stroke="var(--outrazo-accent-primary)" strokeLinecap="round" strokeWidth="22" />
-        <path className="auth-character__arm" d="M320 243c35 13 43 45 53 74" fill="none" stroke="var(--outrazo-accent-primary)" strokeLinecap="round" strokeWidth="22" />
-        <rect x="215" y="245" width="72" height="104" rx="12" fill="var(--outrazo-bg-card)" stroke="var(--outrazo-text-primary)" strokeWidth="5" />
-        <rect x="225" y="260" width="52" height="65" rx="5" fill="var(--outrazo-accent-primary)" opacity=".2" />
-        <path d="M237 280h28M237 292h18" stroke="var(--outrazo-accent-primary)" strokeLinecap="round" strokeWidth="5" />
-        <circle cx="251" cy="336" r="4" fill="var(--outrazo-text-primary)" />
-        <path d="M161 348h194" stroke="var(--outrazo-text-primary)" strokeLinecap="round" strokeOpacity=".18" strokeWidth="4" />
-      </svg>
-    </div>
   );
 }
 
