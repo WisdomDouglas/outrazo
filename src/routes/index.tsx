@@ -4,16 +4,18 @@ import {
   CalendarCheck,
   Compass,
   Flame,
+  LogIn,
   Menu,
   Moon,
   Plus,
+  Sparkles,
   ShieldCheck,
   Sun,
   Ticket,
   Users,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
@@ -98,6 +100,20 @@ function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
   const discovery = useDiscovery();
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [menuOpen]);
+
   const submitSearch = () =>
     navigate({ to: "/events", search: query.trim() ? { q: query.trim() } : {} });
 
@@ -177,42 +193,53 @@ function Landing() {
 
         </div>
 
-        {/* Collapsed mobile menu */}
+        {/* Mobile navigation drawer */}
         {menuOpen ? (
-          <nav
-            aria-label="Mobile"
-            className="mx-auto mt-sm flex max-w-[1080px] flex-col gap-xs rounded-lg border border-primary-text/10 bg-canvas/80 p-md shadow-card backdrop-blur-xl lg:hidden"
-          >
-            <Link
-              to="/events"
-              search={{}}
-              onClick={() => setMenuOpen(false)}
-              className="focus-ring type-body rounded-md px-md py-sm font-medium text-primary-text transition-colors hover:bg-primary-text/8"
-            >
-              Explore
-            </Link>
+          <>
             <button
               type="button"
-              onClick={() => scrollTo("categories")}
-              className="focus-ring type-body rounded-md px-md py-sm text-left font-medium text-primary-text transition-colors hover:bg-primary-text/8"
-            >
-              Categories
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollTo("discover")}
-              className="focus-ring type-body rounded-md px-md py-sm text-left font-medium text-primary-text transition-colors hover:bg-primary-text/8"
-            >
-              Discover
-            </button>
-            <Link
-              to="/create"
+              aria-label="Close navigation menu"
+              className="outrazo-drawer-scrim fixed inset-0 z-40 bg-black/55 backdrop-blur-[2px] lg:hidden"
               onClick={() => setMenuOpen(false)}
-              className="focus-ring type-body rounded-md px-md py-sm font-semibold text-accent transition-colors hover:bg-primary-text/8"
-            >
-              Post Your Event
-            </Link>
-          </nav>
+            />
+            <aside className="outrazo-mobile-drawer fixed inset-y-0 right-0 z-50 flex w-[min(88vw,380px)] flex-col border-l border-primary-text/10 bg-canvas text-primary-text shadow-floating lg:hidden" aria-label="Mobile navigation" role="dialog" aria-modal="true">
+              <div className="flex items-center justify-between border-b border-primary-text/10 px-lg py-lg">
+                <BrandLogo />
+                <button
+                  type="button"
+                  aria-label="Close navigation menu"
+                  onClick={() => setMenuOpen(false)}
+                  className="focus-ring grid size-10 place-items-center rounded-full border border-primary-text/10 bg-primary-text/5 text-muted-text hover:text-primary-text"
+                >
+                  <X aria-hidden className="size-4" />
+                </button>
+              </div>
+              <nav aria-label="Mobile" className="flex flex-1 flex-col gap-xs px-md py-lg">
+                <p className="type-caption mb-xs px-md text-subtle-text">DISCOVER</p>
+                <Link to="/events" search={{}} onClick={() => setMenuOpen(false)} className="outrazo-drawer-link focus-ring">
+                  <Compass aria-hidden className="size-5 text-accent" /> Explore events <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
+                </Link>
+                <button type="button" onClick={() => scrollTo("categories")} className="outrazo-drawer-link focus-ring text-left">
+                  <Sparkles aria-hidden className="size-5 text-accent" /> Categories <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
+                </button>
+                <button type="button" onClick={() => scrollTo("discover")} className="outrazo-drawer-link focus-ring text-left">
+                  <Flame aria-hidden className="size-5 text-transactional" /> Recommended <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
+                </button>
+                <Link to="/create" onClick={() => setMenuOpen(false)} className="outrazo-drawer-link focus-ring">
+                  <Plus aria-hidden className="size-5 text-accent" /> Post your event <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
+                </Link>
+              </nav>
+              <div className="border-t border-primary-text/10 p-lg">
+                <p className="type-body mb-md text-muted-text">Find your next reason to go out.</p>
+                <Link to="/signup" onClick={() => setMenuOpen(false)} className="focus-ring block rounded-full">
+                  <Button className="w-full">Get Started <ArrowRight aria-hidden className="size-4" /></Button>
+                </Link>
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="focus-ring mt-sm flex min-h-11 items-center justify-center gap-xs rounded-full type-body font-semibold text-accent hover:bg-primary-text/5">
+                  <LogIn aria-hidden className="size-4" /> Sign in
+                </Link>
+              </div>
+            </aside>
+          </>
         ) : null}
       </header>
 

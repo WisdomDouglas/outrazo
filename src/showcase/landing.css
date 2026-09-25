@@ -96,6 +96,37 @@ body {
   animation: outrazo-pulse-ring 3s ease-out infinite;
 }
 
+@keyframes outrazo-drawer-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes outrazo-scrim-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.outrazo-mobile-drawer { animation: outrazo-drawer-in 240ms cubic-bezier(.2, .75, .25, 1) both; }
+.outrazo-drawer-scrim { animation: outrazo-scrim-in 180ms ease-out both; }
+.outrazo-drawer-link {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 12px;
+  padding: 0 14px;
+  color: var(--outrazo-text-primary);
+  font: 500 15px/1.3 var(--outrazo-font-body);
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+.outrazo-drawer-link:hover { background: color-mix(in srgb, var(--outrazo-text-primary) 7%, transparent); }
+.outrazo-drawer-link:active { transform: scale(.985); }
+
+@media (prefers-reduced-motion: reduce) {
+  .outrazo-mobile-drawer, .outrazo-drawer-scrim { animation: none; }
+  .outrazo-drawer-link { transition: none; }
+}
+
 /* --- Hero background artwork switching (theme + viewport) --- */
 .hero-bg {
   display: none;

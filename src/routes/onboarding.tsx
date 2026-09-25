@@ -330,6 +330,7 @@ function InterestStep({ selected, onToggle }: { selected: string[]; onToggle: (i
             key={id}
             active={selected.includes(id)}
             icon={<Icon aria-hidden className="size-4" />}
+            className="onboarding-chip"
             onClick={() => onToggle(id)}
           >
             {label}
@@ -401,7 +402,7 @@ function PreferenceStep({ selected, onToggle }: { selected: string[]; onToggle: 
             key={id}
             active={selected.includes(id)}
             icon={<Icon aria-hidden className="size-4" />}
-            className="w-full justify-start"
+            className="onboarding-chip w-full justify-start"
             onClick={() => onToggle(id)}
           >
             {label}
@@ -427,7 +428,7 @@ function OnboardingVisual({
     : step === 2 ? `Discover ${location}` : "Made for your mood";
 
   return (
-    <aside className="onboarding-visual relative hidden min-h-[520px] overflow-hidden rounded-[24px] border border-line bg-card lg:block" aria-label="Event inspiration">
+    <aside className="onboarding-visual relative block min-h-[112px] overflow-hidden rounded-[20px] border border-line bg-card lg:min-h-[520px] lg:rounded-[24px]" aria-label="Event inspiration">
       <img
         src={featured[0].imageSrc}
         alt="Crowd enjoying an Outrazo event"
