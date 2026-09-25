@@ -205,7 +205,6 @@ export type Database = {
           location: string | null
           name: string | null
           onboarding_completed: boolean
-          preferences: Json
           updated_at: string
         }
         Insert: {
@@ -216,7 +215,6 @@ export type Database = {
           location?: string | null
           name?: string | null
           onboarding_completed?: boolean
-          preferences?: Json
           updated_at?: string
         }
         Update: {
@@ -227,7 +225,6 @@ export type Database = {
           location?: string | null
           name?: string | null
           onboarding_completed?: boolean
-          preferences?: Json
           updated_at?: string
         }
         Relationships: []
