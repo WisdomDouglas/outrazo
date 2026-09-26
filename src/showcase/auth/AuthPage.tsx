@@ -20,6 +20,7 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -75,13 +76,16 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const signInWithGoogle = async () => {
     setError(null);
     setNotice(null);
-    setBusy(true);
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/onboarding` },
-    });
-    setBusy(false);
-    if (oauthError) setError(authErrorMessage(oauthError));
+    setGoogleBusy(true);
+    try {
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/onboarding` },
+      });
+      if (oauthError) setError(authErrorMessage(oauthError));
+    } finally {
+      setGoogleBusy(false);
+    }
   };
 
   const isSignup = initialMode === "signup";
