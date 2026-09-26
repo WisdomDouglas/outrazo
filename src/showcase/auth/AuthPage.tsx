@@ -20,6 +20,7 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -75,13 +76,16 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const signInWithGoogle = async () => {
     setError(null);
     setNotice(null);
-    setBusy(true);
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/onboarding` },
-    });
-    setBusy(false);
-    if (oauthError) setError(authErrorMessage(oauthError));
+    setGoogleBusy(true);
+    try {
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/onboarding` },
+      });
+      if (oauthError) setError(authErrorMessage(oauthError));
+    } finally {
+      setGoogleBusy(false);
+    }
   };
 
   const isSignup = initialMode === "signup";
@@ -120,18 +124,38 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
               <Input compact label="Email address" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" leadingIcon={<Mail aria-hidden className="size-4" />} placeholder="you@example.com" />
               <Input compact label="Password" type={showPassword ? "text" : "password"} required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isSignup ? "new-password" : "current-password"} leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="At least 6 characters" />
               {isSignup ? <Input compact label="Confirm password" type={showPassword ? "text" : "password"} required minLength={6} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="Repeat your password" /> : null}
-              <Button type="button" variant="ghost" size="sm" className="self-start px-sm" onClick={() => setShowPassword((visible) => !visible)} leadingIcon={showPassword ? <EyeOff aria-hidden className="size-4" /> : <Eye aria-hidden className="size-4" />}>{showPassword ? "Hide password" : "Show password"}</Button>
+              <div className="flex items-center justify-between gap-sm">
+                <Button type="button" variant="ghost" size="sm" className="px-sm" onClick={() => setShowPassword((visible) => !visible)} leadingIcon={showPassword ? <EyeOff aria-hidden className="size-4" /> : <Eye aria-hidden className="size-4" />}>{showPassword ? "Hide password" : "Show password"}</Button>
+                {!isSignup ? <Button type="button" variant="ghost" size="sm" className="px-sm text-accent" onClick={resetPassword} disabled={busy || googleBusy}>Forgot password?</Button> : null}
+              </div>
               {error ? <p role="alert" className="type-caption text-transactional">{error}</p> : null}
               {notice ? <p role="status" className="type-caption text-accent">{notice}</p> : null}
-              <Button type="submit" loading={busy} size="lg" className="w-full">{isSignup ? "Create account" : "Log in"}<ArrowRight aria-hidden className="size-4" /></Button>
+              <Button type="submit" loading={busy} disabled={googleBusy} size="lg" className="w-full">{isSignup ? "Create account" : "Log in"}<ArrowRight aria-hidden className="size-4" /></Button>
             </form>
-            {!isSignup ? <Button type="button" variant="ghost" size="sm" className="mt-sm px-sm text-accent" onClick={resetPassword} disabled={busy}>Forgot password?</Button> : null}
+            <div className="mt-lg flex items-center gap-md" role="separator" aria-label="Or continue with">
+              <span aria-hidden className="h-px flex-1 border-t border-line" />
+              <span className="type-caption shrink-0 text-muted-text">or continue with</span>
+              <span aria-hidden className="h-px flex-1 border-t border-line" />
+            </div>
+            <Button type="button" variant="outline" size="lg" className="mt-md w-full" loading={googleBusy} disabled={busy} onClick={signInWithGoogle} leadingIcon={<GoogleIcon />}>Continue with Google</Button>
             <div className="mt-xl border-t border-line pt-lg text-center"><p className="type-body text-muted-text">{isSignup ? "Already have an account?" : "New to Outrazo?"}{" "}<Link className="focus-ring rounded-sm font-semibold text-accent" to={isSignup ? "/login" : "/signup"}>{isSignup ? "Log in" : "Create an account"}</Link></p></div>
           </div>
           <p className="text-center type-caption text-subtle-text">You can browse public events without an account.</p>
         </section>
       </div>
     </main>
+  );
+}
+
+/** Official multi-colour Google "G" mark; lucide has no brand icons. */
+function GoogleIcon() {
+  return (
+    <svg aria-hidden viewBox="0 0 18 18" className="size-4 shrink-0">
+      <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92a8.78 8.78 0 0 0 2.68-6.62Z" />
+      <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.32A9 9 0 0 0 9 18Z" />
+      <path fill="#FBBC05" d="M3.97 10.72a5.41 5.41 0 0 1 0-3.44V4.96H.96a9 9 0 0 0 0 8.08l3.01-2.32Z" />
+      <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59A9 9 0 0 0 .96 4.96l3.01 2.32C4.68 5.16 6.66 3.58 9 3.58Z" />
+    </svg>
   );
 }
 
