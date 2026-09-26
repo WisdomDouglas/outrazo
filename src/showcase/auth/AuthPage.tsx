@@ -124,12 +124,20 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
               <Input compact label="Email address" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" leadingIcon={<Mail aria-hidden className="size-4" />} placeholder="you@example.com" />
               <Input compact label="Password" type={showPassword ? "text" : "password"} required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isSignup ? "new-password" : "current-password"} leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="At least 6 characters" />
               {isSignup ? <Input compact label="Confirm password" type={showPassword ? "text" : "password"} required minLength={6} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="Repeat your password" /> : null}
-              <Button type="button" variant="ghost" size="sm" className="self-start px-sm" onClick={() => setShowPassword((visible) => !visible)} leadingIcon={showPassword ? <EyeOff aria-hidden className="size-4" /> : <Eye aria-hidden className="size-4" />}>{showPassword ? "Hide password" : "Show password"}</Button>
+              <div className="flex items-center justify-between gap-sm">
+                <Button type="button" variant="ghost" size="sm" className="px-sm" onClick={() => setShowPassword((visible) => !visible)} leadingIcon={showPassword ? <EyeOff aria-hidden className="size-4" /> : <Eye aria-hidden className="size-4" />}>{showPassword ? "Hide password" : "Show password"}</Button>
+                {!isSignup ? <Button type="button" variant="ghost" size="sm" className="px-sm text-accent" onClick={resetPassword} disabled={busy || googleBusy}>Forgot password?</Button> : null}
+              </div>
               {error ? <p role="alert" className="type-caption text-transactional">{error}</p> : null}
               {notice ? <p role="status" className="type-caption text-accent">{notice}</p> : null}
-              <Button type="submit" loading={busy} size="lg" className="w-full">{isSignup ? "Create account" : "Log in"}<ArrowRight aria-hidden className="size-4" /></Button>
+              <Button type="submit" loading={busy} disabled={googleBusy} size="lg" className="w-full">{isSignup ? "Create account" : "Log in"}<ArrowRight aria-hidden className="size-4" /></Button>
             </form>
-            {!isSignup ? <Button type="button" variant="ghost" size="sm" className="mt-sm px-sm text-accent" onClick={resetPassword} disabled={busy}>Forgot password?</Button> : null}
+            <div className="mt-lg flex items-center gap-md" role="separator" aria-label="Or continue with">
+              <span aria-hidden className="h-px flex-1 border-t border-line" />
+              <span className="type-caption shrink-0 text-muted-text">or continue with</span>
+              <span aria-hidden className="h-px flex-1 border-t border-line" />
+            </div>
+            <Button type="button" variant="outline" size="lg" className="mt-md w-full" loading={googleBusy} disabled={busy} onClick={signInWithGoogle} leadingIcon={<GoogleIcon />}>Continue with Google</Button>
             <div className="mt-xl border-t border-line pt-lg text-center"><p className="type-body text-muted-text">{isSignup ? "Already have an account?" : "New to Outrazo?"}{" "}<Link className="focus-ring rounded-sm font-semibold text-accent" to={isSignup ? "/login" : "/signup"}>{isSignup ? "Log in" : "Create an account"}</Link></p></div>
           </div>
           <p className="text-center type-caption text-subtle-text">You can browse public events without an account.</p>
