@@ -163,12 +163,12 @@ function OnboardingPage() {
     setSaving(true);
     try {
       if (session?.user) {
+        // `preferences` stays local for now; the profiles table has no column for it yet.
         const { error } = await supabase.from("profiles").upsert({
           id: session.user.id,
           name: profile?.name ?? (session.user.user_metadata["name"] as string | undefined) ?? null,
           email: session.user.email ?? null,
           location: selections.location,
-          preferences: selections,
           onboarding_completed: true,
         });
         if (error) throw error;
