@@ -17,7 +17,6 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
@@ -36,7 +35,6 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
     if (password.length < 6) return setError("Password must be at least 6 characters.");
     if (initialMode === "signup") {
       if (!name.trim()) return setError("Enter your name.");
-      if (password !== confirmPassword) return setError("Passwords do not match.");
     }
     setBusy(true);
     try {
@@ -93,7 +91,7 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
     <main className="auth-page bg-canvas text-primary-text">
       <div className="auth-layout mx-auto grid w-full max-w-[1440px] gap-md p-sm sm:p-md lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:p-lg">
         <section className="auth-scene relative flex min-w-0 flex-col overflow-hidden rounded-lg p-lg sm:p-xl lg:p-2xl">
-          <Link to="/" className="focus-ring relative z-20 w-fit rounded-sm" aria-label="Outrazo home"><BrandLogo /></Link>
+          <Link to="/" className="auth-scene__brand focus-ring relative z-20 w-fit rounded-sm" aria-label="Outrazo home"><BrandLogo /></Link>
           <div className="auth-scene__copy relative z-10 mt-lg max-w-[560px] lg:mt-2xl">
             <p className="type-caption font-semibold text-accent">{isSignup ? "MAKE ROOM FOR MORE" : "GOOD TO HAVE YOU BACK"}</p>
             <h1 className="type-h1 mt-sm text-balance">Find your people.<br /><span className="text-accent">Show up for more.</span></h1>
@@ -107,40 +105,40 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
             <div className="auth-float auth-float--date"><CalendarDays className="size-5 text-accent" /><span>This weekend</span></div>
             <img src={explorer} alt="" width={1024} height={1024} className="auth-explorer" />
           </div>
+          <p className="auth-scene__mobile-label relative z-20 type-caption font-medium text-primary-text">{isSignup ? "Create an account" : "Log in to your account"}</p>
           <div className="auth-scene__foot relative z-10 inline-flex w-fit items-center gap-sm rounded-full bg-canvas/70 px-md py-sm type-caption text-primary-text"><span className="size-sm rounded-full bg-accent" />Discover with intention</div>
         </section>
 
         <section className="auth-form-panel flex min-w-0 flex-col justify-center rounded-lg bg-card px-lg py-xl sm:px-2xl lg:px-3xl">
-          <div className="flex items-center justify-between gap-md">
+          <div className="auth-form-nav flex items-center justify-between gap-md">
             <Link to="/" className="focus-ring type-caption inline-flex min-h-11 items-center gap-sm rounded-full text-muted-text hover:text-primary-text"><ArrowLeft aria-hidden className="size-4" /> Back to Outrazo</Link>
             <span className="type-caption text-muted-text">{isSignup ? "01 / JOIN" : "01 / RETURN"}</span>
           </div>
           <div className="auth-form-card mx-auto my-auto w-full max-w-[520px] py-lg">
-            <p className="type-caption font-semibold text-accent">{isSignup ? "JOIN OUTRAZO" : "SIGN IN TO OUTRAZO"}</p>
-            <h2 className="type-h2 mt-sm">{isSignup ? "Create your account" : "Welcome back"}</h2>
-            <p className="type-body-lg mt-sm text-muted-text">{isSignup ? "Save events and make discovery feel like yours." : "Your next great moment is waiting."}</p>
-            <form onSubmit={submit} className="mt-xl flex flex-col gap-md" noValidate>
+            <p className="auth-form-eyebrow type-caption font-semibold text-accent">{isSignup ? "JOIN OUTRAZO" : "SIGN IN TO OUTRAZO"}</p>
+            <h2 className="auth-form-title type-h2 mt-sm">{isSignup ? "Create your account" : "Welcome back"}</h2>
+            <p className="auth-form-description type-body-lg mt-sm text-muted-text">{isSignup ? "Save events and make discovery feel like yours." : "Your next great moment is waiting."}</p>
+            <form onSubmit={submit} className="auth-form mt-xl flex flex-col gap-md" noValidate>
               {isSignup ? <Input compact label="Full name" required value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" leadingIcon={<UserRound aria-hidden className="size-4" />} placeholder="Your name" /> : null}
               <Input compact label="Email address" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" leadingIcon={<Mail aria-hidden className="size-4" />} placeholder="you@example.com" />
               <Input compact label="Password" type={showPassword ? "text" : "password"} required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={isSignup ? "new-password" : "current-password"} leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="At least 6 characters" />
-              {isSignup ? <Input compact label="Confirm password" type={showPassword ? "text" : "password"} required minLength={6} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" leadingIcon={<Lock aria-hidden className="size-4" />} placeholder="Repeat your password" /> : null}
-              <div className="flex items-center justify-between gap-sm">
+              <div className="auth-password-actions flex items-center justify-between gap-sm">
                 <Button type="button" variant="ghost" size="sm" className="px-sm" onClick={() => setShowPassword((visible) => !visible)} leadingIcon={showPassword ? <EyeOff aria-hidden className="size-4" /> : <Eye aria-hidden className="size-4" />}>{showPassword ? "Hide password" : "Show password"}</Button>
                 {!isSignup ? <Button type="button" variant="ghost" size="sm" className="px-sm text-accent" onClick={resetPassword} disabled={busy || googleBusy}>Forgot password?</Button> : null}
               </div>
               {error ? <p role="alert" className="type-caption text-transactional">{error}</p> : null}
               {notice ? <p role="status" className="type-caption text-accent">{notice}</p> : null}
-              <Button type="submit" loading={busy} disabled={googleBusy} size="lg" className="w-full">{isSignup ? "Create account" : "Log in"}<ArrowRight aria-hidden className="size-4" /></Button>
+              <Button type="submit" loading={busy} disabled={googleBusy} size="lg" className="auth-submit w-full">{isSignup ? "Create account" : "Log in"}<ArrowRight aria-hidden className="size-4" /></Button>
             </form>
-            <div className="mt-lg flex items-center gap-md" role="separator" aria-label="Or continue with">
+            <div className="auth-divider mt-lg flex items-center gap-md" role="separator" aria-label="Or continue with">
               <span aria-hidden className="h-px flex-1 border-t border-line" />
               <span className="type-caption shrink-0 text-muted-text">or continue with</span>
               <span aria-hidden className="h-px flex-1 border-t border-line" />
             </div>
-            <Button type="button" variant="outline" size="lg" className="mt-md w-full" loading={googleBusy} disabled={busy} onClick={signInWithGoogle} leadingIcon={<GoogleIcon />}>Continue with Google</Button>
-            <div className="mt-xl border-t border-line pt-lg text-center"><p className="type-body text-muted-text">{isSignup ? "Already have an account?" : "New to Outrazo?"}{" "}<Link className="focus-ring rounded-sm font-semibold text-accent" to={isSignup ? "/login" : "/signup"}>{isSignup ? "Log in" : "Create an account"}</Link></p></div>
+            <Button type="button" variant="outline" size="lg" className="auth-google mt-md w-full" loading={googleBusy} disabled={busy} onClick={signInWithGoogle} leadingIcon={<GoogleIcon />}>Continue with Google</Button>
+            <div className="auth-switch mt-xl border-t border-line pt-lg text-center"><p className="type-body text-muted-text">{isSignup ? "Already have an account?" : "New to Outrazo?"}{" "}<Link className="focus-ring rounded-sm font-semibold text-accent" to={isSignup ? "/login" : "/signup"}>{isSignup ? "Log in" : "Create an account"}</Link></p></div>
           </div>
-          <p className="text-center type-caption text-subtle-text">You can browse public events without an account.</p>
+          <p className="auth-form-foot text-center type-caption text-subtle-text">You can browse public events without an account.</p>
         </section>
       </div>
     </main>
