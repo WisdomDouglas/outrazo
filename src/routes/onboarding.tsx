@@ -445,7 +445,14 @@ function OnboardingVisual({
       </div>
       <div className="onboarding-art-stage relative min-h-0 flex-1" aria-hidden="true">
         <div className="onboarding-art-ring" />
-        <img src={explorer} alt="" width={1024} height={1024} className="onboarding-art-character" />
+        <img
+          key={step}
+          src={STEP_ART[step]?.src ?? explorer}
+          alt=""
+          width={1024}
+          height={1024}
+          className="onboarding-art-character"
+        />
         <img src={featured[0].imageSrc} alt="" className="onboarding-art-event onboarding-art-event--first" />
         <img src={featured[1].imageSrc} alt="" className="onboarding-art-event onboarding-art-event--second" />
       </div>
