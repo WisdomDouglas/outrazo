@@ -33,6 +33,15 @@ import { EVENTS } from "@/showcase/sample-data";
 import { supabase } from "@/integrations/supabase/external-client";
 import { useAuth } from "@/showcase/auth/auth-context";
 import explorer from "@/assets/auth-explorer.png";
+import onboardingInterests from "@/assets/onboarding-interests.png";
+import onboardingLocation from "@/assets/onboarding-location.png";
+import onboardingPreferences from "@/assets/onboarding-preferences.png";
+
+const STEP_ART: Record<number, { src: string; label: string }> = {
+  1: { src: onboardingInterests, label: "Character tapping a floating music note, with a game controller and artist palette nearby" },
+  2: { src: onboardingLocation, label: "Character holding a city map and pointing at a map pin" },
+  3: { src: onboardingPreferences, label: "Character placing an event ticket onto a weekend calendar" },
+};
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -436,7 +445,14 @@ function OnboardingVisual({
       </div>
       <div className="onboarding-art-stage relative min-h-0 flex-1" aria-hidden="true">
         <div className="onboarding-art-ring" />
-        <img src={explorer} alt="" width={1024} height={1024} className="onboarding-art-character" />
+        <img
+          key={step}
+          src={STEP_ART[step]?.src ?? explorer}
+          alt=""
+          width={1024}
+          height={1024}
+          className="onboarding-art-character"
+        />
         <img src={featured[0].imageSrc} alt="" className="onboarding-art-event onboarding-art-event--first" />
         <img src={featured[1].imageSrc} alt="" className="onboarding-art-event onboarding-art-event--second" />
       </div>
