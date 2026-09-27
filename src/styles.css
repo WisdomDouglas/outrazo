@@ -55,7 +55,7 @@ html.light .brand-logo-light { display: block; }
   .auth-float--place { display: none; }
   .auth-form-panel { flex: 1; justify-content: flex-start; border: 0; border-radius: 0; padding: var(--spacing-md) var(--spacing-lg) var(--spacing-sm); }
   .auth-form-nav, .auth-form-eyebrow, .auth-form-title, .auth-form-description, .auth-form-foot { display: none; }
-  .auth-form-card { margin: auto; padding: 0; }
+  .auth-form-card { margin: 0 auto; padding: 0; }
   .auth-form { margin-top: 0; gap: var(--spacing-sm); }
   .auth-password-actions { min-height: 44px; }
   .auth-password-actions .px-sm { padding-inline: var(--spacing-xs); }
