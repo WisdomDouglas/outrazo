@@ -63,4 +63,4 @@
 
 - [x] Layer brand and character in a short illustrated mobile header while preserving desktop copy.
 - [x] Remove signup password confirmation and simplify mobile form spacing.
-- [ ] Verify both screens and themes at mobile sizes, including all actions within a standard phone viewport.
+- [x] Verify both screens and themes at mobile sizes, including all actions within a standard phone viewport.
