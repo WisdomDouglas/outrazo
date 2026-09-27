@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, CalendarDays, Compass, Eye, EyeOff, Lock, Mail, MapPin, Music2, Users, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Eye, EyeOff, Lock, Mail, MapPin, Music2, Users, UserRound } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { Button } from "@/design-system/components/Button";
@@ -138,9 +138,7 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
             <Button type="button" variant="outline" size="lg" className="auth-google mt-md w-full" loading={googleBusy} disabled={busy} onClick={signInWithGoogle} leadingIcon={<GoogleIcon />}>Continue with Google</Button>
             <div className="auth-switch mt-xl border-t border-line pt-lg text-center"><p className="type-body text-muted-text">{isSignup ? "Already have an account?" : "New to Outrazo?"}{" "}<Link className="focus-ring rounded-sm font-semibold text-accent" to={isSignup ? "/login" : "/signup"}>{isSignup ? "Log in" : "Create an account"}</Link></p></div>
           </div>
-          <Link to="/explore" className="auth-form-foot focus-ring inline-flex items-center justify-center gap-xs rounded-sm text-center type-caption text-subtle-text hover:text-accent">
-            <Compass aria-hidden className="size-4" /> Browse public events <ArrowRight aria-hidden className="size-3" />
-          </Link>
+          <p className="auth-form-foot text-center type-caption text-subtle-text">You can browse public events without an account.</p>
         </section>
       </div>
     </main>

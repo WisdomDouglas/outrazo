@@ -4,11 +4,11 @@ import {
   CalendarCheck,
   Compass,
   Flame,
-  LayoutGrid,
   LogIn,
   Menu,
   Moon,
   Plus,
+  Sparkles,
   ShieldCheck,
   Sun,
   Ticket,
@@ -220,7 +220,7 @@ function Landing() {
                   <Compass aria-hidden className="size-5 text-accent" /> Explore events <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
                 </Link>
                 <button type="button" onClick={() => scrollTo("categories")} className="outrazo-drawer-link focus-ring text-left">
-                  <LayoutGrid aria-hidden className="size-5 text-accent" /> Categories <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
+                  <Sparkles aria-hidden className="size-5 text-accent" /> Categories <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
                 </button>
                 <button type="button" onClick={() => scrollTo("discover")} className="outrazo-drawer-link focus-ring text-left">
                   <Flame aria-hidden className="size-5 text-transactional" /> Recommended <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
