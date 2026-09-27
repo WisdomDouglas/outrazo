@@ -68,7 +68,8 @@ html.light .brand-logo-light { display: block; }
 .onboarding-visual { isolation: isolate; background: linear-gradient(150deg, var(--outrazo-bg-card), var(--outrazo-bg-canvas)); }
 .onboarding-art-stage { min-height: 290px; }
 .onboarding-art-ring { position: absolute; bottom: 3%; left: 10%; width: 80%; height: 28%; border: 1px solid var(--outrazo-accent-primary); border-radius: 50%; transform: rotate(-10deg); }
-.onboarding-art-character { position: absolute; z-index: 2; bottom: -18%; left: 50%; width: min(82%, 390px); height: auto; transform: translateX(-50%); animation: auth-breathe 6s ease-in-out infinite; }
+.onboarding-art-character { position: absolute; z-index: 2; bottom: -18%; left: 50%; width: min(82%, 390px); height: auto; transform: translateX(-50%); animation: auth-breathe 6s ease-in-out infinite, onboarding-art-in 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes onboarding-art-in { from { opacity: 0; translate: 0 26px; scale: 0.94; } to { opacity: 1; translate: 0 0; scale: 1; } }
 .onboarding-art-event { position: absolute; z-index: 3; width: 30%; aspect-ratio: 1; border: 2px solid var(--outrazo-border-strong); border-radius: var(--outrazo-radius-md); object-fit: cover; box-shadow: var(--outrazo-shadow-floating); animation: onboarding-float 6s ease-in-out infinite; }
 .onboarding-art-event--first { left: 1%; top: 15%; transform: rotate(-12deg); }
 .onboarding-art-event--second { right: 2%; top: 33%; transform: rotate(10deg); animation-delay: -3s; }
