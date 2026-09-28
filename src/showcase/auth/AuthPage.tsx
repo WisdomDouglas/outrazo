@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, CalendarDays, Compass, Eye, EyeOff, Lock, Mail, MapPin, Music2, Users, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Compass, Eye, EyeOff, Lock, Mail, MapPin, Music2, Ticket, Users, UserRound } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
 import { Button } from "@/design-system/components/Button";
@@ -91,22 +91,22 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
     <main className="auth-page bg-canvas text-primary-text">
       <div className="auth-layout mx-auto grid w-full max-w-[1440px] gap-md p-sm sm:p-md lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:p-lg">
         <section className="auth-scene relative flex min-w-0 flex-col overflow-hidden rounded-lg p-lg sm:p-xl lg:p-2xl">
+          <div className="auth-scene__grid" aria-hidden="true" />
           <Link to="/" className="auth-scene__brand focus-ring relative z-20 w-fit rounded-sm" aria-label="Outrazo home"><BrandLogo /></Link>
-          <div className="auth-scene__copy relative z-10 mt-lg max-w-[560px] lg:mt-2xl">
-            <p className="type-caption font-semibold text-accent">{isSignup ? "MAKE ROOM FOR MORE" : "GOOD TO HAVE YOU BACK"}</p>
-            <h1 className="type-h1 mt-sm text-balance">Find your people.<br /><span className="text-accent">Show up for more.</span></h1>
-            <p className="type-body-lg mt-md max-w-[440px] text-muted-text">The best moments aren't on your feed. They're happening around you.</p>
-          </div>
           <div className="auth-art-stage relative mt-md min-h-0 flex-1" aria-hidden="true">
             <div className="auth-orbit" />
             <div className="auth-float auth-float--music"><Music2 className="size-5 text-accent" /><span>Live music</span></div>
             <div className="auth-float auth-float--place"><MapPin className="size-5 text-accent" /><span>Lagos</span></div>
             <div className="auth-float auth-float--people"><Users className="size-5 text-accent" /><span>Your people</span></div>
             <div className="auth-float auth-float--date"><CalendarDays className="size-5 text-accent" /><span>This weekend</span></div>
+            <div className="auth-float auth-float--ticket"><Ticket className="size-5 text-transactional" /><span>Something good is happening</span></div>
             <img src={explorer} alt="" width={1024} height={1024} className="auth-explorer" />
           </div>
-          <p className="auth-scene__mobile-label relative z-20 type-caption font-medium text-primary-text">{isSignup ? "Create an account" : "Log in to your account"}</p>
-          <div className="auth-scene__foot relative z-10 inline-flex w-fit items-center gap-sm rounded-full bg-canvas/70 px-md py-sm type-caption text-primary-text"><span className="size-sm rounded-full bg-accent" />Discover with intention</div>
+          <div className="auth-scene__copy relative z-10 mt-auto max-w-[560px]">
+            <p className="auth-scene__eyebrow type-caption font-semibold text-accent">YOUR CITY. YOUR PEOPLE.</p>
+            <h1 className="type-h1 mt-sm text-balance">Discover your<br /><span className="text-accent">next great moment.</span></h1>
+            <p className="auth-scene__description type-body-lg mt-md max-w-[440px] text-muted-text">The best moments aren't on your feed. They're happening around you.</p>
+          </div>
         </section>
 
         <section className="auth-form-panel flex min-w-0 flex-col justify-center rounded-lg bg-card px-lg py-xl sm:px-2xl lg:px-3xl">
