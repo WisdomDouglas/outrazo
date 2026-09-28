@@ -58,3 +58,9 @@
 - [x] Refresh sign-in and signup with the reference-inspired illustrated stage and responsive experience.
 - [x] Carry the visual language through onboarding without changing its three-step behavior.
 - [x] Verify both themes and desktop/mobile layouts and interactions.
+
+## Compact mobile authentication
+
+- [x] Layer brand and character in a short illustrated mobile header while preserving desktop copy.
+- [x] Remove signup password confirmation and simplify mobile form spacing.
+- [x] Verify both screens and themes at mobile sizes, including all actions within a standard phone viewport.
