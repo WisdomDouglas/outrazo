@@ -37,6 +37,7 @@ import { CATEGORIES } from "@/showcase/discovery/categories";
 import { useDiscovery } from "@/showcase/discovery/use-discovery";
 
 import { CITIES, TONIGHT_EVENTS, toEventCardProps } from "@/showcase/sample-data";
+import { TonightCoverflow } from "@/showcase/landing/TonightCoverflow";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -453,35 +454,13 @@ function Landing() {
           )}
         </section>
 
-        {/* Happening tonight — looping marquee */}
-        <section className="overflow-visible pb-section">
+        {/* Happening tonight — 3D curved coverflow */}
+        <section className="overflow-hidden pb-section">
           <div className="mx-auto mb-lg flex max-w-[1200px] items-center gap-sm px-md lg:px-xl">
             <h2 className="type-h2">Happening tonight</h2>
             <Badge variant="transactional">Live</Badge>
           </div>
-          <div className="relative">
-            <div className="outrazo-marquee flex w-max gap-md">
-              {[...TONIGHT_EVENTS, ...TONIGHT_EVENTS].map((item, index) => (
-                <article
-                  key={`${item.title}-${index}`}
-                  className="relative w-[220px] shrink-0 overflow-hidden rounded-lg shadow-card"
-                >
-                  <img
-                    src={item.imageSrc}
-                    alt={item.title}
-                    loading="lazy"
-                    className="aspect-[4/3] w-full object-cover"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 bg-canvas/75 p-md backdrop-blur-md">
-                    <h3 className="type-h3 text-primary-text">{item.title}</h3>
-                    <p className="type-caption text-muted-text">
-                      {item.city} · {item.attendeeCount.toLocaleString("en-NG")} going
-                    </p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
+          <TonightCoverflow items={TONIGHT_EVENTS} />
         </section>
 
         {/* Near you */}
