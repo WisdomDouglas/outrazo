@@ -1122,7 +1122,7 @@ body {
     display: block;
     overflow: hidden;
     margin-inline: calc(50% - 50vw);
-    padding-block: var(--spacing-md);
+    padding-block: var(--spacing-md) var(--spacing-xl);
     mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
   }
   .tonight-flow-track {
