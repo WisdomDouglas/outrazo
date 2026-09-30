@@ -454,7 +454,7 @@ function Landing() {
           )}
         </section>
 
-        {/* Happening tonight — 3D curved coverflow */}
+        {/* Happening tonight — continuous event ribbon */}
         <section className="overflow-hidden pb-section">
           <div className="mx-auto mb-lg flex max-w-[1200px] items-center gap-sm px-md lg:px-xl">
             <h2 className="type-h2">Happening tonight</h2>

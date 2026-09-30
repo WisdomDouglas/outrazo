@@ -1,8 +1,6 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef } from "react";
 
 import { usePrefersReducedMotion } from "@/design-system/lib/use-reveal";
-import { cn } from "@/design-system/lib/utils";
 
 export interface CoverflowItem {
   title: string;
@@ -11,119 +9,102 @@ export interface CoverflowItem {
   attendeeCount: number;
 }
 
-/** 3D curved coverflow: centre card lifted, side cards turn away along an arc. */
+/** A non-interactive, seamless ribbon of tonight's existing event cards. */
 export function TonightCoverflow({ items }: { items: CoverflowItem[] }) {
-  const count = items.length;
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const reduced = usePrefersReducedMotion();
-  const dragStart = useRef<number | null>(null);
-
-  const go = (step: number) => setActive((value) => (value + step + count) % count);
 
   useEffect(() => {
-    if (paused || reduced || count < 2) return;
-    const id = window.setInterval(() => setActive((v) => (v + 1) % count), 3200);
-    return () => window.clearInterval(id);
-  }, [paused, reduced, count]);
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    if (!viewport || !track || reduced || items.length < 2) return;
 
-  const onPointerDown = (e: ReactPointerEvent) => {
-    dragStart.current = e.clientX;
-  };
-  const onPointerUp = (e: ReactPointerEvent) => {
-    if (dragStart.current === null) return;
-    const delta = e.clientX - dragStart.current;
-    dragStart.current = null;
-    if (Math.abs(delta) > 40) go(delta < 0 ? 1 : -1);
-  };
+    const groups = Array.from(track.querySelectorAll<HTMLElement>(".tonight-flow-group"));
+    const cards = Array.from(track.querySelectorAll<HTMLElement>(".tonight-flow-card"));
+    let groupWidth = 0;
+    let cardWidth = 0;
+    let viewportWidth = 0;
+    let distance = 0;
+    let lastTime = 0;
+    let frame = 0;
+    let visible = true;
+
+    const measure = () => {
+      groupWidth = groups[0]?.getBoundingClientRect().width ?? 0;
+      cardWidth = cards[0]?.getBoundingClientRect().width ?? 0;
+      viewportWidth = viewport.getBoundingClientRect().width;
+      distance = groupWidth ? distance % groupWidth : 0;
+    };
+
+    const tick = (time: number) => {
+      // A constant travel speed is required at the invisible seam; the gentle
+      // scale/opacity envelope supplies the reference's eased, organic feeling.
+      if (lastTime && visible && groupWidth) {
+        distance = (distance + Math.min(time - lastTime, 64) * 0.029) % groupWidth;
+      }
+      lastTime = time;
+      track.style.transform = `translate3d(${-distance}px, 0, 0)`;
+
+      if (visible && groupWidth) {
+        const center = viewportWidth / 2;
+        const influence = Math.max(viewportWidth * 0.53, cardWidth * 1.6);
+        cards.forEach((card, index) => {
+          const position = Math.floor(index / items.length) * groupWidth
+            + (index % items.length) * (groupWidth / items.length)
+            + cardWidth / 2 - distance;
+          const proximity = Math.max(0, 1 - Math.abs(position - center) / influence);
+          const eased = proximity * proximity * (3 - 2 * proximity);
+          card.style.setProperty("--flow-scale", (0.88 + 0.12 * eased).toFixed(3));
+          card.style.setProperty("--flow-opacity", (0.66 + 0.34 * eased).toFixed(3));
+        });
+      }
+      frame = requestAnimationFrame(tick);
+    };
+
+    measure();
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(viewport);
+    resizeObserver.observe(groups[0]);
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      lastTime = 0;
+    });
+    visibilityObserver.observe(viewport);
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      track.style.transform = "";
+      cards.forEach((card) => {
+        card.style.removeProperty("--flow-scale");
+        card.style.removeProperty("--flow-opacity");
+      });
+    };
+  }, [items, reduced]);
+
+  if (!items.length) return null;
 
   return (
-    <>
-    <div className="tonight-flow" aria-label="Happening tonight" role="region">
-      <div className="tonight-flow-track">
-        {[...items, ...items].map((item, index) => (
-          <div key={`${item.title}-${index}`} className="tonight-flow-card" aria-hidden={index >= count}>
-            <img src={item.imageSrc} alt="" loading="lazy" draggable={false} />
-            <span className="tonight-coverflow-meta">
-              <span className="type-h3 block truncate text-primary-text">{item.title}</span>
-              <span className="type-caption block text-muted-text">
-                {item.city} · {item.attendeeCount.toLocaleString("en-NG")} going
-              </span>
-            </span>
+    <div className="tonight-flow" ref={viewportRef} role="region" aria-label="Happening tonight">
+      <div className="tonight-flow-track" ref={trackRef}>
+        {Array.from({ length: 4 }, (_, copy) => (
+          <div className="tonight-flow-group" key={copy} aria-hidden={copy > 0 ? true : undefined}>
+            {items.map((item, index) => (
+              <div className="tonight-flow-card" key={`${item.title}-${index}`}>
+                <img src={item.imageSrc} alt="" loading="lazy" draggable={false} />
+                <span className="tonight-coverflow-meta">
+                  <span className="type-h3 block truncate text-primary-text">{item.title}</span>
+                  <span className="type-caption block text-muted-text">
+                    {item.city} · {item.attendeeCount.toLocaleString("en-NG")} going
+                  </span>
+                </span>
+              </div>
+            ))}
           </div>
         ))}
       </div>
     </div>
-    <div
-      className="tonight-coverflow relative"
-      role="region"
-      aria-roledescription="carousel"
-      aria-label="Happening tonight"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-      onKeyDown={(e) => {
-        if (e.key === "ArrowRight") go(1);
-        if (e.key === "ArrowLeft") go(-1);
-      }}
-    >
-      <div
-        className="tonight-coverflow-stage"
-        onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
-        onPointerCancel={() => (dragStart.current = null)}
-      >
-        {items.map((item, index) => {
-          let offset = index - active;
-          if (offset > count / 2) offset -= count;
-          if (offset < -count / 2) offset += count;
-          const abs = Math.abs(offset);
-          const hidden = abs > 2;
-          return (
-            <button
-              key={item.title}
-              type="button"
-              tabIndex={offset === 0 ? 0 : -1}
-              aria-hidden={offset !== 0}
-              aria-label={offset === 0 ? `${item.title}, ${item.city}` : undefined}
-              onClick={() => offset !== 0 && setActive(index)}
-              className={cn("tonight-coverflow-card focus-ring", offset === 0 && "is-active")}
-              style={{
-                ["--x" as string]: offset,
-                ["--abs" as string]: abs,
-                ["--dir" as string]: Math.sign(offset),
-                zIndex: 10 - abs,
-                opacity: hidden ? 0 : 1 - abs * 0.22,
-                pointerEvents: hidden ? "none" : undefined,
-              }}
-            >
-              <img src={item.imageSrc} alt="" loading="lazy" draggable={false} />
-              <span className="tonight-coverflow-meta">
-                <span className="type-h3 block truncate text-primary-text">{item.title}</span>
-                <span className="type-caption block text-muted-text">
-                  {item.city} · {item.attendeeCount.toLocaleString("en-NG")} going
-                </span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="mt-lg flex items-center justify-center gap-md">
-        <button type="button" onClick={() => go(-1)} aria-label="Previous event" className="tonight-coverflow-nav focus-ring">
-          <ChevronLeft aria-hidden className="size-5" />
-        </button>
-        <div className="flex items-center gap-xs" aria-hidden>
-          {items.map((item, index) => (
-            <span key={item.title} className={cn("tonight-coverflow-dot", index === active && "is-active")} />
-          ))}
-        </div>
-        <button type="button" onClick={() => go(1)} aria-label="Next event" className="tonight-coverflow-nav focus-ring">
-          <ChevronRight aria-hidden className="size-5" />
-        </button>
-      </div>
-    </div>
-    </>
   );
 }
