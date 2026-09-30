@@ -38,6 +38,22 @@ export function TonightCoverflow({ items }: { items: CoverflowItem[] }) {
   };
 
   return (
+    <>
+    <div className="tonight-flow" aria-label="Happening tonight" role="region">
+      <div className="tonight-flow-track">
+        {[...items, ...items].map((item, index) => (
+          <div key={`${item.title}-${index}`} className="tonight-flow-card" aria-hidden={index >= count}>
+            <img src={item.imageSrc} alt="" loading="lazy" draggable={false} />
+            <span className="tonight-coverflow-meta">
+              <span className="type-h3 block truncate text-primary-text">{item.title}</span>
+              <span className="type-caption block text-muted-text">
+                {item.city} · {item.attendeeCount.toLocaleString("en-NG")} going
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
     <div
       className="tonight-coverflow relative"
       role="region"
@@ -108,5 +124,6 @@ export function TonightCoverflow({ items }: { items: CoverflowItem[] }) {
         </button>
       </div>
     </div>
+    </>
   );
 }

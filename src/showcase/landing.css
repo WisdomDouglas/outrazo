@@ -1114,10 +1114,41 @@ body {
   transition: width 300ms ease, background-color 300ms ease;
 }
 .tonight-coverflow-dot.is-active { width: 20px; background: var(--color-accent); }
+/* Desktop: steady right-to-left flow, edge to edge */
+.tonight-flow { display: none; }
 @media (min-width: 1024px) {
-  .tonight-coverflow-stage { height: 400px; }
-  .tonight-coverflow-card { --w: 290px; }
+  .tonight-coverflow { display: none; }
+  .tonight-flow {
+    display: block;
+    overflow: hidden;
+    margin-inline: calc(50% - 50vw);
+    padding-block: var(--spacing-md);
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  }
+  .tonight-flow-track {
+    display: flex;
+    gap: var(--spacing-lg);
+    width: max-content;
+    animation: tonight-flow 48s linear infinite;
+  }
+  .tonight-flow:hover .tonight-flow-track { animation-play-state: paused; }
+  .tonight-flow-card {
+    width: 280px;
+    flex: none;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-card);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-card);
+    transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .tonight-flow-card:nth-child(even) { translate: 0 var(--spacing-md); }
+  .tonight-flow-card:hover { transform: translateY(-2px); border-color: color-mix(in oklab, var(--color-accent) 45%, transparent); box-shadow: var(--shadow-glow), var(--shadow-card); }
+  .tonight-flow-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 }
+@keyframes tonight-flow { from { transform: translateX(0); } to { transform: translateX(calc(-50% - var(--spacing-lg) / 2)); } }
 @media (prefers-reduced-motion: reduce) {
   .tonight-coverflow-card { transition: opacity 200ms ease; }
+  .tonight-flow-track { animation: none; }
+  .tonight-flow { overflow-x: auto; }
 }
