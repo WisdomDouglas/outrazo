@@ -29,12 +29,28 @@ body {
   border-color: var(--color-line);
   box-shadow: var(--shadow-card);
 }
+/* Images breathe with the scroll; the cards themselves retain their existing hover behavior. */
+@supports (animation-timeline: view()) {
+  .landing-page #discover .ds-rail img,
+  .landing-page #discover .lg\:grid img,
+  .landing-page #discover + section + section img {
+    animation: landing-image-drift linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes landing-image-drift {
+    from { object-position: center 44%; }
+    to { object-position: center 56%; }
+  }
+}
 @media (max-width: 767px) {
   .landing-page [data-landing-reveal="waiting"] { transform: translate3d(0, var(--spacing-md), 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .landing-page [data-landing-reveal="waiting"] { opacity: 1; transform: none; }
   .landing-page [data-landing-reveal="entered"] { animation: none; }
+  .landing-page #discover img,
+  .landing-page #discover + section + section img { animation: none; }
   .landing-page > header > div { transition: none; }
 }
 
