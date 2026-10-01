@@ -104,7 +104,8 @@ function Landing() {
   useEffect(() => {
     const root = pageRef.current;
     if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !('IntersectionObserver' in window)) return;
-    const targets = Array.from(root.querySelectorAll<HTMLElement>("[data-landing-reveal]"));
+    const targets = Array.from(root.querySelectorAll<HTMLElement>("[data-landing-reveal]"))
+      .filter((target) => getComputedStyle(target).display !== "none");
     const enter = (target: HTMLElement) => {
       target.setAttribute("data-landing-reveal", "entered");
       observer.unobserve(target);
