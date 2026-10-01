@@ -1,5 +1,11 @@
 # Roadmap
 
+## Onboarding entry and landing motion
+
+- [x] Make Start exploring open the app home for signed-in users and completed demo onboarding.
+- [ ] Add restrained scroll reveals, scroll progress, and a settled navigation treatment on the landing page.
+- [ ] Verify mobile and desktop scrolling, reduced motion, and onboarding completion.
+
 - [x] Preserve the existing single-stack marquee timing while changing only its trajectory.
 - [x] Match desktop to the first recording’s broken-circle path.
 - [x] Match mobile to the second recording’s shallow arc path.

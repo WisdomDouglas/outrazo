@@ -181,9 +181,10 @@ function OnboardingPage() {
           onboarding_completed: true,
         });
         if (error) throw error;
-        await refreshProfile();
       }
+      // Save the choices before routing so the home feed has them on first render.
       completeOnboarding(selections);
+      if (session?.user) await refreshProfile();
       await navigate({ to: "/app" });
     } catch (caught) {
       setValidation(caught instanceof Error ? caught.message : "We could not save your preferences. Please try again.");

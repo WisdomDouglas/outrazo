@@ -6,6 +6,54 @@ body {
   overflow-x: clip;
 }
 
+/* Landing-only scroll rhythm: reveal entire sections, not every word or image. */
+.landing-page [data-landing-reveal="waiting"] {
+  opacity: 0;
+  transform: translate3d(0, var(--spacing-lg), 0);
+}
+.landing-page [data-landing-reveal="entered"] {
+  animation: landing-rise 760ms cubic-bezier(.22, 1, .36, 1) both;
+}
+@keyframes landing-rise {
+  from { opacity: 0; transform: translate3d(0, var(--spacing-lg), 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+.landing-page .landing-scroll-line {
+  transform: scaleX(var(--landing-progress, 0));
+}
+.landing-page > header > div {
+  transition: background-color 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+}
+.landing-page[data-scrolled] > header > div {
+  background-color: var(--color-card);
+  border-color: var(--color-line);
+  box-shadow: var(--shadow-card);
+}
+/* Images breathe with the scroll; the cards themselves retain their existing hover behavior. */
+@supports (animation-timeline: view()) {
+  .landing-page #discover .ds-rail img,
+  .landing-page #discover .lg\:grid img,
+  .landing-page #discover ~ section img {
+    animation: landing-image-drift linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes landing-image-drift {
+    from { object-position: center 44%; }
+    to { object-position: center 56%; }
+  }
+}
+@media (max-width: 767px) {
+  .landing-page [data-landing-reveal="waiting"] { transform: translate3d(0, var(--spacing-md), 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-page [data-landing-reveal="waiting"] { opacity: 1; transform: none; }
+  .landing-page [data-landing-reveal="entered"] { animation: none; }
+  .landing-page #discover img,
+  .landing-page #discover ~ section img { animation: none; }
+  .landing-page > header > div { transition: none; }
+}
+
 .outrazo-skip-link {
   position: fixed;
   top: var(--spacing-sm);
