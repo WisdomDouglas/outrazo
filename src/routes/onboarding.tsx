@@ -171,6 +171,9 @@ function OnboardingPage() {
     };
     setSaving(true);
     try {
+      // Persist completion before the profile refresh so the app home can read
+      // the selected interests and location on its first render.
+      completeOnboarding(selections);
       if (session?.user) {
         // `preferences` stays local for now; the profiles table has no column for it yet.
         const { error } = await supabase.from("profiles").upsert({
@@ -183,7 +186,6 @@ function OnboardingPage() {
         if (error) throw error;
         await refreshProfile();
       }
-      completeOnboarding(selections);
       await navigate({ to: "/app" });
     } catch (caught) {
       setValidation(caught instanceof Error ? caught.message : "We could not save your preferences. Please try again.");

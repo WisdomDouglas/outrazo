@@ -16,7 +16,6 @@ export interface UserProfile {
   avatar_url: string | null;
   location: string | null;
   onboarding_completed: boolean;
-  preferences: Record<string, unknown> | null;
 }
 
 interface AuthContextValue {
@@ -61,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const { data } = await supabase
       .from("profiles")
-      .select("id, name, email, avatar_url, location, onboarding_completed, preferences")
+      .select("id, name, email, avatar_url, location, onboarding_completed")
       .eq("id", userId)
       .maybeSingle();
     setProfile((data as UserProfile | null) ?? null);
