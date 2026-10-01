@@ -56,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = useCallback(async () => {
     if (!userId) {
       setProfile(null);
+      setLoading(false);
       return;
     }
     const { data } = await supabase
