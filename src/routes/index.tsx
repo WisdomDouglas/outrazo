@@ -15,7 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
@@ -27,7 +27,6 @@ import { EmptyState } from "@/design-system/components/EmptyState";
 import { ErrorState } from "@/design-system/components/ErrorState";
 import { EventCard } from "@/design-system/components/EventCard";
 import { EventCardSkeleton } from "@/design-system/components/EventCardSkeleton";
-import { Reveal } from "@/design-system/components/Reveal";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
 import { CtaFlyerWall } from "@/showcase/landing/CtaFlyerWall";
@@ -95,11 +94,52 @@ const FOOTER_CONTENT = {
 } as const;
 
 function Landing() {
+  const pageRef = useRef<HTMLDivElement>(null);
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const discovery = useDiscovery();
+
+  useEffect(() => {
+    const root = pageRef.current;
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !('IntersectionObserver' in window)) return;
+    const targets = Array.from(root.querySelectorAll<HTMLElement>("[data-landing-reveal]"));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.setAttribute("data-landing-reveal", "entered");
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -7% 0px", threshold: 0.08 });
+    targets.forEach((target) => {
+      if (target.getBoundingClientRect().top > window.innerHeight * 0.93) {
+        target.setAttribute("data-landing-reveal", "waiting");
+        observer.observe(target);
+      }
+    });
+    return () => {
+      observer.disconnect();
+      targets.forEach((target) => target.removeAttribute("data-landing-reveal"));
+    };
+  }, []);
+
+  useEffect(() => {
+    const root = pageRef.current;
+    if (!root) return;
+    let frame = 0;
+    const update = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      root.style.setProperty("--landing-progress", `${max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0}`);
+      root.toggleAttribute("data-scrolled", window.scrollY > 80);
+      frame = 0;
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => { window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); cancelAnimationFrame(frame); };
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -124,11 +164,12 @@ function Landing() {
   };
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-canvas text-primary-text">
+    <div ref={pageRef} className="landing-page min-h-screen overflow-x-clip bg-canvas text-primary-text">
       <a href="#main-content" className="outrazo-skip-link focus-ring">
         Skip to main content
       </a>
       <header className="sticky top-0 z-40 px-md pt-sm lg:pt-md">
+        <span className="landing-scroll-line pointer-events-none absolute inset-x-0 bottom-0 h-px origin-left bg-accent" aria-hidden="true" />
         <div className="mx-auto grid max-w-[1080px] grid-cols-[minmax(0,1fr)_auto] items-center gap-md rounded-full border border-primary-text/10 bg-canvas/25 px-md py-sm shadow-[0_10px_30px_-18px_rgba(0,0,0,0.6)] ring-1 ring-inset ring-primary-text/5 backdrop-blur-xl backdrop-saturate-150 transition-colors lg:grid-cols-[1fr_auto_1fr] lg:px-lg">
 
           <Link to="/" className="focus-ring type-h3 min-w-0 rounded-full" aria-label="Outrazo home">
@@ -326,7 +367,7 @@ function Landing() {
           id="categories"
           className="mx-auto max-w-[1200px] scroll-mt-24 px-md py-section lg:px-xl"
         >
-          <Reveal className="mb-lg flex flex-wrap items-end justify-between gap-md">
+          <div data-landing-reveal="ready" className="mb-lg flex flex-wrap items-end justify-between gap-md">
             <div className="flex flex-col gap-xs">
               <h2 className="type-h2">Discover your kind of experience</h2>
               <p className="type-body text-muted-text">
@@ -340,13 +381,13 @@ function Landing() {
             >
               Browse all
             </Link>
-          </Reveal>
+          </div>
 
           {/* Mobile: swipeable rail. Desktop: grid. */}
+          <div data-landing-reveal="ready" className="lg:hidden">
           <Carousel
             label="Event categories"
             controls={false}
-            className="lg:hidden"
             trackClassName="-mx-md px-md"
             slideClassName="w-[200px]"
           >
@@ -361,11 +402,11 @@ function Landing() {
               />
             ))}
           </Carousel>
+          </div>
 
           <ul className="hidden gap-md lg:grid lg:grid-cols-4">
             {CATEGORIES.map(({ id, label, icon: Icon, count }, index) => (
-              <li key={id}>
-                <Reveal delay={index * 40}>
+              <li key={id} data-landing-reveal="ready" style={{ transitionDelay: `${index * 45}ms` }}>
                   <CategoryCard
                     label={label}
                     meta={count}
@@ -373,7 +414,6 @@ function Landing() {
                     icon={<Icon aria-hidden className="size-5" strokeWidth={2} />}
                     onClick={() => discovery.setCategory(id)}
                   />
-                </Reveal>
               </li>
             ))}
           </ul>
@@ -384,7 +424,7 @@ function Landing() {
           id="discover"
           className="mx-auto max-w-[1200px] scroll-mt-24 px-md pb-section lg:px-xl"
         >
-          <div className="mb-lg flex items-end justify-between gap-md">
+          <div data-landing-reveal="ready" className="mb-lg flex items-end justify-between gap-md">
             <div className="flex flex-col gap-xs">
               <h2 className="type-h2">Recommended for you</h2>
               <p className="type-body text-muted-text">
@@ -422,10 +462,10 @@ function Landing() {
           ) : (
             <>
               {/* Mobile: horizontal rail. Desktop: grid. */}
+              <div data-landing-reveal="ready" className="lg:hidden">
               <Carousel
                 label="Recommended events"
                 controls={false}
-                className="lg:hidden"
                 trackClassName="-mx-md px-md"
                 slideClassName="w-[280px]"
               >
@@ -438,16 +478,17 @@ function Landing() {
                   />
                 ))}
               </Carousel>
+              </div>
 
               <div className="hidden gap-lg lg:grid lg:grid-cols-3">
                 {discovery.events.slice(0, 6).map((event, index) => (
-                  <Reveal key={event.id} delay={index * 50}>
+                  <div key={event.id} data-landing-reveal="ready" style={{ transitionDelay: `${(index % 3) * 65}ms` }}>
                     <EventCard
                       {...toEventCardProps(event)}
                       saved={discovery.isSaved(event.id)}
                       onToggleSave={() => discovery.toggleSave(event.id)}
                     />
-                  </Reveal>
+                  </div>
                 ))}
               </div>
             </>
@@ -456,16 +497,16 @@ function Landing() {
 
         {/* Happening tonight — continuous event ribbon */}
         <section className="overflow-hidden pb-section">
-          <div className="mx-auto mb-lg flex max-w-[1200px] items-center gap-sm px-md lg:px-xl">
+          <div data-landing-reveal="ready" className="mx-auto mb-lg flex max-w-[1200px] items-center gap-sm px-md lg:px-xl">
             <h2 className="type-h2">Happening tonight</h2>
             <Badge variant="transactional">Live</Badge>
           </div>
-          <TonightCoverflow items={TONIGHT_EVENTS} />
+          <div data-landing-reveal="ready"><TonightCoverflow items={TONIGHT_EVENTS} /></div>
         </section>
 
         {/* Near you */}
         <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
-          <Reveal className="mb-lg flex items-end justify-between gap-md">
+          <div data-landing-reveal="ready" className="mb-lg flex items-end justify-between gap-md">
             <div className="flex flex-col gap-xs">
               <h2 className="type-h2">Near you</h2>
               <p className="type-body text-muted-text">
@@ -481,10 +522,10 @@ function Landing() {
                 Clear city
               </button>
             ) : null}
-          </Reveal>
+          </div>
           <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
             {CITIES.map((city, index) => (
-              <Reveal key={city.name} delay={index * 50}>
+              <div key={city.name} data-landing-reveal="ready" style={{ transitionDelay: `${(index % 4) * 65}ms` }}>
                 <CityCard
                   name={city.name}
                   imageSrc={city.src}
@@ -495,14 +536,14 @@ function Landing() {
                     discovery.setCity(discovery.city === city.name ? null : city.name)
                   }
                 />
-              </Reveal>
+              </div>
             ))}
           </div>
         </section>
 
         {/* Trust bar */}
         <section className="mx-auto max-w-[1200px] px-md pb-section lg:px-xl">
-          <Reveal>
+          <div data-landing-reveal="ready">
             <ul className="grid grid-cols-2 gap-lg rounded-lg bg-card p-xl shadow-card lg:grid-cols-4">
               {TRUST.map(({ icon: Icon, title, copy }) => (
                 <li key={title} className="flex items-center gap-md">
@@ -516,13 +557,13 @@ function Landing() {
                 </li>
               ))}
             </ul>
-          </Reveal>
+          </div>
         </section>
 
         {/* Organizer invitation */}
         <section className="cta-invite-section overflow-hidden pb-section">
           <div className="mx-auto max-w-[1200px] px-md lg:px-xl">
-            <Reveal>
+            <div data-landing-reveal="ready">
               <div className="cta-invite-panel">
                 <div className="cta-invite-copy">
                   <span className="cta-invite-eyebrow">
@@ -556,14 +597,14 @@ function Landing() {
                   <CtaFlyerWall />
                 </div>
               </div>
-            </Reveal>
+            </div>
           </div>
         </section>
       </main>
 
       <footer className="outrazo-footer border-t border-line">
         <div className="outrazo-footer-inner mx-auto max-w-[1200px] px-md lg:px-xl">
-          <div className="outrazo-footer-main">
+          <div data-landing-reveal="ready" className="outrazo-footer-main">
             <div className="outrazo-footer-brand">
               <Link to="/" className="focus-ring type-h3 rounded-sm" aria-label="Outrazo home">
                 <BrandLogo />
