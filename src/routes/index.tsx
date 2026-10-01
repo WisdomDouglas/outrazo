@@ -105,11 +105,14 @@ function Landing() {
     const root = pageRef.current;
     if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !('IntersectionObserver' in window)) return;
     const targets = Array.from(root.querySelectorAll<HTMLElement>("[data-landing-reveal]"));
+    const enter = (target: HTMLElement) => {
+      target.setAttribute("data-landing-reveal", "entered");
+      observer.unobserve(target);
+    };
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        entry.target.setAttribute("data-landing-reveal", "entered");
-        observer.unobserve(entry.target);
+        enter(entry.target as HTMLElement);
       });
     }, { rootMargin: "0px 0px -7% 0px", threshold: 0.08 });
     targets.forEach((target) => {
@@ -118,7 +121,14 @@ function Landing() {
         observer.observe(target);
       }
     });
+    const revealPassed = () => {
+      targets.forEach((target) => {
+        if (target.getAttribute("data-landing-reveal") === "waiting" && target.getBoundingClientRect().top < window.innerHeight * 0.93) enter(target);
+      });
+    };
+    window.addEventListener("scroll", revealPassed, { passive: true });
     return () => {
+      window.removeEventListener("scroll", revealPassed);
       observer.disconnect();
       targets.forEach((target) => target.removeAttribute("data-landing-reveal"));
     };
@@ -406,7 +416,7 @@ function Landing() {
 
           <ul className="hidden gap-md lg:grid lg:grid-cols-4">
             {CATEGORIES.map(({ id, label, icon: Icon, count }, index) => (
-              <li key={id} data-landing-reveal="ready" style={{ transitionDelay: `${index * 45}ms` }}>
+              <li key={id} data-landing-reveal="ready" style={{ animationDelay: `${index * 45}ms` }}>
                   <CategoryCard
                     label={label}
                     meta={count}
@@ -482,7 +492,7 @@ function Landing() {
 
               <div className="hidden gap-lg lg:grid lg:grid-cols-3">
                 {discovery.events.slice(0, 6).map((event, index) => (
-                  <div key={event.id} data-landing-reveal="ready" style={{ transitionDelay: `${(index % 3) * 65}ms` }}>
+                  <div key={event.id} data-landing-reveal="ready" style={{ animationDelay: `${(index % 3) * 65}ms` }}>
                     <EventCard
                       {...toEventCardProps(event)}
                       saved={discovery.isSaved(event.id)}
@@ -525,7 +535,7 @@ function Landing() {
           </div>
           <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
             {CITIES.map((city, index) => (
-              <div key={city.name} data-landing-reveal="ready" style={{ transitionDelay: `${(index % 4) * 65}ms` }}>
+              <div key={city.name} data-landing-reveal="ready" style={{ animationDelay: `${(index % 4) * 65}ms` }}>
                 <CityCard
                   name={city.name}
                   imageSrc={city.src}
