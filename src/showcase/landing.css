@@ -33,7 +33,7 @@ body {
 @supports (animation-timeline: view()) {
   .landing-page #discover .ds-rail img,
   .landing-page #discover .lg\:grid img,
-  .landing-page #discover + section + section img {
+  .landing-page #discover ~ section img {
     animation: landing-image-drift linear both;
     animation-timeline: view();
     animation-range: entry 0% exit 100%;
@@ -50,7 +50,7 @@ body {
   .landing-page [data-landing-reveal="waiting"] { opacity: 1; transform: none; }
   .landing-page [data-landing-reveal="entered"] { animation: none; }
   .landing-page #discover img,
-  .landing-page #discover + section + section img { animation: none; }
+  .landing-page #discover ~ section img { animation: none; }
   .landing-page > header > div { transition: none; }
 }
 
