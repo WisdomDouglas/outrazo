@@ -19,7 +19,7 @@ function ProtectedApp() {
 	useEffect(() => {
 		if (loading || completedDemo === null) return;
 		if (!session && !completedDemo) void navigate({ to: "/login", replace: true });
-		else if (!profile || !profile.onboarding_completed) void navigate({ to: "/onboarding", replace: true });
+		else if (session && !profile?.onboarding_completed) void navigate({ to: "/onboarding", replace: true });
 	}, [completedDemo, loading, navigate, profile, session]);
 
 	if (loading || completedDemo === null || (!session && !completedDemo) || (session && !profile?.onboarding_completed)) {
