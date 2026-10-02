@@ -24,7 +24,11 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && session) void navigate({ to: profile?.onboarding_completed ? "/app" : "/onboarding", replace: true });
+    if (!authLoading && session) {
+      const returnTo = profile?.onboarding_completed ? takeReturnTo() : null;
+      if (returnTo) void navigate({ href: returnTo, replace: true });
+      else void navigate({ to: profile?.onboarding_completed ? "/app" : "/onboarding", replace: true });
+    }
   }, [authLoading, navigate, profile?.onboarding_completed, session]);
 
   const submit = async (event: FormEvent) => {

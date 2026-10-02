@@ -11,6 +11,7 @@ import { Button } from "@/design-system/components/Button";
 
 import { useTheme } from "@/design-system/lib/use-theme";
 import { AuthProvider } from "@/showcase/auth/auth-context";
+import { SavedEventsSync } from "@/showcase/saved/SavedEventsSync";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -75,6 +76,7 @@ function RootComponent() {
       <AuthProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <SavedEventsSync />
       </AuthProvider>
     </QueryClientProvider>
   );
