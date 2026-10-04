@@ -1,5 +1,11 @@
 # Roadmap
 
+## Landing FAQ and stories
+
+- [x] Add answers that distinguish available discovery features from demo ticketing and unpublished organizer submissions.
+- [x] Add an animated, clearly illustrative story section without fabricating customer reviews.
+- [ ] Verify both sections on mobile and desktop in dark and light modes, including reduced motion.
+
 ## Onboarding entry and landing motion
 
 - [x] Make Start exploring open the app home for signed-in users and completed demo onboarding.
