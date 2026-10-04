@@ -91,8 +91,8 @@ export function LandingTestimonials() {
               ))}
             </div>
             <div className="flex gap-sm">
-              <Button type="button" variant="outline" size="sm" className="size-11 rounded-full p-0" aria-label="Previous story" onClick={() => setActive((current) => (current + STORIES.length - 1) % STORIES.length)}><ArrowLeft aria-hidden className="size-4" /></Button>
-              <Button type="button" variant="outline" size="sm" className="size-11 rounded-full p-0" aria-label="Next story" onClick={() => setActive((current) => (current + 1) % STORIES.length)}><ArrowRight aria-hidden className="size-4" /></Button>
+              <Button type="button" variant="outline" size="sm" className="size-11 shrink-0 rounded-full px-0!" aria-label="Previous story" onClick={() => setActive((current) => (current + STORIES.length - 1) % STORIES.length)}><ArrowLeft aria-hidden className="size-4 shrink-0" /></Button>
+              <Button type="button" variant="outline" size="sm" className="size-11 shrink-0 rounded-full px-0!" aria-label="Next story" onClick={() => setActive((current) => (current + 1) % STORIES.length)}><ArrowRight aria-hidden className="size-4 shrink-0" /></Button>
             </div>
           </div>
         </div>
