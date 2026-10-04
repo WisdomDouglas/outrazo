@@ -30,6 +30,8 @@ import { EventCardSkeleton } from "@/design-system/components/EventCardSkeleton"
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
 import { CtaFlyerWall } from "@/showcase/landing/CtaFlyerWall";
+import { LandingFaq } from "@/showcase/landing/LandingFaq";
+import { LandingTestimonials } from "@/showcase/landing/LandingTestimonials";
 import { HeroBackdrop } from "@/showcase/landing/HeroBackdrop";
 import { HeroCardStrip } from "@/showcase/landing/HeroFloatingCards";
 import { CATEGORIES } from "@/showcase/discovery/categories";
@@ -611,6 +613,10 @@ function Landing() {
             </div>
           </div>
         </section>
+
+        <LandingTestimonials />
+
+        <LandingFaq />
       </main>
 
       <footer className="outrazo-footer border-t border-line">

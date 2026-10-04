@@ -1147,3 +1147,24 @@ body {
   .tonight-flow-track { transform: none !important; }
   .tonight-flow-card { opacity: 1; transform: none; }
 }
+
+/* Editorial story rotation and FAQ, scoped to the landing page. */
+.landing-story-stage { min-height: 19rem; }
+.landing-story-content { animation: landing-story-enter 850ms cubic-bezier(.2,.8,.2,1) both; }
+@keyframes landing-story-enter {
+  from { opacity: 0; transform: translate3d(0, var(--spacing-md), 0); filter: blur(5px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); filter: blur(0); }
+}
+.landing-story-step { transition: border-color 300ms ease, color 300ms ease; }
+.landing-faq-answer { animation: landing-faq-enter 320ms cubic-bezier(.2,.8,.2,1) both; }
+@keyframes landing-faq-enter {
+  from { opacity: 0; transform: translateY(calc(var(--spacing-sm) * -1)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 767px) {
+  .landing-story-stage { min-height: 22rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-story-content, .landing-faq-answer { animation: none; }
+  .landing-story-step { transition: none; }
+}
