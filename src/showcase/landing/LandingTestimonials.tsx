@@ -48,7 +48,7 @@ export function LandingTestimonials() {
       }}
     >
       <div className="mx-auto max-w-[1200px] px-md py-section lg:px-xl">
-        <div data-landing-reveal="ready" className="flex flex-wrap items-end justify-between gap-lg">
+        <div className="flex flex-wrap items-end justify-between gap-lg">
           <div>
             <p className="type-caption mb-sm font-semibold text-accent">THE REASONS WE SHOW UP</p>
             <h2 id="stories-title" className="type-h2">Every outing starts somewhere.</h2>
@@ -56,7 +56,7 @@ export function LandingTestimonials() {
           <p className="type-caption max-w-[34ch] text-muted-text">Illustrative stories, not customer reviews. Real voices will go here when we have them.</p>
         </div>
 
-        <div data-landing-reveal="ready" className="landing-stories-layout mt-2xl grid gap-xl lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
+        <div className="landing-stories-layout mt-2xl grid gap-xl lg:grid-cols-[minmax(0,1fr)_280px] lg:items-end">
           <div className="landing-story-stage relative min-w-0 border-l-2 border-accent pl-lg sm:pl-xl" aria-live="off">
             <Quote aria-hidden className="mb-lg size-8 text-accent" strokeWidth={1.5} />
             <div key={active} className="landing-story-content">

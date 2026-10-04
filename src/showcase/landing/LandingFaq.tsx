@@ -27,12 +27,12 @@ export function LandingFaq() {
   return (
     <section aria-labelledby="faq-title" className="mx-auto max-w-[1200px] px-md py-section lg:px-xl">
       <div className="grid gap-2xl lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-3xl">
-        <div data-landing-reveal="ready">
+        <div>
           <p className="type-caption mb-sm font-semibold text-accent">GOOD TO KNOW</p>
           <h2 id="faq-title" className="type-h2 max-w-[18ch] text-balance">A few things you might be wondering.</h2>
           <p className="type-body-lg mt-md max-w-[38ch] text-muted-text">The important details, before you head out.</p>
         </div>
-        <div data-landing-reveal="ready" className="border-t border-line">
+        <div className="border-t border-line">
           {QUESTIONS.map(({ question, answer }, index) => (
             <details key={question} className="landing-faq-item group border-b border-line" open={index === 0}>
               <summary className="focus-ring flex min-h-16 cursor-pointer list-none items-center justify-between gap-md rounded-sm py-md marker:hidden [&::-webkit-details-marker]:hidden">
