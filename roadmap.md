@@ -76,3 +76,8 @@
 - [x] Layer brand and character in a short illustrated mobile header while preserving desktop copy.
 - [x] Remove signup password confirmation and simplify mobile form spacing.
 - [x] Verify both screens and themes at mobile sizes, including all actions within a standard phone viewport.
+## Landing FAQ and representative voices redesign
+
+- [ ] Replace the sparse testimonial with a portrait-led editorial story experience.
+- [ ] Polish FAQ content and accordion presentation across desktop and mobile.
+- [ ] Verify both themes, motion, interactions, and overflow.
