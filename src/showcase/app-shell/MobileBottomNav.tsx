@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Bookmark, Compass, Home, Ticket, UserRound, type LucideIcon } from "lucide-react";
+import { Bookmark, Compass, House, Ticket, UserRound, type LucideIcon } from "lucide-react";
 
 interface MobileItem {
   label: string;
@@ -9,7 +9,7 @@ interface MobileItem {
 }
 
 const ITEMS: MobileItem[] = [
-  { label: "Home", to: "/app", icon: Home, exact: true },
+  { label: "Home", to: "/app", icon: House, exact: true },
   { label: "Explore", to: "/app/explore", icon: Compass },
   { label: "Saved", to: "/app/saved", icon: Bookmark },
   { label: "Tickets", to: "/app/tickets", icon: Ticket },
@@ -18,8 +18,8 @@ const ITEMS: MobileItem[] = [
 
 export function MobileBottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-canvas/95 px-xs pb-[max(var(--spacing-sm),env(safe-area-inset-bottom))] pt-sm backdrop-blur-md md:hidden" aria-label="Mobile app navigation">
-      <div className="grid grid-cols-5">
+    <nav className="fixed inset-x-md bottom-md z-40 rounded-lg border border-line bg-card/90 p-xs pb-[max(var(--spacing-xs),env(safe-area-inset-bottom))] shadow-floating backdrop-blur-xl md:hidden" aria-label="Mobile app navigation">
+      <div className="grid grid-cols-5 gap-xs">
         {ITEMS.map((item) => {
           const Icon = item.icon;
           return (
@@ -27,11 +27,11 @@ export function MobileBottomNav() {
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.exact }}
-              className="focus-ring type-caption flex min-h-12 flex-col items-center justify-center gap-xs rounded-sm text-subtle-text"
-              activeProps={{ className: "text-accent" }}
+              className="focus-ring type-caption flex min-h-14 min-w-0 flex-col items-center justify-center gap-xs rounded-md text-subtle-text transition-[color,background-color,transform] duration-200 active:scale-[0.98]"
+              activeProps={{ className: "bg-accent/12 text-accent" }}
             >
-              <Icon aria-hidden className="size-5" />
-              <span>{item.label}</span>
+              <Icon aria-hidden className="size-5 shrink-0" strokeWidth={2} />
+              <span className="max-w-full truncate">{item.label}</span>
             </Link>
           );
         })}

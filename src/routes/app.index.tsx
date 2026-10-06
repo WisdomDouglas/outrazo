@@ -71,10 +71,10 @@ function SectionHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-lg flex flex-wrap items-center justify-between gap-sm">
+    <div className="mb-lg grid grid-cols-[minmax(0,1fr)_auto] items-end gap-md">
       <div className="flex flex-col gap-xs">
-        <h2 className="type-h2 flex items-center gap-sm">
-          <Icon aria-hidden className="size-5 text-accent" strokeWidth={2} />
+        <h2 className="type-h2 flex min-w-0 items-center gap-sm">
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent/10 text-accent"><Icon aria-hidden className="size-4" strokeWidth={2} /></span>
           {title}
         </h2>
         {meta}
@@ -139,27 +139,23 @@ function AppHome() {
     : { category: undefined };
 
   return (
-    <div className="mx-auto flex w-full max-w-[1320px] flex-col gap-section px-md py-xl lg:px-xl lg:py-2xl">
-      <section className="flex flex-col-reverse items-start gap-lg md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-xs">
-          <p className="type-body text-accent">
+    <div className="app-home mx-auto flex w-full max-w-[1320px] flex-col gap-3xl px-md py-lg lg:px-xl lg:py-xl">
+      <section className="app-home-welcome relative isolate grid min-h-[22rem] overflow-hidden rounded-lg border border-line bg-card p-lg shadow-card sm:min-h-[20rem] sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.65fr)] sm:items-center sm:p-xl lg:min-h-[22rem] lg:p-2xl">
+        <div className="relative z-10 flex max-w-[42rem] flex-col items-start gap-xs">
+          <p className="type-caption font-semibold text-accent">
             {greeting}, {displayName}
           </p>
-          <h1 className="type-h1">Welcome to Outrazo</h1>
-          <p className="type-body-lg text-muted-text">Discover what&apos;s happening around you.</p>
-          <LocationPicker location={location} onChange={changeLocation} className="mt-xs" />
+          <h1 className="type-h1 max-w-[12ch] text-balance">Your city has plans for you.</h1>
+          <p className="type-body-lg mt-sm max-w-[34ch] text-muted-text">A personal edit of what&apos;s happening, who&apos;s going, and where to show up next.</p>
+          <LocationPicker location={location} onChange={changeLocation} className="mt-md" />
         </div>
-        <img
-          src={greetingArt}
-          alt=""
-          loading="lazy"
-          width={1024}
-          height={768}
-          className="h-auto w-40 shrink-0 select-none md:w-56 lg:w-64"
-        />
+        <div className="app-home-art pointer-events-none absolute inset-x-0 top-0 h-[13rem] overflow-hidden sm:relative sm:inset-auto sm:h-full">
+          <span aria-hidden className="absolute inset-x-lg bottom-lg h-px bg-accent/30" />
+          <img src={greetingArt} alt="" loading="lazy" width={1024} height={768} className="absolute bottom-0 right-0 h-auto w-56 max-w-none select-none sm:w-[22rem] lg:w-[26rem]" />
+        </div>
       </section>
 
-      <section>
+      <section className="app-home-section">
         <SectionHeader
           title="Picked for you"
           icon={Sparkles}
@@ -199,12 +195,12 @@ function AppHome() {
         )}
       </section>
 
-      <section>
+      <section className="app-home-section">
         <SectionHeader title="Happening soon" icon={CalendarClock} />
         <EventRail events={soon} label="Events happening soon" />
       </section>
 
-      <section>
+      <section className="app-home-section">
         <SectionHeader
           title="Near you"
           icon={Compass}
@@ -227,7 +223,7 @@ function AppHome() {
         )}
       </section>
 
-      <section>
+      <section className="app-home-section">
         <SectionHeader
           title="People are going to"
           icon={Users}
