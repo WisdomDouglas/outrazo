@@ -14,6 +14,7 @@ import {
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
+import { Button } from "@/design-system/components/Button";
 import { cn } from "@/design-system/lib/utils";
 import { useAuth } from "@/showcase/auth/auth-context";
 
