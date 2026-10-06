@@ -76,19 +76,19 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
       ref={ref}
       onClick={selectEvent}
       className={cn(
-        "group flex h-full flex-col gap-md rounded-lg border border-line bg-card p-md shadow-card transition-all duration-200 hover:-translate-y-[3px] hover:border-accent/40 hover:shadow-glow",
+        "group flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-line bg-card shadow-card transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-glow",
         selectEvent && "cursor-pointer",
         className,
       )}
       {...props}
     >
-      <div className="relative overflow-hidden rounded-md">
+      <div className="relative overflow-hidden bg-elevated">
         <img
           src={imageSrc}
           alt={`${title} cover`}
           loading="lazy"
           className={cn(
-            "w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.07]",
+            "w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]",
             aspect === "1/1" ? "aspect-square" : "aspect-video",
           )}
         />
@@ -96,7 +96,7 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-canvas/55 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         />
-        <span className="type-caption absolute left-sm top-sm inline-flex items-center gap-xs rounded-sm bg-canvas/70 px-sm py-[3px] font-semibold text-primary-text backdrop-blur-md">
+        <span className="type-caption absolute left-md top-md inline-flex min-h-8 items-center gap-xs rounded-full border border-line bg-canvas/80 px-sm font-semibold text-primary-text backdrop-blur-md">
           <CalendarDays aria-hidden className="size-3.5 text-accent" />
           {date}
           {time ? ` · ${time}` : ""}
@@ -109,19 +109,19 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
           }}
           aria-pressed={saved}
           aria-label={saved ? `Remove ${title} from saved` : `Save ${title}`}
-          className="focus-ring absolute right-sm top-sm grid size-11 place-items-center rounded-full bg-canvas/70 text-primary-text backdrop-blur-md transition-transform duration-200 hover:scale-110 hover:text-accent active:scale-95"
+          className="focus-ring absolute right-md top-md grid size-11 place-items-center rounded-full border border-line bg-canvas/80 text-primary-text backdrop-blur-md transition-[transform,color,border-color] duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent active:scale-95"
         >
           <Bookmark aria-hidden className={cn("size-[18px]", saved && "fill-accent text-accent")} />
         </button>
         {tag ? (
-          <Badge variant={tagVariant} className="absolute bottom-sm left-sm backdrop-blur-md">
+          <Badge variant={tagVariant} className="absolute bottom-md left-md backdrop-blur-md">
             {tag}
           </Badge>
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-sm">
-        <h3 className="type-h3 min-h-2xl lg:min-h-3xl">
+      <div className="flex flex-col gap-sm px-md pt-md">
+        <h3 className="type-h3 min-h-2xl">
           {eventId ? (
             <Link
               to="/events/$eventId"
@@ -135,13 +135,13 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
             <a href={href} className="focus-ring line-clamp-2 rounded-sm transition-colors hover:text-accent">{title}</a>
           )}
         </h3>
-        <p className="type-body flex items-center gap-xs text-muted-text">
-          <MapPin aria-hidden className="size-4 shrink-0 text-accent" />
+        <p className="type-body flex items-center gap-sm text-muted-text">
+          <span className="grid size-7 shrink-0 place-items-center rounded-full bg-accent/10 text-accent"><MapPin aria-hidden className="size-3.5" /></span>
           <span className="truncate">{location}</span>
         </p>
       </div>
 
-      <div className="mt-auto flex items-center justify-between gap-md border-t border-line pt-md">
+      <div className="mx-md mt-md flex items-center justify-between gap-md border-t border-line py-md">
         <span className="type-caption flex min-w-0 items-center gap-sm text-muted-text">
           <Avatar name={host.name} src={host.avatarSrc} size="sm" />
           <span className="min-w-0">
@@ -155,7 +155,7 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
       </div>
 
       {attendees?.length ? (
-        <AvatarStack people={attendees} totalCount={attendeeCount} className="text-subtle-text" />
+        <AvatarStack people={attendees} totalCount={attendeeCount} className="mx-md mb-md text-subtle-text" />
       ) : null}
     </article>
     );

@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import {
   Bookmark,
   CalendarPlus,
+  ChevronLeft,
+  ChevronRight,
   Compass,
   Home,
   Settings,
@@ -34,53 +36,57 @@ const ACCOUNT_NAV: NavItem[] = [
   { label: "Settings", to: "/app/settings", icon: Settings },
 ];
 
-function SidebarLink({ item, emphasis = false }: { item: NavItem; emphasis?: boolean }) {
+function SidebarLink({ item, emphasis = false, collapsed = false }: { item: NavItem; emphasis?: boolean; collapsed?: boolean }) {
   const Icon = item.icon;
   return (
     <Link
       to={item.to}
       activeOptions={{ exact: item.exact }}
       className={cn(
-        "focus-ring type-body flex min-h-11 items-center gap-md rounded-md px-md font-medium text-muted-text transition-colors hover:bg-primary-text/5 hover:text-primary-text md:justify-center md:px-sm xl:justify-start xl:px-md",
+        "focus-ring type-body group/nav flex min-h-12 items-center gap-md rounded-md px-md font-medium text-muted-text transition-[background-color,color,transform] duration-200 hover:bg-primary-text/5 hover:text-primary-text",
+        collapsed ? "justify-center px-sm" : "justify-start",
         emphasis && "text-accent",
       )}
       activeProps={{ className: "bg-accent/12 text-accent" }}
       title={item.label}
     >
-      <Icon aria-hidden className="size-5 shrink-0" />
-      <span className="md:hidden xl:inline">{item.label}</span>
+      <span className="grid size-8 shrink-0 place-items-center rounded-sm transition-colors group-hover/nav:bg-accent/10"><Icon aria-hidden className="size-5" /></span>
+      {collapsed ? null : <span className="truncate">{item.label}</span>}
     </Link>
   );
 }
 
-export function AppSidebar() {
+export function AppSidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const { displayName, profile } = useAuth();
   return (
-    <aside className="hidden h-dvh w-section shrink-0 flex-col border-r border-line bg-card md:flex xl:w-[calc(var(--spacing-section)*2.5)]">
-      <div className="flex min-h-20 items-center px-lg md:justify-center md:px-sm xl:justify-start xl:px-lg">
+    <aside className={`relative hidden h-dvh shrink-0 flex-col border-r border-line bg-card transition-[width] duration-300 ease-out md:flex ${collapsed ? "w-section" : "w-[calc(var(--spacing-section)*2.5)]"}`}>
+      <div className={`flex min-h-20 items-center ${collapsed ? "justify-center px-sm" : "justify-start px-lg"}`}>
         <Link to="/app" className="focus-ring type-h3 rounded-sm text-primary-text" aria-label="Outrazo home">
-          <span className="xl:hidden"><BrandLogo compact /></span>
-          <span className="hidden xl:inline-flex"><BrandLogo /></span>
+          {collapsed ? <BrandLogo compact /> : <BrandLogo />}
         </Link>
       </div>
 
+      <Button type="button" variant="outline" size="sm" onClick={onToggle} className="absolute -right-[22px] top-24 z-20 size-11 rounded-full bg-card p-0 shadow-card" aria-label={collapsed ? "Expand navigation" : "Minimize navigation"} title={collapsed ? "Expand navigation" : "Minimize navigation"}>
+        {collapsed ? <ChevronRight aria-hidden className="size-4" /> : <ChevronLeft aria-hidden className="size-4" />}
+      </Button>
+
       <nav className="flex flex-col gap-xs px-sm" aria-label="App navigation">
-        {PRIMARY_NAV.map((item) => <SidebarLink key={item.to} item={item} />)}
+        {PRIMARY_NAV.map((item) => <SidebarLink key={item.to} item={item} collapsed={collapsed} />)}
         <div className="my-sm border-t border-line" />
-        <SidebarLink item={{ label: "Post Your Event", to: "/app/create-event", icon: CalendarPlus }} emphasis />
+        <SidebarLink item={{ label: "Post Your Event", to: "/app/create-event", icon: CalendarPlus }} emphasis collapsed={collapsed} />
       </nav>
 
       <nav className="mt-auto flex flex-col gap-xs border-t border-line p-sm" aria-label="Account navigation">
-        {ACCOUNT_NAV.map((item) => <SidebarLink key={item.to} item={item} />)}
+        {ACCOUNT_NAV.map((item) => <SidebarLink key={item.to} item={item} collapsed={collapsed} />)}
         <Link
           to="/app/profile"
-          className="focus-ring mt-sm flex min-h-14 items-center gap-sm rounded-md bg-elevated px-sm md:justify-center xl:justify-start"
+          className={`focus-ring mt-sm flex min-h-14 items-center gap-sm rounded-md bg-elevated px-sm ${collapsed ? "justify-center" : "justify-start"}`}
         >
           <Avatar name={displayName} src={profile?.avatar_url ?? undefined} size="md" />
-          <span className="min-w-0 md:hidden xl:block">
+          {collapsed ? null : <span className="min-w-0">
             <strong className="type-body block truncate">{displayName}</strong>
             <span className="type-caption block truncate text-muted-text">View profile</span>
-          </span>
+          </span>}
         </Link>
       </nav>
     </aside>

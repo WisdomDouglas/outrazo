@@ -31,11 +31,11 @@ export function AppHeader({ title }: { title: string }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-canvas/95 backdrop-blur-md">
-      <div className="flex min-h-20 items-center gap-md px-md lg:px-xl">
+    <header className="sticky top-0 z-30 border-b border-line bg-canvas/90 backdrop-blur-xl">
+      <div className="grid min-h-20 grid-cols-[minmax(0,1fr)_auto] items-center gap-md px-md sm:flex lg:px-xl">
         <Link to="/app" className="focus-ring type-h3 shrink-0 rounded-sm md:hidden" aria-label="Outrazo home"><BrandLogo /></Link>
         <h1 className="type-h2 hidden shrink-0 md:block">{title}</h1>
-        <form onSubmit={submit} className="ml-auto hidden w-full max-w-[440px] sm:block" role="search">
+        <form onSubmit={submit} className="ml-auto hidden w-full max-w-[480px] sm:block" role="search">
           <SearchField value={query} onChange={(event) => setQuery(event.target.value)} onClear={() => setQuery("")} placeholder="Search events" />
         </form>
         <div ref={notificationRef} className="relative">
