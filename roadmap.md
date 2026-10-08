@@ -89,4 +89,4 @@
 - [x] Refine shared event-card hierarchy and responsive sizing without duplicating event logic.
 - [x] Recompose the personalized home into an editorial dashboard using existing content and artwork.
 - [x] Add a persistent collapsible desktop sidebar and polished mobile navigation dock.
-- [ ] Verify dark and light themes on mobile and desktop, including navigation, search, saves, and overflow.
+- [x] Verify dark and light themes on mobile and desktop, navigation, search, sign-in-gated saves, character motion, reduced motion, and overflow.

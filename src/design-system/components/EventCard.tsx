@@ -97,10 +97,9 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-canvas/55 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         />
-        <span className="type-caption absolute left-md top-md inline-flex min-h-8 items-center gap-xs rounded-full border border-line bg-canvas/80 px-sm font-semibold text-primary-text backdrop-blur-md">
-          <CalendarDays aria-hidden className="size-3.5 text-accent" />
-          {date}
-          {time ? ` · ${time}` : ""}
+        <span className="type-caption absolute left-md top-md inline-flex min-h-8 max-w-[calc(100%-var(--spacing-section))] items-center gap-xs rounded-full border border-line bg-canvas/80 px-sm font-semibold text-primary-text backdrop-blur-md">
+          <CalendarDays aria-hidden className="size-3.5 shrink-0 text-accent" />
+          <span className="truncate">{date}{time ? ` · ${time}` : ""}</span>
         </span>
         <Button
           type="button"
