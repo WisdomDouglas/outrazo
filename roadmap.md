@@ -84,6 +84,8 @@
 
 ## App home editorial polish
 
+- [x] Update the home character illustration and give it visible, uncluttered animated placement.
+- [x] Repair mobile header alignment, compact the demo banner, and balance personalized event rows.
 - [x] Refine shared event-card hierarchy and responsive sizing without duplicating event logic.
 - [x] Recompose the personalized home into an editorial dashboard using existing content and artwork.
 - [x] Add a persistent collapsible desktop sidebar and polished mobile navigation dock.

@@ -32,13 +32,13 @@ export function AppHeader({ title }: { title: string }) {
 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-canvas/90 backdrop-blur-xl">
-      <div className="grid min-h-20 grid-cols-[minmax(0,1fr)_auto] items-center gap-md px-md sm:flex lg:px-xl">
+      <div className="flex min-h-16 items-center gap-sm px-md sm:min-h-20 sm:gap-md lg:px-xl">
         <Link to="/app" className="focus-ring type-h3 shrink-0 rounded-sm md:hidden" aria-label="Outrazo home"><BrandLogo /></Link>
         <h1 className="type-h2 hidden shrink-0 md:block">{title}</h1>
         <form onSubmit={submit} className="ml-auto hidden w-full max-w-[480px] sm:block" role="search">
           <SearchField value={query} onChange={(event) => setQuery(event.target.value)} onClear={() => setQuery("")} placeholder="Search events" />
         </form>
-        <div ref={notificationRef} className="relative">
+        <div ref={notificationRef} className="relative ml-auto sm:ml-0">
           <Button type="button" variant="ghost" className="relative size-11 p-0" aria-label="Open notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen((open) => !open)}>
             <Bell aria-hidden className="size-5" />
             <span className="absolute right-sm top-sm size-2 rounded-full bg-transactional" aria-label="3 unread notifications" />

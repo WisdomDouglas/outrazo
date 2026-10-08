@@ -21,13 +21,17 @@ export function AppShell() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
-    setSidebarCollapsed(window.localStorage.getItem("outrazo-sidebar-collapsed") === "true");
+    try {
+      setSidebarCollapsed(window.localStorage.getItem("outrazo-sidebar-collapsed") === "true");
+    } catch { /* Navigation remains usable when storage is blocked. */ }
   }, []);
 
   const toggleSidebar = () => {
     setSidebarCollapsed((current) => {
       const next = !current;
-      window.localStorage.setItem("outrazo-sidebar-collapsed", String(next));
+      try {
+        window.localStorage.setItem("outrazo-sidebar-collapsed", String(next));
+      } catch { /* Keep the preference for this visit. */ }
       return next;
     });
   };

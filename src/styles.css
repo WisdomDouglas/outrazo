@@ -130,27 +130,29 @@ html.light .brand-logo-light { display: block; }
   .onboarding-step, .onboarding-art-character, .onboarding-art-event { animation: none; }
 }
 
-/* App home: restrained editorial motion and visual hierarchy. */
-.app-home-welcome::before {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: linear-gradient(var(--outrazo-border) 1px, transparent 1px), linear-gradient(90deg, var(--outrazo-border) 1px, transparent 1px);
-  background-size: var(--spacing-2xl) var(--spacing-2xl);
-  mask-image: linear-gradient(90deg, transparent, black, transparent);
-  opacity: .22;
-  content: "";
-}
+/* Home artwork stays in normal flow so faces and controls never overlap. */
+.app-home-welcome { padding-block: var(--spacing-lg) 0; }
+.app-home-welcome > div:first-child { padding-bottom: var(--spacing-xl); }
 .app-home-welcome > div:first-child { animation: app-home-enter 600ms cubic-bezier(.22,1,.36,1) both; }
-.app-home-art img { animation: app-home-art-float 7s ease-in-out infinite; filter: drop-shadow(0 var(--spacing-lg) var(--spacing-xl) color-mix(in srgb, var(--outrazo-bg-canvas) 56%, transparent)); }
-.app-home-section { animation: app-home-enter 650ms cubic-bezier(.22,1,.36,1) both; animation-timeline: view(); animation-range: entry 0% entry 22%; }
+.app-home-art { width: 100%; max-width: calc(var(--spacing-section) * 5); margin-inline: auto; padding-top: var(--spacing-xl); }
+.app-home-art img { transform-origin: center bottom; animation: app-home-art-sway 6s ease-in-out infinite; }
+.app-home-art-label { position: absolute; z-index: 20; animation: app-home-art-float 5s ease-in-out infinite; }
+.app-home-art-label--music { top: 0; left: var(--spacing-sm); transform: rotate(-6deg); }
+.app-home-art-label--people { right: 0; bottom: var(--spacing-xl); animation-delay: -2.5s; }
+.app-home-section { animation: app-home-enter 650ms cubic-bezier(.22,1,.36,1) both; }
+@supports (animation-timeline: view()) { .app-home-section { animation-timeline: view(); animation-range: entry 0% entry 22%; } }
+.app-home h1, .app-home h2, .app-home h3 { letter-spacing: 0; }
 @keyframes app-home-enter { from { opacity: 0; transform: translateY(var(--spacing-md)); } to { opacity: 1; transform: translateY(0); } }
-@keyframes app-home-art-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(calc(var(--spacing-sm) * -1)); } }
+@keyframes app-home-art-sway { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(calc(var(--spacing-sm) * -1)) rotate(1deg); } }
+@keyframes app-home-art-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 calc(var(--spacing-sm) * -1); } }
 @media (max-width: 639px) {
-  .app-home-welcome { padding-top: 13rem; }
-  .app-home-welcome::before { background-size: var(--spacing-xl) var(--spacing-xl); }
-  .app-home { gap: var(--spacing-3xl); }
+  .app-home-welcome { gap: 0; padding-top: 0; }
+  .app-home-welcome > div:first-child { padding-bottom: var(--spacing-md); }
+  .app-home-art { max-width: calc(var(--spacing-section) * 3); }
+  .app-home-art-label--people { bottom: var(--spacing-md); }
+  .app-home { gap: var(--spacing-xl); }
+  .app-home h2 { font-size: var(--text-h3); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .app-home-welcome > div:first-child, .app-home-art img, .app-home-section { animation: none; }
+  .app-home-welcome > div:first-child, .app-home-art img, .app-home-art-label, .app-home-section { animation: none; }
 }
