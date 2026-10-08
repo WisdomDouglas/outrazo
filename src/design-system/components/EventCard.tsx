@@ -5,6 +5,7 @@ import { forwardRef, type HTMLAttributes } from "react";
 import { Avatar } from "./Avatar";
 import { AvatarStack, type AvatarStackPerson } from "./AvatarStack";
 import { Badge } from "./Badge";
+import { Button } from "./Button";
 import { cn } from "../lib/utils";
 
 export interface EventCardProps extends HTMLAttributes<HTMLElement> {
@@ -101,18 +102,20 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
           {date}
           {time ? ` · ${time}` : ""}
         </span>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={(event) => {
             event.stopPropagation();
             onToggleSave?.();
           }}
           aria-pressed={saved}
           aria-label={saved ? `Remove ${title} from saved` : `Save ${title}`}
-          className="focus-ring absolute right-md top-md grid size-11 place-items-center rounded-full border border-line bg-canvas/80 text-primary-text backdrop-blur-md transition-[transform,color,border-color] duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent active:scale-95"
+          className="absolute right-md top-md rounded-full border border-line bg-canvas/80 text-primary-text backdrop-blur-md hover:border-accent/50 hover:text-accent"
         >
-          <Bookmark aria-hidden className={cn("size-[18px]", saved && "fill-accent text-accent")} />
-        </button>
+          <Bookmark aria-hidden className={cn("size-4", saved && "fill-accent text-accent")} />
+        </Button>
         {tag ? (
           <Badge variant={tagVariant} className="absolute bottom-md left-md backdrop-blur-md">
             {tag}
@@ -120,8 +123,8 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-sm px-md pt-md">
-        <h3 className="type-h3 min-h-2xl">
+      <div className="flex flex-1 flex-col gap-sm px-md pt-md">
+        <h3 className="type-h3 min-h-[2.6em]">
           {eventId ? (
             <Link
               to="/events/$eventId"

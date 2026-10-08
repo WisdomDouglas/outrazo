@@ -19,6 +19,7 @@ const buttonVariants = cva(
           "text-primary-text rounded-full bg-transparent hover:bg-primary-text/8",
       },
       size: {
+        icon: "size-11 shrink-0 p-0 [&_svg]:shrink-0",
         sm: "h-11 px-lg text-[13px]",
         md: "h-12 px-xl",
         lg: "h-14 px-2xl text-[16px]",

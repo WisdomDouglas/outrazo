@@ -68,7 +68,7 @@ export function AppSidebar({ collapsed, onToggle }: { collapsed: boolean; onTogg
         </Link>
       </div>
 
-      <Button type="button" variant="outline" size="sm" onClick={onToggle} className="absolute right-0 top-section z-20 size-11 translate-x-1/2 rounded-full bg-card p-0 shadow-card" aria-label={collapsed ? "Expand navigation" : "Minimize navigation"} title={collapsed ? "Expand navigation" : "Minimize navigation"}>
+      <Button type="button" variant="outline" size="icon" onClick={onToggle} className="absolute right-0 top-section z-20 translate-x-1/2 rounded-full bg-card shadow-card" aria-label={collapsed ? "Expand navigation" : "Minimize navigation"} title={collapsed ? "Expand navigation" : "Minimize navigation"}>
         {collapsed ? <ChevronRight aria-hidden className="size-4" /> : <ChevronLeft aria-hidden className="size-4" />}
       </Button>
 

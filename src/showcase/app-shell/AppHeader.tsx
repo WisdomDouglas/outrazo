@@ -39,7 +39,7 @@ export function AppHeader({ title }: { title: string }) {
           <SearchField value={query} onChange={(event) => setQuery(event.target.value)} onClear={() => setQuery("")} placeholder="Search events" />
         </form>
         <div ref={notificationRef} className="relative ml-auto sm:ml-0">
-          <Button type="button" variant="ghost" className="relative size-11 p-0" aria-label="Open notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen((open) => !open)}>
+          <Button type="button" variant="ghost" size="icon" className="relative" aria-label="Open notifications" aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen((open) => !open)}>
             <Bell aria-hidden className="size-5" />
             <span className="absolute right-sm top-sm size-2 rounded-full bg-transactional" aria-label="3 unread notifications" />
           </Button>

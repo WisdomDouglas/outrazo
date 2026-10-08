@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import { cn } from "../lib/utils";
+import { Button } from "./Button";
 
 export interface CarouselProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
   /** Slides. Each child is snapped into place. */
@@ -54,14 +55,16 @@ export function Carousel({
     const el = trackRef.current;
     if (!el) return;
     const onResize = () => sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(el);
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    return () => { observer.disconnect(); window.removeEventListener("resize", onResize); };
   }, [sync]);
 
   const scrollByPage = (direction: 1 | -1) => {
     const el = trackRef.current;
     if (!el) return;
-    el.scrollBy({ left: direction * Math.max(240, el.clientWidth * 0.8), behavior: "smooth" });
+    el.scrollBy({ left: direction * Math.max(240, el.clientWidth * 0.8), behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   };
 
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -149,8 +152,10 @@ function RailButton({
 }) {
   const Icon = direction === "prev" ? ChevronLeft : ChevronRight;
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon"
       onClick={onClick}
       disabled={disabled}
       aria-label={direction === "prev" ? "Scroll backwards" : "Scroll forwards"}
@@ -161,6 +166,6 @@ function RailButton({
       )}
     >
       <Icon aria-hidden className="size-5" />
-    </button>
+    </Button>
   );
 }

@@ -9,7 +9,7 @@ export function EventRail({ events, label }: { events: OutrazoEvent[]; label: st
   return (
     <Carousel
       label={label}
-      controls={false}
+      controls
       trackClassName="-mx-md px-md lg:mx-0 lg:px-0"
       slideClassName="w-[82vw] max-w-[340px] sm:w-[320px] lg:w-[340px]"
     >
