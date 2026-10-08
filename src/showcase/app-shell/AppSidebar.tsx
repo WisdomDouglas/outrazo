@@ -50,6 +50,7 @@ function SidebarLink({ item, emphasis = false, collapsed = false }: { item: NavI
       )}
       activeProps={{ className: "bg-accent/12 text-accent" }}
       title={item.label}
+      aria-label={item.label}
     >
       <span className="grid size-8 shrink-0 place-items-center rounded-sm transition-colors group-hover/nav:bg-accent/10"><Icon aria-hidden className="size-5" /></span>
       {collapsed ? null : <span className="truncate">{item.label}</span>}
@@ -67,7 +68,7 @@ export function AppSidebar({ collapsed, onToggle }: { collapsed: boolean; onTogg
         </Link>
       </div>
 
-      <Button type="button" variant="outline" size="sm" onClick={onToggle} className="absolute -right-[22px] top-24 z-20 size-11 rounded-full bg-card p-0 shadow-card" aria-label={collapsed ? "Expand navigation" : "Minimize navigation"} title={collapsed ? "Expand navigation" : "Minimize navigation"}>
+      <Button type="button" variant="outline" size="icon" onClick={onToggle} className="absolute right-0 top-section z-20 translate-x-1/2 rounded-full bg-card shadow-card" aria-label={collapsed ? "Expand navigation" : "Minimize navigation"} title={collapsed ? "Expand navigation" : "Minimize navigation"}>
         {collapsed ? <ChevronRight aria-hidden className="size-4" /> : <ChevronLeft aria-hidden className="size-4" />}
       </Button>
 
@@ -81,6 +82,9 @@ export function AppSidebar({ collapsed, onToggle }: { collapsed: boolean; onTogg
         {ACCOUNT_NAV.map((item) => <SidebarLink key={item.to} item={item} collapsed={collapsed} />)}
         <Link
           to="/app/profile"
+          aria-label="View profile"
+          title="View profile"
+          activeProps={{ className: "ring-1 ring-accent" }}
           className={`focus-ring mt-sm flex min-h-14 items-center gap-sm rounded-md bg-elevated px-sm ${collapsed ? "justify-center" : "justify-start"}`}
         >
           <Avatar name={displayName} src={profile?.avatar_url ?? undefined} size="md" />

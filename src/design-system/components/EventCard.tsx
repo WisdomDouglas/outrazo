@@ -5,6 +5,7 @@ import { forwardRef, type HTMLAttributes } from "react";
 import { Avatar } from "./Avatar";
 import { AvatarStack, type AvatarStackPerson } from "./AvatarStack";
 import { Badge } from "./Badge";
+import { Button } from "./Button";
 import { cn } from "../lib/utils";
 
 export interface EventCardProps extends HTMLAttributes<HTMLElement> {
@@ -96,23 +97,24 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-canvas/55 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         />
-        <span className="type-caption absolute left-md top-md inline-flex min-h-8 items-center gap-xs rounded-full border border-line bg-canvas/80 px-sm font-semibold text-primary-text backdrop-blur-md">
-          <CalendarDays aria-hidden className="size-3.5 text-accent" />
-          {date}
-          {time ? ` · ${time}` : ""}
+        <span className="type-caption absolute left-md top-md inline-flex min-h-8 max-w-[calc(100%-var(--spacing-section))] items-center gap-xs rounded-full border border-line bg-canvas/80 px-sm font-semibold text-primary-text backdrop-blur-md">
+          <CalendarDays aria-hidden className="size-3.5 shrink-0 text-accent" />
+          <span className="truncate">{date}{time ? ` · ${time}` : ""}</span>
         </span>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={(event) => {
             event.stopPropagation();
             onToggleSave?.();
           }}
           aria-pressed={saved}
           aria-label={saved ? `Remove ${title} from saved` : `Save ${title}`}
-          className="focus-ring absolute right-md top-md grid size-11 place-items-center rounded-full border border-line bg-canvas/80 text-primary-text backdrop-blur-md transition-[transform,color,border-color] duration-200 hover:scale-105 hover:border-accent/50 hover:text-accent active:scale-95"
+          className="absolute right-md top-md rounded-full border border-line bg-canvas/80 text-primary-text backdrop-blur-md hover:border-accent/50 hover:text-accent"
         >
-          <Bookmark aria-hidden className={cn("size-[18px]", saved && "fill-accent text-accent")} />
-        </button>
+          <Bookmark aria-hidden className={cn("size-4", saved && "fill-accent text-accent")} />
+        </Button>
         {tag ? (
           <Badge variant={tagVariant} className="absolute bottom-md left-md backdrop-blur-md">
             {tag}
@@ -120,8 +122,8 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-sm px-md pt-md">
-        <h3 className="type-h3 min-h-2xl">
+      <div className="flex flex-1 flex-col gap-sm px-md pt-md">
+        <h3 className="type-h3 min-h-[2.6em]">
           {eventId ? (
             <Link
               to="/events/$eventId"

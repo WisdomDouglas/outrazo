@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CalendarClock, Compass, Sparkles, Users } from "lucide-react";
+import { ArrowRight, CalendarClock, Compass, Music2, Sparkles, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
-import greetingArt from "@/assets/home-greeting.png";
+import greetingArt from "@/assets/home-community.png";
 import emptyArt from "@/assets/home-empty.png";
 import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
 import { EventRail } from "@/showcase/app-shell/EventRail";
@@ -140,18 +140,19 @@ function AppHome() {
 
   return (
     <div className="app-home mx-auto flex w-full max-w-[1320px] flex-col gap-3xl px-md py-lg lg:px-xl lg:py-xl">
-      <section className="app-home-welcome relative isolate grid min-h-[22rem] overflow-hidden rounded-lg border border-line bg-card p-lg shadow-card sm:min-h-[20rem] sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.65fr)] sm:items-center sm:p-xl lg:min-h-[22rem] lg:p-2xl">
+      <section className="app-home-welcome relative isolate grid items-center gap-lg border-b border-line sm:grid-cols-2">
         <div className="relative z-10 flex max-w-[42rem] flex-col items-start gap-xs">
           <p className="type-caption font-semibold text-accent">
             {greeting}, {displayName}
           </p>
           <h1 className="type-h1 max-w-[12ch] text-balance">Your city has plans for you.</h1>
-          <p className="type-body-lg mt-sm max-w-[34ch] text-muted-text">A personal edit of what&apos;s happening, who&apos;s going, and where to show up next.</p>
+          <p className="type-body-lg mt-sm max-w-[34ch] text-muted-text">Find your next great night, new connection, or favourite spot.</p>
           <LocationPicker location={location} onChange={changeLocation} className="mt-md" />
         </div>
-        <div className="app-home-art pointer-events-none absolute inset-x-0 top-0 h-[13rem] overflow-hidden sm:relative sm:inset-auto sm:h-full">
-          <span aria-hidden className="absolute inset-x-lg bottom-lg h-px bg-accent/30" />
-          <img src={greetingArt} alt="" loading="lazy" width={1024} height={768} className="absolute bottom-0 right-0 h-auto w-56 max-w-none select-none sm:w-[22rem] lg:w-[26rem]" />
+        <div className="app-home-art pointer-events-none relative isolate self-end" aria-hidden="true">
+          <span className="app-home-art-label app-home-art-label--music type-caption inline-flex items-center gap-sm rounded-full border border-line bg-card px-md py-sm text-accent"><Music2 className="size-4" />Good vibes</span>
+          <span className="app-home-art-label app-home-art-label--people type-caption inline-flex items-center gap-sm rounded-full border border-line bg-card px-md py-sm text-primary-text"><Users className="size-4 text-accent" />Your kind of people</span>
+          <img src={greetingArt} alt="" fetchPriority="high" width={1024} height={768} className="relative z-10 block h-auto w-full select-none" />
         </div>
       </section>
 
@@ -227,7 +228,7 @@ function AppHome() {
         <SectionHeader
           title="People are going to"
           icon={Users}
-          meta={<p className="type-caption text-muted-text">Most attended events in the dataset.</p>}
+           meta={<p className="type-caption text-muted-text">Popular with the Outrazo community.</p>}
         />
         <AppEventGrid events={popular} />
       </section>
