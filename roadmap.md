@@ -84,6 +84,8 @@
 
 ## App home editorial polish
 
+- [x] Blend the welcome into a full-width illustrated card and verify mobile/desktop in both themes.
+
 - [x] Update the home character illustration and give it visible, uncluttered animated placement.
 - [x] Repair mobile header alignment, compact the demo banner, and balance personalized event rows.
 - [x] Refine shared event-card hierarchy and responsive sizing without duplicating event logic.
