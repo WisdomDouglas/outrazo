@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CalendarClock, Compass, Music2, Sparkles, Users } from "lucide-react";
+import { ArrowRight, CalendarClock, Compass, MapPin, Music2, Sparkles, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/design-system/components/Button";
@@ -140,7 +140,7 @@ function AppHome() {
 
   return (
     <div className="app-home mx-auto flex w-full max-w-[1320px] flex-col gap-3xl px-md py-lg lg:px-xl lg:py-xl">
-      <section className="app-home-welcome relative isolate grid items-center gap-lg border-b border-line sm:grid-cols-2">
+      <section className="app-home-welcome relative isolate grid items-center gap-lg overflow-hidden rounded-md border border-line bg-card sm:grid-cols-2">
         <div className="relative z-10 flex max-w-[42rem] flex-col items-start gap-xs">
           <p className="type-caption font-semibold text-accent">
             {greeting}, {displayName}
@@ -150,6 +150,7 @@ function AppHome() {
           <LocationPicker location={location} onChange={changeLocation} className="mt-md" />
         </div>
         <div className="app-home-art pointer-events-none relative isolate self-end" aria-hidden="true">
+          <span className="app-home-art-place grid place-items-center rounded-full border border-accent/20 bg-elevated text-accent"><MapPin className="size-6" strokeWidth={2} /></span>
           <span className="app-home-art-label app-home-art-label--music type-caption inline-flex items-center gap-sm rounded-full border border-line bg-card px-md py-sm text-accent"><Music2 className="size-4" />Good vibes</span>
           <span className="app-home-art-label app-home-art-label--people type-caption inline-flex items-center gap-sm rounded-full border border-line bg-card px-md py-sm text-primary-text"><Users className="size-4 text-accent" />Your kind of people</span>
           <img src={greetingArt} alt="" fetchPriority="high" width={1024} height={768} className="relative z-10 block h-auto w-full select-none" />

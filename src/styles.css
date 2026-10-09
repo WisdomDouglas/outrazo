@@ -131,13 +131,15 @@ html.light .brand-logo-light { display: block; }
 }
 
 /* Home artwork stays in normal flow so faces and controls never overlap. */
-.app-home-welcome { padding-block: var(--spacing-lg) 0; }
+.app-home-welcome { padding: var(--spacing-xl) var(--spacing-xl) 0; background: linear-gradient(115deg, var(--outrazo-bg-card) 45%, var(--outrazo-bg-elevated)); }
 .app-home-welcome > div:first-child { padding-bottom: var(--spacing-xl); }
 .app-home-welcome > div:first-child { animation: app-home-enter 600ms cubic-bezier(.22,1,.36,1) both; }
-.app-home-art { width: 100%; max-width: calc(var(--spacing-section) * 5); margin-inline: auto; padding-top: var(--spacing-xl); }
+.app-home-art { width: 100%; max-width: calc(var(--spacing-section) * 5); margin-inline: auto; padding-top: var(--spacing-2xl); }
+.app-home-art::before { content: ""; position: absolute; inset: 12% 6% 10%; border: 1px solid color-mix(in srgb, var(--outrazo-accent-primary) 20%, transparent); border-radius: var(--outrazo-radius-full); transform: rotate(-12deg); pointer-events: none; }
+.app-home-art-place { position: absolute; top: 10%; right: 8%; width: var(--spacing-2xl); height: var(--spacing-2xl); transform: rotate(12deg); animation: app-home-art-float 6s ease-in-out infinite; }
 .app-home-art img { transform-origin: center bottom; animation: app-home-art-sway 6s ease-in-out infinite; }
 .app-home-art-label { position: absolute; z-index: 20; animation: app-home-art-float 5s ease-in-out infinite; }
-.app-home-art-label--music { top: 0; left: var(--spacing-sm); transform: rotate(-6deg); }
+.app-home-art-label--music { top: var(--spacing-sm); left: 0; transform: rotate(-6deg); }
 .app-home-art-label--people { right: 0; bottom: var(--spacing-xl); animation-delay: -2.5s; }
 .app-home-section { animation: app-home-enter 650ms cubic-bezier(.22,1,.36,1) both; }
 @supports (animation-timeline: view()) { .app-home-section { animation-timeline: view(); animation-range: entry 0% entry 22%; } }
@@ -146,13 +148,14 @@ html.light .brand-logo-light { display: block; }
 @keyframes app-home-art-sway { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(calc(var(--spacing-sm) * -1)) rotate(1deg); } }
 @keyframes app-home-art-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 calc(var(--spacing-sm) * -1); } }
 @media (max-width: 639px) {
-  .app-home-welcome { gap: 0; padding-top: 0; }
+  .app-home-welcome { gap: 0; padding: var(--spacing-lg) var(--spacing-md) 0; }
   .app-home-welcome > div:first-child { padding-bottom: var(--spacing-md); }
-  .app-home-art { max-width: calc(var(--spacing-section) * 3); }
+  .app-home-art { max-width: calc(var(--spacing-section) * 3); padding-top: var(--spacing-xl); }
+  .app-home-art-place { right: 0; top: 18%; }
   .app-home-art-label--people { bottom: var(--spacing-md); }
   .app-home { gap: var(--spacing-xl); }
   .app-home h2 { font-size: var(--text-h3); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .app-home-welcome > div:first-child, .app-home-art img, .app-home-art-label, .app-home-section { animation: none; }
+  .app-home-welcome > div:first-child, .app-home-art img, .app-home-art-label, .app-home-art-place, .app-home-section { animation: none; }
 }
