@@ -601,12 +601,13 @@ html.light .brand-logo-light { display: block; }
   .home-description { max-width: 31ch; margin-top: 10px; font-size: 14px; line-height: 1.48; }
   .home-search { margin-top: 17px; }
   .home-quick-filters { margin-top: 11px; }
-  .home-stats { order: 1; margin: 2px 15px 0; border-radius: 16px; box-shadow: 0 7px 20px rgba(10,45,31,.055); }
-  .home-stat { min-height: 75px; gap: 5px; padding: 9px 4px; }
-  .home-stat-icon { width: 26px; height: 26px; }
-  .home-stat-icon svg { width: 19px; height: 19px; }
-  .home-stat strong { font-size: 13px; }
-  .home-stat small { font-size: 9px; line-height: 1.25; }
+  .home-stats { order: 1; margin: 10px 15px 0; border-radius: 16px; box-shadow: 0 7px 20px rgba(10,45,31,.055); }
+  .home-stat { min-height: 70px; flex-direction: row; justify-content: center; gap: 6px; padding: 8px 4px; text-align: left; }
+  .home-stat-icon { width: 24px; height: 28px; }
+  .home-stat-icon svg { width: 18px; height: 18px; }
+  .home-stat > span:last-child { gap: 1px; }
+  .home-stat strong { font-size: 12px; }
+  .home-stat small { font-size: 8px; line-height: 1.25; }
   .home-featured-section { order: 2; padding: 24px 15px 3px; }
   .home-feature-heading { margin-bottom: 13px; }
   .home-feature-heading h2 { font-size: 23px; }
@@ -628,49 +629,54 @@ html.light .brand-logo-light { display: block; }
     bottom: max(11px, calc(env(safe-area-inset-bottom) + 9px));
     left: 50%;
     width: min(520px, calc(100% - 24px));
-    min-height: 76px;
+    min-height: 78px;
     align-items: center;
     transform: translateX(-50%);
-    border: 1px solid rgba(255,255,255,.76);
-    border-radius: 25px;
-    background: linear-gradient(135deg, rgba(255,255,255,.87), rgba(241,250,245,.76));
-    padding: 6px 8px;
-    box-shadow: 0 14px 38px rgba(9,45,29,.19), inset 0 1px 0 rgba(255,255,255,.76);
+    border: 1px solid rgba(255,255,255,.86);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(255,249,238,.96), rgba(246,232,211,.94));
+    padding: 5px 6px;
+    box-shadow: 0 10px 30px rgba(63,49,29,.2), inset 0 1px 0 rgba(255,255,255,.95);
     -webkit-backdrop-filter: blur(24px) saturate(165%);
     backdrop-filter: blur(24px) saturate(165%);
   }
   .app-mobile-nav-item {
-    min-height: 60px;
-    gap: 2px;
-    border-radius: 17px;
-    color: #65756d;
+    min-height: 66px;
+    gap: 3px;
+    border-radius: 999px;
+    color: #445c50;
     transition: color 180ms ease, background-color 180ms ease, transform 180ms ease;
   }
   .app-mobile-nav-item:active { transform: scale(.96); }
-  .app-mobile-nav-icon { width: 40px; min-height: 32px; border-radius: 12px; transition: background-color 180ms ease, color 180ms ease; }
-  .app-mobile-nav-item--active { background: rgba(0,184,120,.075); color: #00885a; }
-  .app-mobile-nav-item--active .app-mobile-nav-icon { background: rgba(0,184,120,.1); }
-  .app-mobile-nav-label { font-size: 9px; font-weight: 600; letter-spacing: .005em; }
-  .app-mobile-nav-item--primary { background: transparent; color: #65756d; }
+  .app-mobile-nav-icon { width: 38px; min-height: 29px; border-radius: 12px; transition: background-color 180ms ease, color 180ms ease; }
+  .app-mobile-nav-item--active { background: rgba(255,255,255,.72); color: #006f49; box-shadow: inset 0 1px 0 rgba(255,255,255,.94), 0 3px 10px rgba(78,61,37,.08); }
+  .app-mobile-nav-item--active .app-mobile-nav-icon { background: transparent; }
+  .app-mobile-nav-label { font-size: 10px; font-weight: 600; letter-spacing: .005em; }
+  .app-mobile-nav-item--primary { background: transparent; color: #445c50; }
   .app-mobile-nav-item--primary .app-mobile-nav-icon {
-    width: 46px;
-    height: 46px;
-    min-height: 46px;
-    margin-top: -13px;
-    border: 4px solid rgba(248,252,250,.96);
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+    margin-top: 0;
+    border: 0;
     border-radius: 50%;
-    background: linear-gradient(145deg, #12c987, #009d67);
-    color: #fff;
-    box-shadow: 0 8px 19px rgba(0,165,105,.3), inset 0 1px 0 rgba(255,255,255,.3);
+    background: rgba(0,184,120,.13);
+    color: #00784f;
+    box-shadow: none;
   }
-  .app-mobile-nav-item--primary .app-mobile-nav-label { margin-top: 0; }
+  .app-mobile-nav-item--primary .app-mobile-nav-icon svg { width: 20px; height: 20px; }
+  .app-mobile-nav-item--primary.app-mobile-nav-item--active { background: rgba(255,255,255,.72); color: #006f49; }
   .app-mobile-nav-item:focus-visible { outline: 3px solid rgba(0,184,120,.45); outline-offset: 2px; }
 }
 
 @media (max-width: 359px) {
-  .app-mobile-nav { width: calc(100% - 16px); padding-inline: 5px; }
-  .app-mobile-nav-label { font-size: 8px; }
-  .app-mobile-nav-icon { width: 36px; }
+  .app-mobile-nav { width: calc(100% - 16px); padding-inline: 4px; }
+  .app-mobile-nav-label { font-size: 9px; }
+  .app-mobile-nav-icon { width: 32px; }
+  .app-mobile-nav-item { gap: 2px; }
+  .home-title { font-size: 34px; }
+  .home-feature-heading h2 { font-size: 19px; }
+  .home-view-all { gap: 3px; padding-inline: 5px; font-size: 10px; }
 }
 
 html:not(.light) .app-home {
@@ -688,9 +694,9 @@ html:not(.light) .home-secondary-section .bg-accent\/10 { box-shadow: inset 0 0 
     box-shadow: 0 14px 38px rgba(0,0,0,.4), inset 0 1px 0 rgba(224,245,232,.08);
   }
   html:not(.light) .app-mobile-nav-item { color: #abc2b4; }
-  html:not(.light) .app-mobile-nav-item--active { background: rgba(16,185,129,.12); color: #72e2b1; }
-  html:not(.light) .app-mobile-nav-item--active .app-mobile-nav-icon { background: rgba(16,185,129,.15); }
-  html:not(.light) .app-mobile-nav-item--primary .app-mobile-nav-icon { border-color: rgba(13,38,27,.96); }
+  html:not(.light) .app-mobile-nav-item--active { background: rgba(16,185,129,.15); color: #72e2b1; box-shadow: inset 0 1px 0 rgba(224,245,232,.08); }
+  html:not(.light) .app-mobile-nav-item--active .app-mobile-nav-icon { background: transparent; }
+  html:not(.light) .app-mobile-nav-item--primary .app-mobile-nav-icon { background: rgba(16,185,129,.18); color: #72e2b1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -803,9 +809,9 @@ html:not(.light) .home-secondary-section article:hover { box-shadow: 0 12px 30px
     background: linear-gradient(135deg, rgba(13,38,27,.91), rgba(8,25,17,.88));
     box-shadow: 0 14px 38px rgba(0,0,0,.4), inset 0 1px 0 rgba(224,245,232,.08);
   }
-  html:not(.light) .app-mobile-nav-item--active { color: #72e2b1; }
-  html:not(.light) .app-mobile-nav-item--active .app-mobile-nav-icon { background: rgba(16,185,129,.15); }
-  html:not(.light) .app-mobile-nav-item--primary .app-mobile-nav-icon { border-color: rgba(13,38,27,.96); }
+  html:not(.light) .app-mobile-nav-item--active { background: rgba(16,185,129,.15); color: #72e2b1; box-shadow: inset 0 1px 0 rgba(224,245,232,.08); }
+  html:not(.light) .app-mobile-nav-item--active .app-mobile-nav-icon { background: transparent; }
+  html:not(.light) .app-mobile-nav-item--primary .app-mobile-nav-icon { border: 0; background: rgba(16,185,129,.18); color: #72e2b1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .home-secondary-section article { transition: none; }
