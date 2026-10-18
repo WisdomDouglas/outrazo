@@ -220,8 +220,6 @@ function AppHome() {
       .slice(0, 3);
   }, [location, query, quickFilter]);
 
-  const heroEvent = featured[0] ?? EVENTS[0];
-
   const soon = useMemo(
     () => [...EVENTS].sort((a, b) => a.startsAt.localeCompare(b.startsAt)).slice(0, 6),
     [],
@@ -301,17 +299,6 @@ function AppHome() {
         <div className="app-home-art">
           <span className="app-home-art-label app-home-art-label--music"><Music2 aria-hidden className="size-4" /> Good vibes</span>
           <span className="app-home-art-place" aria-hidden="true"><MapPin className="size-5" /></span>
-          {heroEvent ? (
-            <Link to="/events/$eventId" params={{ eventId: heroEvent.id }} className="app-home-floating-event focus-ring">
-              <img src={heroEvent.imageSrc} alt="" loading="lazy" />
-              <span className="app-home-floating-event-copy">
-                <span className="app-home-floating-event-tag">{heroEvent.tonight ? "Tonight" : "Featured"}</span>
-                <strong>{heroEvent.title}</strong>
-                <small><MapPin aria-hidden className="size-3" /> {heroEvent.location}</small>
-              </span>
-              <span className="app-home-floating-event-price">{heroEvent.price ?? "Free"}</span>
-            </Link>
-          ) : null}
         </div>
       </section>
 
