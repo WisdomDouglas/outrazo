@@ -368,7 +368,7 @@ function AppHome() {
           }
         />
         {picked.length ? (
-          <AppEventGrid events={picked} />
+          <AppEventGrid events={picked} className="app-home-event-rail" label="Your picked events" />
         ) : (
           <EmptyState
             title="Your picks will show up here."
@@ -387,7 +387,7 @@ function AppHome() {
       <section className="app-home-section home-secondary-section">
         <SectionHeader title="Near you" icon={Compass} meta={<LocationPicker location={location} onChange={changeLocation} />} />
         {nearYou.length ? (
-          <AppEventGrid events={nearYou} />
+          <AppEventGrid events={nearYou} className="app-home-event-rail" label={`Events near ${location}`} />
         ) : (
           <EmptyState
             title="Nothing happening nearby yet."
@@ -403,7 +403,7 @@ function AppHome() {
           icon={Users}
           meta={<p className="type-caption text-muted-text">Popular with the Outrazo community.</p>}
         />
-        <AppEventGrid events={popular} />
+        <AppEventGrid events={popular} className="app-home-event-rail" label="Popular events" />
       </section>
     </div>
   );
