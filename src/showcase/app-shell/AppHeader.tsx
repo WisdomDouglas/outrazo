@@ -1,11 +1,12 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, CalendarDays, ChevronDown, Compass, Home, PanelLeftClose, PanelLeftOpen, Ticket } from "lucide-react";
+import { Bell, CalendarDays, ChevronDown, Compass, Home, Moon, PanelLeftClose, PanelLeftOpen, Sun, Ticket } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Button } from "@/design-system/components/Button";
 import { SearchField } from "@/design-system/components/SearchField";
+import { useTheme } from "@/design-system/lib/use-theme";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { NotificationPanel } from "./NotificationPanel";
 
@@ -19,6 +20,7 @@ const HEADER_LINKS = [
 export function AppHeader({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const navigate = useNavigate();
   const { displayName, profile } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [query, setQuery] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
@@ -83,6 +85,18 @@ export function AppHeader({ collapsed, onToggle }: { collapsed: boolean; onToggl
             className="h-[50px] rounded-full bg-white px-lg"
           />
         </form>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="app-header-theme-toggle shrink-0"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          {theme === "dark" ? <Sun aria-hidden className="size-5" /> : <Moon aria-hidden className="size-5" />}
+        </Button>
 
         <div ref={notificationRef} className="relative ml-auto lg:ml-0">
           <Button

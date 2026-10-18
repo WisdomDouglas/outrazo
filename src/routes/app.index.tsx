@@ -18,6 +18,7 @@ import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { SearchField } from "@/design-system/components/SearchField";
 import emptyArt from "@/assets/home-empty.webp";
+import homeHero from "@/assets/home-hero-festival.webp";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
 import { EventRail } from "@/showcase/app-shell/EventRail";
@@ -220,7 +221,6 @@ function AppHome() {
   }, [location, query, quickFilter]);
 
   const heroEvent = featured[0] ?? EVENTS[0];
-  const heroImage = EVENTS[0]?.imageSrc.replace(/\?[^?]*$/, "?auto=format&fit=crop&w=1600&q=75");
 
   const soon = useMemo(
     () => [...EVENTS].sort((a, b) => a.startsAt.localeCompare(b.startsAt)).slice(0, 6),
@@ -248,7 +248,7 @@ function AppHome() {
   return (
     <div className="app-home">
       <section className="app-home-welcome" aria-labelledby="app-home-title">
-        {heroImage ? <img className="app-home-hero-background" src={heroImage} alt="" aria-hidden="true" fetchPriority="high" /> : null}
+        <img className="app-home-hero-background" src={homeHero} alt="" aria-hidden="true" fetchPriority="high" />
         <div className="app-home-copy">
           <p className="home-discover-pill">
             <span className="home-discover-dot" aria-hidden="true" />
