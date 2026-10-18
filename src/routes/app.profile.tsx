@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { UserRound } from "lucide-react";
+import { Bookmark, CalendarPlus, Settings, UserRound } from "lucide-react";
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { Badge } from "@/design-system/components/Badge";
@@ -28,6 +28,18 @@ function ProfilePage() {
             {user?.email ?? "Your profile and preferences"}
           </p>
         </div>
+      </div>
+
+      <div className="mt-lg flex flex-wrap gap-sm">
+        <Link to="/app/create-event" className="focus-ring rounded-full">
+          <Button variant="primary" leadingIcon={<CalendarPlus aria-hidden className="size-4" />}>Post an event</Button>
+        </Link>
+        <Link to="/app/saved" className="focus-ring rounded-full">
+          <Button variant="outline" leadingIcon={<Bookmark aria-hidden className="size-4" />}>Saved events</Button>
+        </Link>
+        <Link to="/app/settings" className="focus-ring rounded-full">
+          <Button variant="ghost" leadingIcon={<Settings aria-hidden className="size-4" />}>Settings</Button>
+        </Link>
       </div>
 
       <dl className="mt-xl grid gap-md rounded-lg border border-line bg-card p-lg sm:grid-cols-2">

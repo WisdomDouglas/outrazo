@@ -1,41 +1,30 @@
 import { Link } from "@tanstack/react-router";
-import { Bookmark, Compass, House, Ticket, UserRound, type LucideIcon } from "lucide-react";
+import { Compass, House, Plus, Ticket, UserRound } from "lucide-react";
 
-interface MobileItem {
-  label: string;
-  to: "/app" | "/app/explore" | "/app/saved" | "/app/tickets" | "/app/profile";
-  icon: LucideIcon;
-  exact?: boolean;
-}
-
-const ITEMS: MobileItem[] = [
-  { label: "Home", to: "/app", icon: House, exact: true },
-  { label: "Explore", to: "/app/explore", icon: Compass },
-  { label: "Saved", to: "/app/saved", icon: Bookmark },
-  { label: "Tickets", to: "/app/tickets", icon: Ticket },
-  { label: "Profile", to: "/app/profile", icon: UserRound },
+const ITEMS = [
+  { label: "Home", to: "/app" as const, icon: House, exact: true },
+  { label: "Explore", to: "/app/explore" as const, icon: Compass },
+  { label: "Create", to: "/app/create-event" as const, icon: Plus, primary: true },
+  { label: "Tickets", to: "/app/tickets" as const, icon: Ticket },
+  { label: "Profile", to: "/app/profile" as const, icon: UserRound },
 ];
 
 export function MobileBottomNav() {
   return (
-    <nav className="fixed inset-x-md bottom-md z-40 rounded-lg border border-line bg-card/90 p-xs pb-[max(var(--spacing-xs),env(safe-area-inset-bottom))] shadow-floating backdrop-blur-xl md:hidden" aria-label="Mobile app navigation">
-      <div className="grid grid-cols-5 gap-xs">
-        {ITEMS.map((item) => {
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              activeOptions={{ exact: item.exact }}
-              className="focus-ring type-caption flex min-h-14 min-w-0 flex-col items-center justify-center gap-xs rounded-md text-subtle-text transition-[color,background-color,transform] duration-200 active:scale-[0.98]"
-              activeProps={{ className: "bg-accent/12 text-accent" }}
-            >
-              <Icon aria-hidden className="size-5 shrink-0" strokeWidth={2} />
-              <span className="max-w-full truncate">{item.label}</span>
-            </Link>
-          );
-        })}
-      </div>
+    <nav className="app-mobile-nav" aria-label="Mobile app navigation">
+      {ITEMS.map(({ label, to, icon: Icon, exact, primary }) => (
+        <Link
+          key={to}
+          to={to}
+          activeOptions={{ exact: exact ?? false }}
+          className={`app-mobile-nav-item focus-ring ${primary ? "app-mobile-nav-item--primary" : ""}`}
+          activeProps={{ className: "app-mobile-nav-item--active" }}
+          aria-label={primary ? "Create an event" : label}
+        >
+          <span className="app-mobile-nav-icon"><Icon aria-hidden className={primary ? "size-7" : "size-5"} strokeWidth={2} /></span>
+          <span className="app-mobile-nav-label">{label}</span>
+        </Link>
+      ))}
     </nav>
   );
 }
