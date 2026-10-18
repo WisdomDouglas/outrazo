@@ -456,3 +456,165 @@ html.light .brand-logo-light { display: block; }
   .app-home-art img.app-home-art-scene { animation: none; }
   .app-mobile-nav-item { transition: none; }
 }
+
+/* Full-bleed photographic home hero: the copy shares the image and its gradients. */
+.app-home-welcome {
+  position: relative;
+  min-height: 540px;
+  isolation: isolate;
+  overflow: hidden;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 42px 4.6% 30px;
+  background: #e8f5ee;
+}
+.app-home-hero-background {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 44%;
+  animation: home-photo-arrive 900ms cubic-bezier(.2,.7,.2,1) both;
+}
+.app-home-welcome::before {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(244,251,247,.99) 0%, rgba(244,251,247,.95) 23%, rgba(244,251,247,.79) 40%, rgba(228,244,235,.26) 58%, rgba(5,38,25,.1) 100%),
+    linear-gradient(0deg, rgba(5,38,25,.24), transparent 40%),
+    linear-gradient(180deg, rgba(255,255,255,.12), transparent 48%);
+  content: "";
+  pointer-events: none;
+}
+.app-home-copy { z-index: 2; max-width: 610px; padding: 20px 0 26px; }
+.home-discover-pill { border-color: rgba(228,241,233,.82); background: rgba(251,255,252,.72); box-shadow: 0 8px 22px rgba(9,47,30,.08); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.home-title { color: #09241a; text-shadow: 0 1px 18px rgba(244,251,247,.24); }
+.home-title em { color: #007b50; }
+.home-description { color: #314f41; text-shadow: 0 1px 14px rgba(244,251,247,.28); }
+.home-search-field { border-color: rgba(255,255,255,.86); background: rgba(255,255,255,.88); box-shadow: 0 12px 28px rgba(5,39,25,.13); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.home-quick-filter { border-color: rgba(255,255,255,.84); background: rgba(250,255,252,.83); box-shadow: 0 6px 16px rgba(5,39,25,.08); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.home-quick-filter--selected { background: linear-gradient(135deg,#00c77d,#009f66); }
+.app-home-art {
+  position: relative;
+  z-index: 2;
+  display: block;
+  min-width: 0;
+  min-height: 440px;
+  max-height: none;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.app-home-art::after { display: none; }
+.app-home-art-label { border-color: rgba(255,255,255,.56); background: rgba(245,255,249,.74); color: #007b50; box-shadow: 0 10px 28px rgba(7,39,26,.16); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.app-home-art-label--music { top: 11%; left: 18%; }
+.app-home-art-place { top: 19%; right: 7%; border-color: rgba(255,255,255,.7); background: rgba(245,255,249,.82); box-shadow: 0 8px 22px rgba(7,39,26,.16); }
+.app-home-floating-event {
+  position: absolute;
+  right: 2%;
+  bottom: 7%;
+  display: grid;
+  width: min(360px, 92%);
+  min-height: 108px;
+  grid-template-columns: 82px minmax(0,1fr) auto;
+  grid-template-rows: auto 1fr;
+  align-items: center;
+  gap: 3px 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.68);
+  border-radius: 20px;
+  background: rgba(250,255,252,.9);
+  padding: 9px 12px 9px 9px;
+  color: #102b20;
+  text-decoration: none;
+  box-shadow: 0 18px 42px rgba(3,33,20,.24);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  backdrop-filter: blur(22px) saturate(145%);
+  animation: home-card-arrive 680ms 120ms cubic-bezier(.2,.7,.2,1) both;
+}
+.app-home-floating-event > img { display: block; width: 82px; height: 88px; grid-row: 1 / 3; border-radius: 13px; object-fit: cover; }
+.app-home-floating-event-copy { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 4px; grid-column: 2 / 4; }
+.app-home-floating-event-tag { border-radius: 999px; background: #e1f8ed; padding: 4px 8px; color: #008357; font: 700 9px/1 var(--outrazo-font-body); letter-spacing: .04em; text-transform: uppercase; }
+.app-home-floating-event-copy strong { display: block; max-width: 100%; overflow: hidden; color: #102b20; font: 700 13px/1.2 var(--outrazo-font-body); text-overflow: ellipsis; white-space: nowrap; }
+.app-home-floating-event-copy small { display: flex; max-width: 100%; align-items: center; gap: 3px; overflow: hidden; color: #61736a; font: 450 10px/1.2 var(--outrazo-font-body); text-overflow: ellipsis; white-space: nowrap; }
+.app-home-floating-event-copy small svg { flex: none; color: #00a96d; }
+.app-home-floating-event-price { align-self: end; grid-column: 3; grid-row: 2; border-radius: 999px; background: #007b58; padding: 5px 9px; color: white; font: 650 9px/1 var(--outrazo-font-body); white-space: nowrap; }
+@keyframes home-photo-arrive { from { opacity: .7; transform: scale(1.025); } to { opacity: 1; transform: scale(1); } }
+@keyframes home-card-arrive { from { opacity: 0; transform: translateY(12px) rotate(-1.5deg); } to { opacity: 1; transform: translateY(0) rotate(0); } }
+
+@media (max-width: 899px) {
+  .app-home-welcome {
+    display: block;
+    min-height: 0;
+    padding: 190px 16px 20px;
+    background: #eef8f2;
+  }
+  .app-home-hero-background { object-position: 57% 32%; }
+  .app-home-welcome::before {
+    background: linear-gradient(180deg, rgba(5,38,25,.12) 0%, rgba(5,38,25,.05) 16%, rgba(233,247,239,.58) 29%, rgba(238,248,242,.94) 43%, #f8fcf9 68%, #fff 100%), linear-gradient(90deg, rgba(5,38,25,.16), transparent 70%);
+  }
+  .app-home-copy { position: relative; z-index: 3; max-width: none; padding: 0; }
+  .home-discover-pill { min-height: 32px; margin-bottom: 10px; }
+  .home-title { max-width: 12ch; font-size: clamp(38px, 10vw, 48px); line-height: .99; }
+  .home-title br { display: block; }
+  .home-description { max-width: 34ch; margin-top: 9px; color: #38564a; font-size: 14px; line-height: 1.42; }
+  .home-search { width: 100%; margin-top: 15px; }
+  .home-search-field { height: 50px; }
+  .home-quick-filters { flex-wrap: nowrap; gap: 7px; overflow-x: auto; margin: 10px -16px 0; padding: 0 16px 6px; scrollbar-width: none; }
+  .home-quick-filters::-webkit-scrollbar { display: none; }
+  .home-quick-filter { min-height: 37px; flex: none; gap: 6px; padding-inline: 11px; font-size: 10px; }
+  .home-location-row { display: none; }
+  .app-home-art { position: absolute; z-index: 2; inset: 0; width: auto; height: auto; min-height: 0; max-height: none; margin: 0; overflow: visible; pointer-events: none; }
+  .app-home-art-label--music { top: 17px; left: 15px; }
+  .app-home-art-place { top: 16px; right: 16px; width: 38px; height: 38px; }
+  .app-home-floating-event {
+    top: 84px;
+    right: 13px;
+    bottom: auto;
+    width: min(278px, calc(100% - 26px));
+    min-height: 82px;
+    grid-template-columns: 62px minmax(0,1fr) auto;
+    gap: 2px 9px;
+    border-radius: 16px;
+    padding: 6px 8px 6px 6px;
+    pointer-events: auto;
+  }
+  .app-home-floating-event > img { width: 62px; height: 68px; border-radius: 11px; }
+  .app-home-floating-event-tag { padding: 3px 7px; font-size: 8px; }
+  .app-home-floating-event-copy { gap: 3px; }
+  .app-home-floating-event-copy strong { font-size: 11px; }
+  .app-home-floating-event-copy small { font-size: 9px; }
+  .app-home-floating-event-price { padding: 4px 7px; font-size: 8px; }
+  .app-shell { --app-mobile-dock-height: 72px; }
+  .app-main { padding-bottom: calc(var(--app-mobile-dock-height) + env(safe-area-inset-bottom) + 36px) !important; }
+  .app-mobile-nav {
+    right: 12px;
+    bottom: calc(env(safe-area-inset-bottom) + 10px);
+    left: 12px;
+    min-height: var(--app-mobile-dock-height);
+    align-items: center;
+    border: 1px solid rgba(223,237,229,.88);
+    border-radius: 23px;
+    background: rgba(247,252,249,.84);
+    padding: 5px 7px;
+    box-shadow: 0 12px 34px rgba(9,45,29,.17);
+  }
+  .app-mobile-nav-item { min-height: 58px; }
+  .app-mobile-nav-item--primary .app-mobile-nav-icon { width: 42px; height: 42px; margin-top: -10px; }
+}
+@media (max-width: 359px) {
+  .app-home-welcome { padding-top: 177px; }
+  .home-title { font-size: 36px; }
+  .app-home-floating-event { top: 77px; }
+  .app-home-art-label--music { min-height: 27px; font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-home-hero-background, .app-home-floating-event { animation: none; }
+}

@@ -17,7 +17,6 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { SearchField } from "@/design-system/components/SearchField";
-import greetingArt from "@/assets/home-community.png";
 import emptyArt from "@/assets/home-empty.png";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
@@ -220,6 +219,9 @@ function AppHome() {
       .slice(0, 3);
   }, [location, query, quickFilter]);
 
+  const heroEvent = featured[0] ?? EVENTS[0];
+  const heroImage = EVENTS[0]?.imageSrc.replace(/\?[^?]*$/, "?auto=format&fit=crop&w=2000&q=85");
+
   const soon = useMemo(
     () => [...EVENTS].sort((a, b) => a.startsAt.localeCompare(b.startsAt)).slice(0, 6),
     [],
@@ -246,6 +248,7 @@ function AppHome() {
   return (
     <div className="app-home">
       <section className="app-home-welcome" aria-labelledby="app-home-title">
+        {heroImage ? <img className="app-home-hero-background" src={heroImage} alt="" aria-hidden="true" fetchPriority="high" /> : null}
         <div className="app-home-copy">
           <p className="home-discover-pill">
             <span className="home-discover-dot" aria-hidden="true" />
@@ -296,11 +299,19 @@ function AppHome() {
         </div>
 
         <div className="app-home-art">
-          <img className="app-home-art-scene" src={EVENTS[0]?.imageSrc} alt="" aria-hidden="true" />
           <span className="app-home-art-label app-home-art-label--music"><Music2 aria-hidden className="size-4" /> Good vibes</span>
-          <span className="app-home-art-label app-home-art-label--people"><Users aria-hidden className="size-4" /> Your kind of people</span>
           <span className="app-home-art-place" aria-hidden="true"><MapPin className="size-5" /></span>
-          <img className="app-home-art-people" src={greetingArt} alt="A group of friends getting ready to enjoy an event together" fetchPriority="high" width={1024} height={768} />
+          {heroEvent ? (
+            <Link to="/events/$eventId" params={{ eventId: heroEvent.id }} className="app-home-floating-event focus-ring">
+              <img src={heroEvent.imageSrc} alt="" loading="lazy" />
+              <span className="app-home-floating-event-copy">
+                <span className="app-home-floating-event-tag">{heroEvent.tonight ? "Tonight" : "Featured"}</span>
+                <strong>{heroEvent.title}</strong>
+                <small><MapPin aria-hidden className="size-3" /> {heroEvent.location}</small>
+              </span>
+              <span className="app-home-floating-event-price">{heroEvent.price ?? "Free"}</span>
+            </Link>
+          ) : null}
         </div>
       </section>
 
