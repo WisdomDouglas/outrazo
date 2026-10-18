@@ -328,3 +328,131 @@ html.light .brand-logo-light { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .app-home-art img, .app-home-art-label, .app-home-art-place, .home-feature-card, .home-feature-image { animation: none; transition: none; }
 }
+
+/* Shared app chrome and dashboard hero finish. */
+.app-header {
+  border-color: rgba(202, 219, 210, .72);
+  background: rgba(248, 252, 250, .78);
+  box-shadow: 0 8px 26px rgba(15, 47, 34, .045);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+}
+.app-header-inner { min-height: 76px; }
+.app-header-link { border: 1px solid transparent; }
+.app-header-link--active { background: rgba(255,255,255,.7); }
+.app-header-link--active::after { bottom: 5px; height: 2px; }
+.app-header-search > div,
+.app-header-search input { background: rgba(255,255,255,.78); }
+.app-header-collapse { border: 1px solid rgba(204,220,212,.85); background: rgba(255,255,255,.72); }
+.app-home-welcome { position: relative; isolation: isolate; overflow: hidden; }
+.app-home-art {
+  min-height: 430px;
+  overflow: hidden;
+  border: 1px solid rgba(217, 234, 225, .82);
+  border-radius: 30px;
+  background: linear-gradient(140deg, #e6f5ee, #f8fbf9 62%, #d7efe3);
+  box-shadow: 0 16px 40px rgba(22, 75, 51, .12);
+}
+.app-home-art::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(229,247,239,.48), transparent 37%), linear-gradient(0deg, rgba(9,47,31,.26), transparent 45%);
+  content: "";
+  pointer-events: none;
+}
+.app-home-art img.app-home-art-scene {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: center;
+  opacity: .8;
+  filter: saturate(.9);
+  animation: app-home-scene-drift 24s ease-in-out infinite alternate;
+}
+.app-home-art img.app-home-art-people {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  max-width: 650px;
+  height: 100%;
+  max-height: 475px;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 14px 22px rgba(15,50,35,.14));
+}
+.app-home-art-label { z-index: 2; border-color: rgba(255,255,255,.68); background: rgba(248,255,251,.78); box-shadow: 0 10px 28px rgba(8,47,31,.13); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.app-home-art-label--music { top: 26px; left: 5%; }
+.app-home-art-label--people { right: 4%; bottom: 24px; }
+.app-home-art-place { z-index: 2; border-color: rgba(255,255,255,.7); background: rgba(248,255,251,.8); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.home-discover-pill { background: rgba(255,255,255,.74); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+@keyframes app-home-scene-drift { from { transform: scale(1); } to { transform: scale(1.06); } }
+
+@media (max-width: 899px) {
+  .app-header { border-bottom-color: rgba(205,221,213,.75); background: rgba(247,252,249,.78); }
+  .app-header-inner { min-height: 62px; padding-inline: 15px; }
+  .app-header-inner > a:first-child .brand-logo-dark,
+  .app-header-inner > a:first-child .brand-logo-light { height: 27px; }
+  .app-header-inner > a:first-child > span > span:last-child { font-size: 16px; }
+  .app-header-inner > a:first-child > span > span:first-child { width: 24px; height: 27px; }
+  .app-header-inner > div.relative { margin-left: auto; }
+  .app-header-inner > div.relative > button { width: 40px; height: 40px; border: 1px solid rgba(206,221,213,.72); border-radius: 50%; background: rgba(255,255,255,.68); }
+  .app-header-inner > a:last-child { margin-left: 0; }
+  .app-header-avatar { box-shadow: 0 3px 10px rgba(10,45,31,.12); }
+  .app-shell { --app-mobile-dock-height: 76px; }
+  .app-main { padding-bottom: calc(var(--app-mobile-dock-height) + env(safe-area-inset-bottom) + 20px) !important; }
+  .app-mobile-nav {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    min-height: calc(var(--app-mobile-dock-height) + env(safe-area-inset-bottom));
+    align-items: start;
+    border: 0;
+    border-top: 1px solid rgba(205,222,213,.78);
+    border-radius: 21px 21px 0 0;
+    background: rgba(248,252,250,.84);
+    padding: 8px 9px calc(8px + env(safe-area-inset-bottom));
+    box-shadow: 0 -9px 28px rgba(12,48,32,.10);
+    -webkit-backdrop-filter: blur(22px) saturate(155%);
+    backdrop-filter: blur(22px) saturate(155%);
+  }
+  .app-mobile-nav-item { position: relative; min-height: 56px; gap: 3px; border-radius: 15px; transition: color 180ms ease, background-color 180ms ease, transform 180ms ease; }
+  .app-mobile-nav-item--active { background: rgba(0,184,120,.08); color: #008e5e; }
+  .app-mobile-nav-icon { min-height: 28px; }
+  .app-mobile-nav-label { font-size: 10px; }
+  .app-mobile-nav-item--primary { background: transparent; }
+  .app-mobile-nav-item--primary .app-mobile-nav-icon { width: 46px; height: 46px; margin-top: -15px; border: 4px solid rgba(248,252,250,.96); background: linear-gradient(145deg,#00c77f,#00a96d); box-shadow: 0 7px 18px rgba(0,165,105,.28); }
+  .app-mobile-nav-item--primary .app-mobile-nav-label { margin-top: 0; }
+  .app-home { width: calc(100% - 20px); margin: 10px 10px 18px; }
+  .app-home-welcome { gap: 0; padding: 0 16px 15px; background: linear-gradient(180deg,#edf8f2 0%,#fff 48%); }
+  .app-home-art {
+    order: 0;
+    width: calc(100% + 32px);
+    height: clamp(190px, 58vw, 255px);
+    min-height: 0;
+    margin: 0 -16px 14px;
+    border: 0;
+    border-radius: 18px 18px 24px 24px;
+    box-shadow: none;
+    background: #d8eee3;
+  }
+  .app-home-art::after { background: linear-gradient(0deg,rgba(247,252,249,.96) 0%,rgba(247,252,249,.34) 25%,transparent 61%), linear-gradient(90deg,rgba(14,61,39,.22),transparent 65%); }
+  .app-home-art img.app-home-art-scene { opacity: .72; object-position: center 48%; animation-duration: 30s; }
+  .app-home-art img.app-home-art-people { width: 100%; max-width: 470px; height: 100%; max-height: none; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 10px 15px rgba(10,50,32,.15)); }
+  .app-home-art-label { min-height: 30px; gap: 5px; padding-inline: 10px; font-size: 10px; }
+  .app-home-art-label svg { width: 14px; height: 14px; }
+  .app-home-art-label--music { top: 13px; left: 12px; }
+  .app-home-art-label--people { right: 12px; bottom: 13px; }
+  .app-home-art-place { top: 15px; right: 14px; width: 34px; height: 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-home-art img.app-home-art-scene { animation: none; }
+  .app-mobile-nav-item { transition: none; }
+}

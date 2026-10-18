@@ -296,10 +296,11 @@ function AppHome() {
         </div>
 
         <div className="app-home-art">
+          <img className="app-home-art-scene" src={EVENTS[0]?.imageSrc} alt="" aria-hidden="true" />
           <span className="app-home-art-label app-home-art-label--music"><Music2 aria-hidden className="size-4" /> Good vibes</span>
           <span className="app-home-art-label app-home-art-label--people"><Users aria-hidden className="size-4" /> Your kind of people</span>
           <span className="app-home-art-place" aria-hidden="true"><MapPin className="size-5" /></span>
-          <img src={greetingArt} alt="A group of friends getting ready to enjoy an event together" fetchPriority="high" width={1024} height={768} />
+          <img className="app-home-art-people" src={greetingArt} alt="A group of friends getting ready to enjoy an event together" fetchPriority="high" width={1024} height={768} />
         </div>
       </section>
 
