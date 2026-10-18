@@ -106,17 +106,15 @@ function FeaturedEventCard({
   event,
   saved,
   onToggleSave,
-  primary = false,
 }: {
   event: OutrazoEvent;
   saved: boolean;
   onToggleSave: () => void;
-  primary?: boolean;
 }) {
   const badge = event.tonight ? "Tonight" : event.tag;
 
   return (
-    <article className={`home-feature-card group ${primary ? "home-feature-card--primary" : ""}`}>
+    <article className="home-feature-card group">
       <div className="home-feature-image-wrap">
         <Link
           to="/events/$eventId"
@@ -331,11 +329,10 @@ function AppHome() {
         </div>
         {featured.length ? (
           <div className="home-feature-grid">
-            {featured.map((event, index) => (
+            {featured.map((event) => (
               <FeaturedEventCard
                 key={event.id}
                 event={event}
-                primary={index === 0}
                 saved={isSaved(event.id)}
                 onToggleSave={() => toggle(event.id)}
               />
@@ -349,12 +346,6 @@ function AppHome() {
             action={<Link to="/events" search={{}}><Button variant="primary">Explore all events</Button></Link>}
           />
         )}
-      </section>
-
-      <section className="home-community-banner" aria-label="Outrazo community">
-        <span className="home-community-icon"><Users aria-hidden className="size-5" /></span>
-        <p><span>Not just events.</span><strong>Real people. Real connections.</strong></p>
-        <Link to="/app/explore" className="focus-ring home-community-link">Join <ArrowRight aria-hidden className="size-4" /></Link>
       </section>
 
       <section className="app-home-section home-secondary-section">
