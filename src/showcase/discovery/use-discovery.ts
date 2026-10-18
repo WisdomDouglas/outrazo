@@ -1,9 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { EVENTS, type CategoryId, type OutrazoEvent } from "../sample-data";
-
-export type DiscoveryStatus = "loading" | "ready" | "error";
 
 export interface DiscoveryState {
   category: CategoryId;
@@ -13,8 +11,6 @@ export interface DiscoveryState {
   events: OutrazoEvent[];
   /** All loaded events, before category/city filters. */
   allEvents: OutrazoEvent[];
-  status: DiscoveryStatus;
-  retry: () => void;
   isSaved: (id: string) => boolean;
   toggleSave: (id: string) => void;
   savedCount: number;
@@ -29,18 +25,7 @@ export interface DiscoveryState {
 export function useDiscovery(source: OutrazoEvent[] = EVENTS): DiscoveryState {
   const [category, setCategory] = useState<CategoryId>("all");
   const [city, setCity] = useState<string | null>(null);
-  const [status, setStatus] = useState<DiscoveryStatus>("loading");
-  const [attempt, setAttempt] = useState(0);
   const { isSaved, toggle, saved } = useSavedItems();
-
-  // Demo data resolves on mount. Replace with the real fetch lifecycle later.
-  useEffect(() => {
-    setStatus("loading");
-    const timer = window.setTimeout(() => setStatus("ready"), 350);
-    return () => window.clearTimeout(timer);
-  }, [attempt]);
-
-  const retry = useCallback(() => setAttempt((value) => value + 1), []);
 
   const events = useMemo(
     () =>
@@ -64,8 +49,6 @@ export function useDiscovery(source: OutrazoEvent[] = EVENTS): DiscoveryState {
     setCity,
     events,
     allEvents: source,
-    status,
-    retry,
     isSaved,
     toggleSave: toggle,
     savedCount: saved.length,

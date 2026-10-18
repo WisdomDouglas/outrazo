@@ -1,7 +1,7 @@
-import desktopDark from "@/assets/hero-desktop-dark.png";
-import desktopLight from "@/assets/hero-desktop-light.png";
-import mobileDark from "@/assets/hero-mobile-dark.png";
-import mobileLight from "@/assets/hero-mobile-light.png";
+import desktopDark from "@/assets/hero-desktop-dark.webp";
+import desktopLight from "@/assets/hero-desktop-light.webp";
+import mobileDark from "@/assets/hero-mobile-dark.webp";
+import mobileLight from "@/assets/hero-mobile-light.webp";
 
 /**
  * Hero background: the four supplied artworks, swapped by theme (dark/light)
@@ -46,4 +46,3 @@ export function HeroBackdrop() {
     </div>
   );
 }
-

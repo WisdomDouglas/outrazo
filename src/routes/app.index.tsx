@@ -17,7 +17,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { SearchField } from "@/design-system/components/SearchField";
-import emptyArt from "@/assets/home-empty.png";
+import emptyArt from "@/assets/home-empty.webp";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
 import { EventRail } from "@/showcase/app-shell/EventRail";
@@ -220,7 +220,7 @@ function AppHome() {
   }, [location, query, quickFilter]);
 
   const heroEvent = featured[0] ?? EVENTS[0];
-  const heroImage = EVENTS[0]?.imageSrc.replace(/\?[^?]*$/, "?auto=format&fit=crop&w=2000&q=85");
+  const heroImage = EVENTS[0]?.imageSrc.replace(/\?[^?]*$/, "?auto=format&fit=crop&w=1600&q=75");
 
   const soon = useMemo(
     () => [...EVENTS].sort((a, b) => a.startsAt.localeCompare(b.startsAt)).slice(0, 6),

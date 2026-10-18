@@ -24,9 +24,7 @@ import { Carousel } from "@/design-system/components/Carousel";
 import { CategoryCard } from "@/design-system/components/CategoryCard";
 import { CityCard } from "@/design-system/components/CityCard";
 import { EmptyState } from "@/design-system/components/EmptyState";
-import { ErrorState } from "@/design-system/components/ErrorState";
 import { EventCard } from "@/design-system/components/EventCard";
-import { EventCardSkeleton } from "@/design-system/components/EventCardSkeleton";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
 import { CtaFlyerWall } from "@/showcase/landing/CtaFlyerWall";
@@ -454,15 +452,7 @@ function Landing() {
             </Link>
           </div>
 
-          {discovery.status === "loading" ? (
-            <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <EventCardSkeleton key={index} />
-              ))}
-            </div>
-          ) : discovery.status === "error" ? (
-            <ErrorState onRetry={discovery.retry} />
-          ) : discovery.events.length === 0 ? (
+          {discovery.events.length === 0 ? (
             <EmptyState
               title="Nothing happening here yet."
               description="Try another location or explore another category."

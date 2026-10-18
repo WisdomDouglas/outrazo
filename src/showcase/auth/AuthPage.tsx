@@ -7,7 +7,7 @@ import { Button } from "@/design-system/components/Button";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Input } from "@/design-system/components/Input";
 import { supabase } from "@/integrations/supabase/external-client";
-import explorer from "@/assets/auth-explorer.png";
+import explorer from "@/assets/auth-explorer.webp";
 import { useAuth } from "./auth-context";
 
 export type AuthMode = "signin" | "signup";

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, Bookmark, CalendarDays, ChevronRight, Heart, MapPin, Navigation, Ticket, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { AvatarStack } from "@/design-system/components/AvatarStack";
@@ -12,7 +12,6 @@ import { ErrorState } from "@/design-system/components/ErrorState";
 import { EventBookingDrawer } from "@/design-system/components/EventBookingDrawer";
 import { EventCard } from "@/design-system/components/EventCard";
 import { EventShareMenu } from "@/design-system/components/EventShareMenu";
-import { Skeleton } from "@/design-system/components/Skeleton";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { getEvent, getRelatedEvents, toEventCardProps, type EventDetails } from "@/showcase/sample-data";
 
@@ -65,23 +64,13 @@ export const Route = createFileRoute("/events/$eventId")({
   component: EventDetailsPage,
 });
 
-function DetailSkeleton() {
-  return <div className="mx-auto grid max-w-[1200px] gap-xl px-md py-xl lg:grid-cols-[1.15fr_0.85fr] lg:px-xl"><Skeleton className="aspect-[4/3] w-full rounded-lg" /><div className="flex flex-col gap-md"><Skeleton className="h-6 w-24" /><Skeleton className="h-16 w-full" /><Skeleton className="h-20 w-full" /><Skeleton className="h-14 w-full" /><Skeleton className="h-14 w-full" /></div></div>;
-}
-
 function EventDetailsPage() {
   const event = Route.useLoaderData();
-  const [loading, setLoading] = useState(true);
   const [bookingOpen, setBookingOpen] = useState(false);
   const { isSaved, toggle } = useSavedItems();
   const related = getRelatedEvents(event);
   const saved = isSaved(event.id);
   const actionLabel = event.ticketTiers.length ? "Get Tickets" : "RSVP";
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setLoading(false), 220);
-    return () => window.clearTimeout(timer);
-  }, [event.id]);
 
   return (
     <div className="min-h-screen overflow-x-clip bg-canvas pb-[calc(var(--spacing-section)+var(--spacing-xl))] text-primary-text lg:pb-0">
@@ -96,8 +85,7 @@ function EventDetailsPage() {
         </div>
       </header>
 
-      {loading ? <DetailSkeleton /> : (
-        <main>
+      <main>
           <div className="mx-auto max-w-[1200px] px-md pt-lg lg:px-xl lg:pt-xl">
             <Link to="/events" search={{}} className="focus-ring type-body hidden min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text sm:inline-flex"><ArrowLeft aria-hidden className="size-4" />Back to Explore</Link>
           </div>
@@ -139,7 +127,6 @@ function EventDetailsPage() {
             <div className="mx-auto max-w-[1200px] px-md lg:px-xl"><h2 className="type-h2 mb-lg">More events you might like</h2><Carousel label="Related events" controls={false} trackClassName="-mx-md px-md lg:mx-0 lg:grid lg:grid-cols-4 lg:px-0" slideClassName="w-[280px] lg:w-auto">{related.map((item) => <EventCard key={item.id} {...toEventCardProps(item)} saved={isSaved(item.id)} onToggleSave={() => toggle(item.id)} />)}</Carousel></div>
           </section>
         </main>
-      )}
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-canvas/95 p-md backdrop-blur-md lg:hidden"><Button variant={event.ticketTiers.length ? "transactional" : "primary"} size="lg" className="w-full" onClick={() => setBookingOpen(true)}>{actionLabel}</Button></div>
       <EventBookingDrawer event={event} open={bookingOpen} onClose={() => setBookingOpen(false)} />

@@ -32,10 +32,10 @@ import {
 import { EVENTS } from "@/showcase/sample-data";
 import { supabase } from "@/integrations/supabase/external-client";
 import { useAuth } from "@/showcase/auth/auth-context";
-import explorer from "@/assets/auth-explorer.png";
-import onboardingInterests from "@/assets/onboarding-interests.png";
-import onboardingLocation from "@/assets/onboarding-location.png";
-import onboardingPreferences from "@/assets/onboarding-preferences.png";
+import explorer from "@/assets/auth-explorer.webp";
+import onboardingInterests from "@/assets/onboarding-interests.webp";
+import onboardingLocation from "@/assets/onboarding-location.webp";
+import onboardingPreferences from "@/assets/onboarding-preferences.webp";
 
 const STEP_ART: Record<number, { src: string; label: string }> = {
   1: { src: onboardingInterests, label: "Character tapping a floating music note, with a game controller and artist palette nearby" },

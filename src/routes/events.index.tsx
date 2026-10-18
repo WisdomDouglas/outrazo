@@ -6,8 +6,6 @@ import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
 import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { EmptyState } from "@/design-system/components/EmptyState";
-import { ErrorState } from "@/design-system/components/ErrorState";
-import { EventCardSkeleton } from "@/design-system/components/EventCardSkeleton";
 import { CityCard } from "@/design-system/components/CityCard";
 import { EventCard } from "@/design-system/components/EventCard";
 import { Reveal } from "@/design-system/components/Reveal";
@@ -305,15 +303,7 @@ function ExploreEvents() {
           </div>
         ) : null}
 
-        {discovery.status === "loading" ? (
-          <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <EventCardSkeleton key={index} />
-            ))}
-          </div>
-        ) : discovery.status === "error" ? (
-          <ErrorState onRetry={discovery.retry} />
-        ) : results.length ? (
+        {results.length ? (
           <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
             {results.map((event, index) => (
               <Reveal key={event.id} delay={index * 40}>
