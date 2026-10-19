@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import {
   Bookmark,
+  CalendarDays,
   CalendarPlus,
   ChevronLeft,
   ChevronRight,
@@ -13,14 +14,13 @@ import {
 } from "lucide-react";
 
 import { Avatar } from "@/design-system/components/Avatar";
-import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Button } from "@/design-system/components/Button";
 import { cn } from "@/design-system/lib/utils";
 import { useAuth } from "@/showcase/auth/auth-context";
 
 interface NavItem {
   label: string;
-  to: "/app" | "/app/explore" | "/app/saved" | "/app/tickets" | "/app/create-event" | "/app/profile" | "/app/settings";
+  to: "/app" | "/app/explore" | "/events" | "/app/saved" | "/app/tickets" | "/app/create-event" | "/app/profile" | "/app/settings";
   icon: LucideIcon;
   exact?: boolean;
 }
@@ -28,6 +28,7 @@ interface NavItem {
 const PRIMARY_NAV: NavItem[] = [
   { label: "Home", to: "/app", icon: Home, exact: true },
   { label: "Explore", to: "/app/explore", icon: Compass },
+  { label: "Categories", to: "/events", icon: CalendarDays },
   { label: "Saved", to: "/app/saved", icon: Bookmark },
   { label: "My Tickets", to: "/app/tickets", icon: Ticket },
 ];
@@ -42,6 +43,7 @@ function SidebarLink({ item, emphasis = false, collapsed = false }: { item: NavI
   return (
     <Link
       to={item.to}
+      {...(item.to === "/events" ? { search: {} } : {})}
       activeOptions={{ exact: item.exact }}
       className={cn(
         "focus-ring type-body group/nav flex min-h-12 items-center gap-md rounded-md px-md font-medium text-muted-text transition-[background-color,color,transform] duration-200 hover:bg-primary-text/5 hover:text-primary-text",
@@ -61,16 +63,13 @@ function SidebarLink({ item, emphasis = false, collapsed = false }: { item: NavI
 export function AppSidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const { displayName, profile } = useAuth();
   return (
-    <aside className={`relative hidden h-dvh shrink-0 flex-col border-r border-line bg-card transition-[width] duration-300 ease-out md:flex ${collapsed ? "w-section" : "w-[calc(var(--spacing-section)*2.5)]"}`}>
-      <div className={`flex min-h-20 items-center ${collapsed ? "justify-center px-sm" : "justify-start px-lg"}`}>
-        <Link to="/app" className="focus-ring type-h3 rounded-sm text-primary-text" aria-label="Outrazo home">
-          {collapsed ? <BrandLogo compact /> : <BrandLogo />}
-        </Link>
+    <aside className={`app-sidebar relative hidden h-full shrink-0 flex-col border-r border-line bg-card transition-[width] duration-300 ease-out min-[900px]:flex ${collapsed ? "w-section" : "w-[calc(var(--spacing-section)*2.5)]"}`}>
+      <div className={`flex min-h-16 items-center ${collapsed ? "justify-center px-sm" : "justify-between px-md"}`}>
+        {collapsed ? null : <span className="type-caption font-semibold uppercase tracking-wider text-muted-text">Menu</span>}
+        <Button type="button" variant="outline" size="icon" onClick={onToggle} className="rounded-full bg-card" aria-label={collapsed ? "Expand navigation" : "Collapse navigation"} title={collapsed ? "Expand navigation" : "Collapse navigation"}>
+          {collapsed ? <ChevronRight aria-hidden className="size-4" /> : <ChevronLeft aria-hidden className="size-4" />}
+        </Button>
       </div>
-
-      <Button type="button" variant="outline" size="icon" onClick={onToggle} className="absolute right-0 top-section z-20 translate-x-1/2 rounded-full bg-card shadow-card" aria-label={collapsed ? "Expand navigation" : "Minimize navigation"} title={collapsed ? "Expand navigation" : "Minimize navigation"}>
-        {collapsed ? <ChevronRight aria-hidden className="size-4" /> : <ChevronLeft aria-hidden className="size-4" />}
-      </Button>
 
       <nav className="flex flex-col gap-xs px-sm" aria-label="App navigation">
         {PRIMARY_NAV.map((item) => <SidebarLink key={item.to} item={item} collapsed={collapsed} />)}

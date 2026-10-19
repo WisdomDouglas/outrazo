@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, CalendarDays, ChevronDown, Compass, Home, Moon, PanelLeftClose, PanelLeftOpen, Sun, Ticket } from "lucide-react";
+import { Bell, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Avatar } from "@/design-system/components/Avatar";
@@ -10,14 +10,7 @@ import { useTheme } from "@/design-system/lib/use-theme";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { NotificationPanel } from "./NotificationPanel";
 
-const HEADER_LINKS = [
-  { label: "Home", to: "/app" as const, icon: Home, exact: true },
-  { label: "Explore", to: "/app/explore" as const, icon: Compass },
-  { label: "Categories", to: "/events" as const, icon: CalendarDays },
-  { label: "My Tickets", to: "/app/tickets" as const, icon: Ticket },
-];
-
-export function AppHeader({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+export function AppHeader() {
   const navigate = useNavigate();
   const { displayName, profile } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -45,36 +38,6 @@ export function AppHeader({ collapsed, onToggle }: { collapsed: boolean; onToggl
         <Link to="/app" className="focus-ring shrink-0 rounded-sm" aria-label="Outrazo home">
           <BrandLogo />
         </Link>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={onToggle}
-          className="app-header-collapse hidden shrink-0 text-muted-text"
-          aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
-          title={collapsed ? "Expand navigation" : "Collapse navigation"}
-        >
-          {collapsed ? <PanelLeftOpen aria-hidden className="size-4" /> : <PanelLeftClose aria-hidden className="size-4" />}
-        </Button>
-
-        <nav className={`app-header-nav ${collapsed ? "app-header-nav--collapsed" : ""}`} aria-label="Main navigation">
-          {HEADER_LINKS.map(({ label, to, icon: Icon, exact }) => (
-            <Link
-              key={label}
-              to={to}
-              {...(to === "/events" ? { search: {} } : {})}
-              activeOptions={{ exact: exact ?? false }}
-              className="app-header-link focus-ring"
-              activeProps={{ className: "app-header-link--active" }}
-              title={label}
-            >
-              <Icon aria-hidden className="size-[17px] shrink-0" strokeWidth={2} />
-              <span className="app-header-link-label">{label}</span>
-              {label === "Categories" && !collapsed ? <ChevronDown aria-hidden className="app-header-chevron size-3.5" /> : null}
-            </Link>
-          ))}
-        </nav>
 
         <form onSubmit={submit} className="app-header-search ml-auto hidden w-full max-w-[430px] lg:block" role="search">
           <SearchField
