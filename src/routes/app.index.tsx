@@ -7,6 +7,7 @@ import {
   Heart,
   MapPin,
   Music2,
+  Navigation,
   Search,
   Sparkles,
   Ticket,
@@ -24,6 +25,7 @@ import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
 import { EventRail } from "@/showcase/app-shell/EventRail";
 import { LocationPicker } from "@/showcase/app-shell/LocationPicker";
 import { useAuth } from "@/showcase/auth/auth-context";
+import { CATEGORIES } from "@/showcase/discovery/categories";
 import {
   loadOnboardingRecord,
   saveOnboardingLocation,
@@ -188,18 +190,6 @@ function AppHome() {
     return Array.from(new Set(categories));
   }, [record]);
 
-  const picked = useMemo<OutrazoEvent[]>(() => {
-    if (!interestCategories.length) return [];
-    return [...EVENTS]
-      .filter((event) => interestCategories.includes(event.category))
-      .sort(
-        (a, b) =>
-          Number(b.city === location) - Number(a.city === location) ||
-          b.attendeeCount - a.attendeeCount,
-      )
-      .slice(0, 4);
-  }, [interestCategories, location]);
-
   const featured = useMemo(() => {
     const searchTerm = query.trim().toLowerCase();
     return [...EVENTS]
@@ -220,28 +210,51 @@ function AppHome() {
       .slice(0, 3);
   }, [location, query, quickFilter]);
 
-  const soon = useMemo(
-    () => [...EVENTS].sort((a, b) => a.startsAt.localeCompare(b.startsAt)).slice(0, 6),
-    [],
-  );
+  const nearYou = useMemo(() => {
+    const alreadyFeatured = new Set(featured.map((event) => event.id));
+    return EVENTS
+      .filter((event) => event.city === location && !alreadyFeatured.has(event.id))
+      .sort((a, b) => b.attendeeCount - a.attendeeCount)
+      .slice(0, 3);
+  }, [featured, location]);
 
-  const nearYou = useMemo(
-    () => EVENTS.filter((event) => event.city === location).slice(0, 3),
-    [location],
-  );
+  const picked = useMemo<OutrazoEvent[]>(() => {
+    if (!interestCategories.length) return [];
+    const alreadyShown = new Set([...featured, ...nearYou].map((event) => event.id));
+    return EVENTS
+      .filter((event) => !alreadyShown.has(event.id))
+      .filter((event) => interestCategories.includes(event.category))
+      .sort(
+        (a, b) =>
+          Number(b.city === location) - Number(a.city === location) ||
+          b.attendeeCount - a.attendeeCount,
+      )
+      .slice(0, 4);
+  }, [featured, interestCategories, location, nearYou]);
+
+  const soon = useMemo(() => {
+    const alreadyShown = new Set([...featured, ...nearYou, ...picked].map((event) => event.id));
+    return EVENTS
+      .filter((event) => !alreadyShown.has(event.id))
+      .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
+      .slice(0, 4);
+  }, [featured, nearYou, picked]);
 
   const popular = useMemo(
-    () => [...EVENTS].sort((a, b) => b.attendeeCount - a.attendeeCount).slice(0, 3),
-    [],
+    () => {
+      const alreadyShown = new Set([...featured, ...nearYou, ...picked, ...soon].map((event) => event.id));
+      return EVENTS
+        .filter((event) => !alreadyShown.has(event.id))
+        .sort((a, b) => b.attendeeCount - a.attendeeCount)
+        .slice(0, 3);
+    },
+    [featured, nearYou, picked, soon],
   );
 
   const submitSearch = (event: FormEvent) => {
     event.preventDefault();
     navigate({ to: "/events", search: query.trim() ? { q: query.trim() } : {} });
   };
-
-  const freeCount = EVENTS.filter((event) => !event.price).length;
-  const cityCount = new Set(EVENTS.map((event) => event.city)).size;
 
   return (
     <div className="app-home">
@@ -302,18 +315,30 @@ function AppHome() {
         </div>
       </section>
 
-      <section className="home-stats" aria-label="Outrazo event overview">
-        <div className="home-stat">
-          <span className="home-stat-icon"><Users aria-hidden className="size-6" /></span>
-          <span><strong>{EVENTS.length}</strong><small>Events to explore</small></span>
+      <section className="home-category-section" aria-labelledby="home-category-title">
+        <div className="home-category-heading">
+          <div>
+            <p className="home-section-kicker">Browse by category</p>
+            <h2 id="home-category-title">Find your kind of experience</h2>
+            <p>Pick a scene and discover events made for you.</p>
+          </div>
+          <Link to="/events" search={{}} className="focus-ring home-view-all">
+            All events <ArrowRight aria-hidden className="size-4" />
+          </Link>
         </div>
-        <div className="home-stat">
-          <span className="home-stat-icon"><Ticket aria-hidden className="size-6" /></span>
-          <span><strong>{freeCount}</strong><small>Free experiences</small></span>
-        </div>
-        <div className="home-stat">
-          <span className="home-stat-icon"><MapPin aria-hidden className="size-6" /></span>
-          <span><strong>{cityCount}</strong><small>Cities represented</small></span>
+        <div className="home-category-grid" aria-label="Event categories">
+          {CATEGORIES.filter(({ id }) => id !== "all").map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              className="home-category-item focus-ring"
+              aria-label={`Browse ${label} events`}
+              onClick={() => navigate({ to: "/events", search: { category: id } })}
+            >
+              <span className="home-category-icon"><Icon aria-hidden className="size-5" strokeWidth={1.7} /></span>
+              <span className="home-category-label">{label}</span>
+            </button>
+          ))}
         </div>
       </section>
 
@@ -350,13 +375,49 @@ function AppHome() {
 
       <section className="app-home-section home-secondary-section">
         <SectionHeader
+          title="Near you"
+          icon={Compass}
+          meta={<LocationPicker location={location} onChange={changeLocation} />}
+        />
+        <a
+          className="nearby-map-card focus-ring"
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${location}, Nigeria`)}`}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Open ${location} in Google Maps`}
+        >
+          <span className="nearby-map-art" aria-hidden="true">
+            <span className="nearby-map-road nearby-map-road--one" />
+            <span className="nearby-map-road nearby-map-road--two" />
+            <span className="nearby-map-road nearby-map-road--three" />
+            <span className="nearby-map-pin"><MapPin className="size-5" /></span>
+          </span>
+          <span className="nearby-map-copy">
+            <span className="nearby-map-kicker"><Navigation className="size-3.5" /> Explore the area</span>
+            <strong>Find your next plan in {location}</strong>
+            <span>Open this city in Google Maps <ArrowRight className="size-4" /></span>
+          </span>
+        </a>
+        {nearYou.length ? (
+          <AppEventGrid events={nearYou} className="nearby-event-list" label={`Events near ${location}`} />
+        ) : (
+          <EmptyState
+            title={`Nothing happening in ${location} just yet.`}
+            icon={<img src={emptyArt} alt="" loading="lazy" width={816} height={816} className="size-10" />}
+            action={<Link to="/events" search={{}}><Button variant="outline">Explore other locations</Button></Link>}
+          />
+        )}
+      </section>
+
+      <section className="app-home-section home-secondary-section">
+        <SectionHeader
           title="Picked for you"
           icon={Sparkles}
           meta={
             <p className="type-caption text-muted-text">
               {interestCategories.length
                 ? "Based on the interests you chose."
-                : "Explore events to start building your personal picks."}
+                : "Choose your interests to get event picks tailored to your taste."}
             </p>
           }
           action={
@@ -369,42 +430,35 @@ function AppHome() {
         />
         {picked.length ? (
           <AppEventGrid events={picked} className="app-home-event-rail" label="Your picked events" />
+        ) : interestCategories.length ? (
+          <p className="type-body text-muted-text">More picks are on the way. Explore a category to find your next event.</p>
         ) : (
           <EmptyState
-            title="Your picks will show up here."
-            description="Choose a few interests to make your home feel more like you."
+            title="Make your home feel more like you."
+            description="Choose a few interests to get event picks tailored to your taste."
             icon={<Compass aria-hidden className="size-5" strokeWidth={2} />}
-            action={<Link to="/app/profile"><Button variant="outline">Update your interests</Button></Link>}
+            action={<Link to="/app/profile"><Button variant="outline">Choose your interests</Button></Link>}
           />
         )}
       </section>
 
-      <section className="app-home-section home-secondary-section">
-        <SectionHeader title="Happening soon" icon={CalendarDays} />
-        <EventRail events={soon} label="Events happening soon" />
-      </section>
+      {soon.length ? (
+        <section className="app-home-section home-secondary-section">
+          <SectionHeader title="Happening soon" icon={CalendarDays} />
+          <EventRail events={soon} label="Events happening soon" />
+        </section>
+      ) : null}
 
-      <section className="app-home-section home-secondary-section">
-        <SectionHeader title="Near you" icon={Compass} meta={<LocationPicker location={location} onChange={changeLocation} />} />
-        {nearYou.length ? (
-          <AppEventGrid events={nearYou} className="app-home-event-rail" label={`Events near ${location}`} />
-        ) : (
-          <EmptyState
-            title="Nothing happening nearby yet."
-            icon={<img src={emptyArt} alt="" loading="lazy" width={816} height={816} className="size-10" />}
-            action={<Link to="/events" search={{}}><Button variant="outline">Explore other locations</Button></Link>}
+      {popular.length ? (
+        <section className="app-home-section home-secondary-section">
+          <SectionHeader
+            title="People are going to"
+            icon={Users}
+            meta={<p className="type-caption text-muted-text">Popular with the Outrazo community.</p>}
           />
-        )}
-      </section>
-
-      <section className="app-home-section home-secondary-section">
-        <SectionHeader
-          title="People are going to"
-          icon={Users}
-          meta={<p className="type-caption text-muted-text">Popular with the Outrazo community.</p>}
-        />
-        <AppEventGrid events={popular} className="app-home-event-rail" label="Popular events" />
-      </section>
+          <AppEventGrid events={popular} className="app-home-event-rail" label="Popular events" />
+        </section>
+      ) : null}
     </div>
   );
 }
