@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Compass, House, Plus, Ticket, UserRound } from "lucide-react";
+import { CircleUserRound, Compass, House, Plus, TicketCheck } from "lucide-react";
 
 const ITEMS = [
   { label: "Home", to: "/app" as const, icon: House, exact: true },
   { label: "Explore", to: "/app/explore" as const, icon: Compass },
   { label: "Create", to: "/app/create-event" as const, icon: Plus, primary: true },
-  { label: "Tickets", to: "/app/tickets" as const, icon: Ticket },
-  { label: "Profile", to: "/app/profile" as const, icon: UserRound },
+  { label: "Tickets", to: "/app/tickets" as const, icon: TicketCheck },
+  { label: "Profile", to: "/app/profile" as const, icon: CircleUserRound },
 ];
 
 export function MobileBottomNav() {
@@ -21,7 +21,9 @@ export function MobileBottomNav() {
           activeProps={{ className: "app-mobile-nav-item--active" }}
           aria-label={primary ? "Create an event" : label}
         >
-          <span className="app-mobile-nav-icon"><Icon aria-hidden className={primary ? "size-7" : "size-5"} strokeWidth={2} /></span>
+          <span className="app-mobile-nav-icon">
+            <Icon aria-hidden className={primary ? "size-6" : "size-[22px]"} strokeWidth={2.2} />
+          </span>
           <span className="app-mobile-nav-label">{label}</span>
         </Link>
       ))}
