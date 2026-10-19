@@ -1156,7 +1156,8 @@ html:not(.light) .home-secondary-section article:hover { box-shadow: 0 12px 30px
   .home-feature-card,
   .home-secondary-section article,
   .app-mobile-nav-item,
-  .app-mobile-nav-item::before { transition: none; }
+  .app-mobile-nav-item::before,
+  .app-mobile-nav-icon { transition: none; }
 }
 
 @media (max-width: 899px) {
@@ -1164,8 +1165,12 @@ html:not(.light) .home-secondary-section article:hover { box-shadow: 0 12px 30px
     min-height: 76px;
     padding: 5px 7px;
     border: 0 !important;
+    border-style: none !important;
+    border-color: transparent !important;
     outline: 0;
-    box-shadow: 0 16px 38px rgba(7,42,28,.22), 0 4px 12px rgba(7,42,28,.1);
+    background-clip: padding-box;
+    box-shadow: 0 18px 44px rgba(7,42,28,.24), 0 5px 14px rgba(7,42,28,.12);
+    -webkit-tap-highlight-color: transparent;
   }
 
   .app-mobile-nav::after {
@@ -1187,15 +1192,15 @@ html:not(.light) .home-secondary-section article:hover { box-shadow: 0 12px 30px
   }
 
   .app-mobile-nav-item--active .app-mobile-nav-icon {
-    background: linear-gradient(145deg, rgba(0,184,120,.16), rgba(0,184,120,.06));
+    background: linear-gradient(145deg, rgba(0,184,120,.2), rgba(0,184,120,.07));
     transform: translateY(-2px);
   }
 
   .app-mobile-nav-item--active::before {
     top: auto;
     bottom: 3px;
-    width: 4px;
-    height: 4px;
+    width: 5px;
+    height: 5px;
     transform: translateX(-50%) scale(0);
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(0,184,120,.55);
@@ -1218,7 +1223,7 @@ html:not(.light) .home-secondary-section article:hover { box-shadow: 0 12px 30px
     border-radius: 50%;
     background: linear-gradient(145deg, #18ce8c, #009866);
     color: #fff;
-    box-shadow: 0 7px 18px rgba(0,165,105,.32), 0 0 0 5px rgba(0,184,120,.1);
+    box-shadow: 0 8px 20px rgba(0,165,105,.34), 0 0 0 5px rgba(0,184,120,.11), inset 0 1px 0 rgba(255,255,255,.36);
     transform: translateY(0);
   }
 
@@ -1230,13 +1235,14 @@ html:not(.light) .home-secondary-section article:hover { box-shadow: 0 12px 30px
 
   .app-mobile-nav-item--primary.app-mobile-nav-item--active .app-mobile-nav-icon {
     background: linear-gradient(145deg, #1bd796, #008f61);
-    box-shadow: 0 0 0 4px rgba(0,184,120,.13), 0 8px 20px rgba(0,165,105,.34);
+    box-shadow: 0 0 0 5px rgba(0,184,120,.16), 0 9px 22px rgba(0,165,105,.38);
   }
 
   .app-mobile-nav-item--primary .app-mobile-nav-label { margin-top: -1px; }
+  .app-mobile-nav-item:focus-visible { outline: 2px solid rgba(0,184,120,.72); outline-offset: 1px; }
 
   html:not(.light) .app-mobile-nav-item--active .app-mobile-nav-icon {
-    background: linear-gradient(145deg, rgba(16,185,129,.2), rgba(16,185,129,.07));
+    background: linear-gradient(145deg, rgba(16,185,129,.24), rgba(16,185,129,.08));
   }
 
   html:not(.light) .app-mobile-nav-item--primary.app-mobile-nav-item--active .app-mobile-nav-icon {
@@ -1246,15 +1252,8 @@ html:not(.light) .home-secondary-section article:hover { box-shadow: 0 12px 30px
 
   html:not(.light) .app-mobile-nav {
     border: 0 !important;
-    box-shadow: 0 16px 40px rgba(0,0,0,.48), 0 4px 12px rgba(0,0,0,.2);
+    border-style: none !important;
+    border-color: transparent !important;
+    box-shadow: 0 18px 46px rgba(0,0,0,.52), 0 5px 14px rgba(0,0,0,.22);
   }
-}
-
-@media (hover: hover) and (pointer: fine) and (max-width: 899px) {
-  .app-mobile-nav-item:hover .app-mobile-nav-icon { transform: translateY(-2px); }
-  .app-mobile-nav-item--primary:hover .app-mobile-nav-icon { transform: translateY(-3px) scale(1.04); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .app-mobile-nav-item--active::before { transition: none; }
 }
