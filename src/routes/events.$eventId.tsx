@@ -13,7 +13,8 @@ import { EventBookingDrawer } from "@/design-system/components/EventBookingDrawe
 import { EventCard } from "@/design-system/components/EventCard";
 import { EventShareMenu } from "@/design-system/components/EventShareMenu";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
-import { getEvent, getRelatedEvents, toEventCardProps, type EventDetails } from "@/showcase/sample-data";
+import { fetchPublishedEventDetails } from "@/showcase/event-data";
+import { getRelatedEvents, toEventCardProps, type EventDetails } from "@/showcase/sample-data";
 
 function EventNotFound() {
   return (
@@ -34,8 +35,8 @@ function EventLoadError({ reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createFileRoute("/events/$eventId")({
-  loader: ({ params }) => {
-    const event = getEvent(params.eventId);
+  loader: async ({ params }) => {
+    const event = await fetchPublishedEventDetails(params.eventId);
     if (!event) throw notFound();
     return event;
   },
@@ -119,7 +120,7 @@ function EventDetailsPage() {
               </ContentSection>
             </div>
             <ContentSection title="Location">
-              <div className="flex flex-col gap-md"><div><h3 className="type-h3">{event.venue.name}</h3><p className="type-body mt-xs text-muted-text">{event.venue.address}<br />{event.venue.city}</p></div><div className="grid aspect-[4/3] place-items-center rounded-md border border-line bg-card" aria-label="Map placeholder"><MapPin aria-hidden className="size-10 text-accent" /><span className="sr-only">Map preview will be available here</span></div><a href={`https://www.google.com/maps/search/?api=1&query=${event.venue.latitude},${event.venue.longitude}`} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="outline" className="w-full" leadingIcon={<Navigation aria-hidden className="size-4" />}>Get Directions</Button></a></div>
+              <div className="flex flex-col gap-md"><div><h3 className="type-h3">{event.venue.name}</h3><p className="type-body mt-xs text-muted-text">{event.venue.address}<br />{event.venue.city}</p></div><div className="grid aspect-[4/3] place-items-center rounded-md border border-line bg-card" aria-label="Map placeholder"><MapPin aria-hidden className="size-10 text-accent" /><span className="sr-only">Map preview will be available here</span></div><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.latitude != null && event.venue.longitude != null ? `${event.venue.latitude},${event.venue.longitude}` : `${event.venue.address}, ${event.venue.city}`)}`} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="outline" className="w-full" leadingIcon={<Navigation aria-hidden className="size-4" />}>Get Directions</Button></a></div>
             </ContentSection>
           </div>
 

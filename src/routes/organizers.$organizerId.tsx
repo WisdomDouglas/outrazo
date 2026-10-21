@@ -18,6 +18,7 @@ import {
   ORGANIZERS,
   toEventCardProps,
 } from "@/showcase/sample-data";
+import { fetchPublishedOrganizerProfile } from "@/showcase/event-data";
 
 function OrganizerNotFound() {
   return (
@@ -73,12 +74,16 @@ function OrganizerPending() {
 }
 
 export const Route = createFileRoute("/organizers/$organizerId")({
-  loader: ({ params }) => {
-    if (!ORGANIZERS.some((item) => item.id === params.organizerId)) throw notFound();
-    return {
-      organizer: getOrganizer(params.organizerId),
-      events: getOrganizerEvents(params.organizerId),
-    };
+  loader: async ({ params }) => {
+    if (ORGANIZERS.some((item) => item.id === params.organizerId)) {
+      return {
+        organizer: getOrganizer(params.organizerId),
+        events: getOrganizerEvents(params.organizerId),
+      };
+    }
+    const profile = await fetchPublishedOrganizerProfile(params.organizerId);
+    if (!profile) throw notFound();
+    return profile;
   },
   head: ({ loaderData }) => ({
     meta: loaderData

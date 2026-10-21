@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
+import { mergeEventCatalog } from "../event-data";
 import { EVENTS, type CategoryId, type OutrazoEvent } from "../sample-data";
+import { useEventCatalog } from "../use-event-catalog";
 
 export interface DiscoveryState {
   category: CategoryId;
@@ -14,6 +16,8 @@ export interface DiscoveryState {
   isSaved: (id: string) => boolean;
   toggleSave: (id: string) => void;
   savedCount: number;
+  error: string | null;
+  refreshEvents: () => void;
   reset: () => void;
 }
 
@@ -26,15 +30,20 @@ export function useDiscovery(source: OutrazoEvent[] = EVENTS): DiscoveryState {
   const [category, setCategory] = useState<CategoryId>("all");
   const [city, setCity] = useState<string | null>(null);
   const { isSaved, toggle, saved } = useSavedItems();
+  const catalog = useEventCatalog();
+  const allEvents = useMemo(
+    () => source === EVENTS ? catalog.events : mergeEventCatalog(catalog.events, source),
+    [catalog.events, source],
+  );
 
   const events = useMemo(
     () =>
-      source.filter(
+      allEvents.filter(
         (event) =>
           (category === "all" || event.category === category) &&
           (!city || event.city === city),
       ),
-    [source, category, city],
+    [allEvents, category, city],
   );
 
   const reset = useCallback(() => {
@@ -48,10 +57,12 @@ export function useDiscovery(source: OutrazoEvent[] = EVENTS): DiscoveryState {
     city,
     setCity,
     events,
-    allEvents: source,
+    allEvents,
     isSaved,
     toggleSave: toggle,
     savedCount: saved.length,
+    error: catalog.error,
+    refreshEvents: catalog.refresh,
     reset,
   };
 }

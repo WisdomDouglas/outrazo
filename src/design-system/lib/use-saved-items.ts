@@ -1,8 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
+  isDatabaseEventId,
   rememberReturnTo,
+  toggleLocalSavedEvent,
   toggleSavedEvent,
   useSavedEventsState,
 } from "@/showcase/saved/saved-events-store";
@@ -44,6 +46,10 @@ export function useSavedItems(storageKey = EVENTS_KEY) {
   const toggle = useCallback(
     (id: string) => {
       if (isEvents) {
+        if (!isDatabaseEventId(id)) {
+          toggleLocalSavedEvent(id);
+          return;
+        }
         void toggleSavedEvent(id).then((ok) => {
           if (!ok) {
             rememberReturnTo(window.location.pathname + window.location.search);
@@ -65,8 +71,18 @@ export function useSavedItems(storageKey = EVENTS_KEY) {
     [isEvents, navigate, storageKey],
   );
 
-  const saved = isEvents ? remote.keys : local;
+  const saved = useMemo(
+    () => isEvents ? [...remote.keys, ...remote.demoKeys] : local,
+    [isEvents, local, remote.demoKeys, remote.keys],
+  );
   const isSaved = useCallback((id: string) => saved.includes(id), [saved]);
 
-  return { saved, isSaved, toggle, setSaved: persist, status: isEvents ? remote.status : ("ready" as const) };
+  return {
+    saved,
+    isSaved,
+    toggle,
+    setSaved: persist,
+    status: isEvents ? remote.status : ("ready" as const),
+    demoStatus: remote.demoStatus,
+  };
 }

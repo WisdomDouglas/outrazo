@@ -8,6 +8,7 @@ import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { CityCard } from "@/design-system/components/CityCard";
 import { EventCard } from "@/design-system/components/EventCard";
+import { ErrorState } from "@/design-system/components/ErrorState";
 import { Reveal } from "@/design-system/components/Reveal";
 import { SearchField } from "@/design-system/components/SearchField";
 import { CATEGORIES } from "@/showcase/discovery/categories";
@@ -207,7 +208,7 @@ function ExploreEvents() {
               Back home
             </Link>
             <Link
-              to="/create"
+              to="/app/create-event"
               className="focus-ring rounded-full"
               aria-label="Post your event"
             >
@@ -287,6 +288,14 @@ function ExploreEvents() {
       </header>
 
       <main className="mx-auto max-w-[1200px] px-md py-xl lg:px-xl">
+        {discovery.error ? (
+          <ErrorState
+            className="mb-xl"
+            title="Some events may be missing."
+            description={discovery.error}
+            onRetry={discovery.refreshEvents}
+          />
+        ) : null}
         {discovery.city ? (
           <div className="mb-lg flex items-center gap-sm">
             <Badge variant="accent">

@@ -63,9 +63,11 @@ export type Database = {
           created_by: string | null
           currency: string
           description: string | null
+          event_type: string
           ends_at: string | null
           id: string
           image_url: string | null
+          capacity: number
           latitude: number | null
           longitude: number | null
           organizer_id: string
@@ -87,9 +89,11 @@ export type Database = {
           created_by?: string | null
           currency?: string
           description?: string | null
+          event_type?: string
           ends_at?: string | null
           id?: string
           image_url?: string | null
+          capacity?: number
           latitude?: number | null
           longitude?: number | null
           organizer_id: string
@@ -111,9 +115,11 @@ export type Database = {
           created_by?: string | null
           currency?: string
           description?: string | null
+          event_type?: string
           ends_at?: string | null
           id?: string
           image_url?: string | null
+          capacity?: number
           latitude?: number | null
           longitude?: number | null
           organizer_id?: string
@@ -139,6 +145,41 @@ export type Database = {
             columns: ["organizer_id"]
             isOneToOne: false
             referencedRelation: "organizers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_ticket_tiers: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          name: string
+          price: number
+          quantity: number
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          name: string
+          price: number
+          quantity: number
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          name?: string
+          price?: number
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_ticket_tiers_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]

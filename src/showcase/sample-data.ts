@@ -47,6 +47,7 @@ export interface TicketTier {
   id: string;
   name: string;
   price: number;
+  quantity?: number;
   description?: string;
 }
 
@@ -54,8 +55,8 @@ export interface EventVenue {
   name: string;
   address: string;
   city: string;
-  latitude: number;
-  longitude: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface OutrazoEvent {
@@ -81,6 +82,10 @@ export interface OutrazoEvent {
   attendeeIds: string[];
   /** Demo flag powering the "tonight" surfaces. */
   tonight?: boolean;
+  /** Real host details for published Supabase events. */
+  organizerDetails?: Organizer;
+  eventType?: "free" | "paid";
+  capacity?: number;
   summary?: string;
   description?: string;
   endTime?: string;
@@ -526,7 +531,7 @@ export function getEvent(id: string): EventDetails | undefined {
     description: details?.description ?? `Discover ${event.title}, hosted by ${getOrganizer(event.organizerId).name}. Expect a welcoming crowd, thoughtful programming, and a memorable experience in ${event.city}.`,
     venue,
     ticketTiers: details?.ticketTiers ?? (basePrice ? [{ id: "regular", name: "Regular", price: basePrice, description: "General admission" }, { id: "vip", name: "VIP", price: Math.round(basePrice * 2), description: "Priority access" }] : []),
-    organizer: getOrganizer(event.organizerId),
+    organizer: event.organizerDetails ?? getOrganizer(event.organizerId),
     attendees: getAttendees(event.attendeeIds),
     status: event.status ?? "upcoming",
   };
@@ -534,8 +539,8 @@ export function getEvent(id: string): EventDetails | undefined {
 
 export const getOrganizerEvents = (organizerId: string) => EVENTS.filter((event) => event.organizerId === organizerId);
 
-export function getRelatedEvents(event: OutrazoEvent, limit = 4) {
-  return EVENTS.filter((item) => item.id !== event.id)
+export function getRelatedEvents(event: OutrazoEvent, limit = 4, source: OutrazoEvent[] = EVENTS) {
+  return source.filter((item) => item.id !== event.id)
     .sort((a, b) => Number(b.category === event.category) + Number(b.city === event.city) - Number(a.category === event.category) - Number(a.city === event.city))
     .slice(0, limit);
 }
@@ -568,7 +573,7 @@ export const CITIES = Object.entries(cityMeta).map(([name, meta]) => {
 
 /** Maps a demo event record onto EventCard props. Swap the source, keep the UI. */
 export function toEventCardProps(event: OutrazoEvent) {
-  const organizer = getOrganizer(event.organizerId);
+  const organizer = event.organizerDetails ?? getOrganizer(event.organizerId);
   return {
     eventId: event.id,
     id: event.id,

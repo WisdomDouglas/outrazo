@@ -17,6 +17,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 
 import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
+import { ErrorState } from "@/design-system/components/ErrorState";
 import { SearchField } from "@/design-system/components/SearchField";
 import emptyArt from "@/assets/home-empty.webp";
 import homeHero from "@/assets/home-hero-festival.webp";
@@ -31,7 +32,8 @@ import {
   saveOnboardingLocation,
   type OnboardingRecord,
 } from "@/showcase/onboarding-storage";
-import { EVENTS, type CategoryId, type OutrazoEvent } from "@/showcase/sample-data";
+import { type CategoryId, type OutrazoEvent } from "@/showcase/sample-data";
+import { useEventCatalog } from "@/showcase/use-event-catalog";
 
 /** Maps onboarding interests onto the event categories in the dataset. */
 const INTEREST_TO_CATEGORY: Record<string, Exclude<CategoryId, "all">> = {
@@ -172,6 +174,7 @@ function AppHome() {
   const [quickFilter, setQuickFilter] = useState<QuickFilter>("tonight");
   const [query, setQuery] = useState("");
   const { isSaved, toggle } = useSavedItems();
+  const catalog = useEventCatalog();
 
   useEffect(() => {
     setRecord(loadOnboardingRecord());
@@ -192,7 +195,7 @@ function AppHome() {
 
   const featured = useMemo(() => {
     const searchTerm = query.trim().toLowerCase();
-    return [...EVENTS]
+    return [...catalog.events]
       .filter((event) => {
         if (quickFilter === "tonight" && !event.tonight) return false;
         if (quickFilter === "weekend" && !/weekend/i.test(event.tag ?? "") && !/\b(Sat|Sun)\b/.test(event.date)) return false;
@@ -208,20 +211,20 @@ function AppHome() {
           b.attendeeCount - a.attendeeCount,
       )
       .slice(0, 3);
-  }, [location, query, quickFilter]);
+  }, [catalog.events, location, query, quickFilter]);
 
   const nearYou = useMemo(() => {
     const alreadyFeatured = new Set(featured.map((event) => event.id));
-    return EVENTS
+    return catalog.events
       .filter((event) => event.city === location && !alreadyFeatured.has(event.id))
       .sort((a, b) => b.attendeeCount - a.attendeeCount)
       .slice(0, 3);
-  }, [featured, location]);
+  }, [catalog.events, featured, location]);
 
   const picked = useMemo<OutrazoEvent[]>(() => {
     if (!interestCategories.length) return [];
     const alreadyShown = new Set([...featured, ...nearYou].map((event) => event.id));
-    return EVENTS
+    return catalog.events
       .filter((event) => !alreadyShown.has(event.id))
       .filter((event) => interestCategories.includes(event.category))
       .sort(
@@ -230,25 +233,25 @@ function AppHome() {
           b.attendeeCount - a.attendeeCount,
       )
       .slice(0, 4);
-  }, [featured, interestCategories, location, nearYou]);
+  }, [catalog.events, featured, interestCategories, location, nearYou]);
 
   const soon = useMemo(() => {
     const alreadyShown = new Set([...featured, ...nearYou, ...picked].map((event) => event.id));
-    return EVENTS
+    return catalog.events
       .filter((event) => !alreadyShown.has(event.id))
       .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
       .slice(0, 4);
-  }, [featured, nearYou, picked]);
+  }, [catalog.events, featured, nearYou, picked]);
 
   const popular = useMemo(
     () => {
       const alreadyShown = new Set([...featured, ...nearYou, ...picked, ...soon].map((event) => event.id));
-      return EVENTS
+      return catalog.events
         .filter((event) => !alreadyShown.has(event.id))
         .sort((a, b) => b.attendeeCount - a.attendeeCount)
         .slice(0, 3);
     },
-    [featured, nearYou, picked, soon],
+    [catalog.events, featured, nearYou, picked, soon],
   );
 
   const submitSearch = (event: FormEvent) => {
@@ -258,6 +261,14 @@ function AppHome() {
 
   return (
     <div className="app-home">
+      {catalog.error ? (
+        <ErrorState
+          className="mx-md mt-md lg:mx-xl"
+          title="Some events may be missing."
+          description={catalog.error}
+          onRetry={catalog.refresh}
+        />
+      ) : null}
       <section className="app-home-welcome" aria-labelledby="app-home-title">
         <img className="app-home-hero-background" src={homeHero} alt="" aria-hidden="true" fetchPriority="high" />
         <div className="app-home-copy">

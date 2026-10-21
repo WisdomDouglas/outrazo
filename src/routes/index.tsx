@@ -25,6 +25,7 @@ import { CategoryCard } from "@/design-system/components/CategoryCard";
 import { CityCard } from "@/design-system/components/CityCard";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { EventCard } from "@/design-system/components/EventCard";
+import { ErrorState } from "@/design-system/components/ErrorState";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
 import { CtaFlyerWall } from "@/showcase/landing/CtaFlyerWall";
@@ -82,8 +83,8 @@ const FOOTER_CONTENT = {
     { label: "Find your city", hash: "discover" },
   ],
   organizers: [
-    { label: "Post an event", href: "/create" as const },
-    { label: "Organizer tools", href: "/create" as const },
+    { label: "Post an event", href: "/app/create-event" as const },
+    { label: "Organizer tools", href: "/app/create-event" as const },
     { label: "Ticketing help", href: "/app/tickets" as const },
   ],
   newsletter: {
@@ -278,7 +279,7 @@ function Landing() {
                 <button type="button" onClick={() => scrollTo("discover")} className="outrazo-drawer-link focus-ring text-left">
                   <Flame aria-hidden className="size-5 text-transactional" /> Recommended <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
                 </button>
-                <Link to="/create" onClick={() => setMenuOpen(false)} className="outrazo-drawer-link focus-ring">
+                <Link to="/app/create-event" onClick={() => setMenuOpen(false)} className="outrazo-drawer-link focus-ring">
                   <Plus aria-hidden className="size-5 text-accent" /> Post your event <ArrowRight aria-hidden className="ml-auto size-4 text-subtle-text" />
                 </Link>
               </nav>
@@ -435,6 +436,14 @@ function Landing() {
           id="discover"
           className="mx-auto max-w-[1200px] scroll-mt-24 px-md pb-section lg:px-xl"
         >
+          {discovery.error ? (
+            <ErrorState
+              className="mb-xl"
+              title="Some events may be missing."
+              description={discovery.error}
+              onRetry={discovery.refreshEvents}
+            />
+          ) : null}
           <div data-landing-reveal="ready" className="mb-lg flex items-end justify-between gap-md">
             <div className="flex flex-col gap-xs">
               <h2 className="type-h2">Recommended for you</h2>

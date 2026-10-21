@@ -6,10 +6,12 @@ import type { Database } from './types';
 import { brokeredPreviewStorage } from './previewAuthStorage';
 
 export const EXTERNAL_SUPABASE_URL =
+  (import.meta.env['VITE_SUPABASE_URL'] as string | undefined) ??
   (import.meta.env['VITE_EXTERNAL_SUPABASE_URL'] as string | undefined) ??
   'https://ihydlkfmszqwrwryfztv.supabase.co';
 
 export const EXTERNAL_SUPABASE_PUBLISHABLE_KEY =
+  (import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] as string | undefined) ??
   (import.meta.env['VITE_EXTERNAL_SUPABASE_PUBLISHABLE_KEY'] as string | undefined) ??
   'sb_publishable_hXGyb6C1J2EYixc9qkk3zw_hldnXHKF';
 
