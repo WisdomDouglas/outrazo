@@ -5,6 +5,19 @@
 .brand-logo-light { display: none; }
 html.light .brand-logo-dark { display: none; }
 html.light .brand-logo-light { display: block; }
+.brand-logo { gap: 9px; }
+.brand-logo-mark { width: 44px; height: 44px; }
+.brand-logo-name { font-size: 20px; font-weight: 700; line-height: 1; letter-spacing: .04em; }
+.brand-logo-a { background: linear-gradient(145deg, #6ee7b7, var(--outrazo-accent-primary) 70%); background-clip: text; font-weight: 800; -webkit-text-fill-color: transparent; }
+@media (max-width: 359px) {
+  .landing-page > header.sticky { padding-inline: 10px; }
+  .landing-page > header.sticky > div { gap: 8px; padding-inline: 10px; }
+  .landing-page > header.sticky .brand-logo { gap: 5px; }
+  .landing-page > header.sticky .brand-logo-mark { width: 28px; height: 28px; }
+  .landing-page > header.sticky .brand-logo-name { font-size: 13px; letter-spacing: .01em; }
+  .landing-page > header.sticky .landing-nav-action { width: 36px; height: 36px; }
+  .landing-page > header.sticky > div > div.flex { gap: 4px; }
+}
 
 /* Auth: an illustrated event-poster stage paired with a calm, legible form. */
 .auth-page { min-height: 100dvh; overflow-x: clip; }
@@ -117,6 +130,8 @@ html.light .brand-logo-light { display: block; }
   .onboarding-visual > div:last-child .type-h2 { font-size: var(--text-h3); }
 }
 @media (max-width: 639px) {
+  .brand-logo-mark { width: 38px; height: 38px; }
+  .brand-logo-name { font-size: 17px; }
   .onboarding-header .brand-logo-mark { width: 24px; height: 24px; }
   .onboarding-header { min-height: 56px; }
   .onboarding-layout { padding-bottom: var(--spacing-sm); }
@@ -240,10 +255,8 @@ html.light .brand-logo-light { display: block; }
 }
 @media (max-width: 899px) {
   .app-header-inner { min-height: 64px; padding-inline: 16px; }
-  .app-header-inner > a:first-child .brand-logo-mark { width: 29px; height: 29px; }
-  .app-header-inner > a:first-child > span { gap: 7px; }
-  .app-header-inner > a:first-child > span > span:last-child { font-size: 17px; }
-  .app-header-inner > a:first-child > span > span:first-child { width: 29px; height: 29px; }
+  .app-header-inner > a:first-child .brand-logo-mark { width: 38px; height: 38px; }
+  .app-header-inner > a:first-child .brand-logo-name { font-size: 17px; }
   .app-mobile-nav { position: fixed; z-index: 40; right: 12px; bottom: max(9px, env(safe-area-inset-bottom)); left: 12px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; min-height: 68px; border: 1px solid rgba(207,222,214,.92); border-radius: 20px; background: rgba(255,255,255,.96); padding: 5px 7px; box-shadow: 0 10px 30px rgba(10,45,31,.14); backdrop-filter: blur(16px); }
   .app-mobile-nav-item { display: flex; min-width: 0; min-height: 55px; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 14px; color: #62736b; text-decoration: none; }
   .app-mobile-nav-icon { display: grid; min-height: 27px; place-items: center; }
@@ -366,9 +379,8 @@ html.light .brand-logo-light { display: block; }
 @media (max-width: 899px) {
   .app-header { border-bottom-color: rgba(205,221,213,.75); background: rgba(247,252,249,.78); }
   .app-header-inner { min-height: 62px; padding-inline: 15px; }
-  .app-header-inner > a:first-child .brand-logo-mark { width: 27px; height: 27px; }
-  .app-header-inner > a:first-child > span > span:last-child { font-size: 16px; }
-  .app-header-inner > a:first-child > span > span:first-child { width: 27px; height: 27px; }
+  .app-header-inner > a:first-child .brand-logo-mark { width: 38px; height: 38px; }
+  .app-header-inner > a:first-child .brand-logo-name { font-size: 17px; }
   .app-header-inner > div.relative { margin-left: auto; }
   .app-header-inner > div.relative > button { width: 40px; height: 40px; border: 1px solid rgba(206,221,213,.72); border-radius: 50%; background: rgba(255,255,255,.68); }
   .app-header-inner > a:last-child { margin-left: 0; }

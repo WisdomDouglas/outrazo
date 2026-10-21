@@ -1188,13 +1188,29 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 @media (max-width: 767px) {
-  .landing-stories-layout { gap: var(--spacing-md); }
-  .landing-story-feature { grid-template-rows: minmax(20rem, 52vh) auto; }
-  .landing-story-content { padding: var(--spacing-lg); }
-  .landing-story-index { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .landing-story-selector { min-height: 4.5rem; padding: var(--spacing-sm); }
-  .landing-story-selector > span:nth-child(2) { display: none; }
-  .landing-story-index > div:last-child { grid-column: 1 / -1; }
+  .landing-stories > div { padding-block: 48px; }
+  .landing-stories-header { gap: 12px; }
+  .landing-stories-header h2 { font-size: clamp(1.35rem, 5.8vw, 1.5rem); line-height: 1.2; }
+  .landing-stories-layout { gap: 12px; margin-top: 20px; }
+  .landing-story-feature { grid-template-rows: clamp(12rem, 58vw, 15rem) auto; border-radius: 20px; }
+  .landing-story-portrait { min-height: 0; }
+  .landing-story-portrait img { object-position: center 35%; }
+  .landing-story-number { top: 12px; left: 12px; }
+  .landing-story-content { gap: 18px; padding: 16px; }
+  .landing-story-content > div:first-child > svg { width: 22px; height: 22px; margin-bottom: 10px; }
+  .landing-story-content blockquote { font-size: 20px; line-height: 1.35; letter-spacing: -0.02em; }
+  .landing-story-content > div:last-child { gap: 10px; padding-top: 14px; }
+  .landing-story-index { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .landing-story-selector { min-height: 44px; justify-content: center; padding: 6px 8px; border-radius: 9999px; }
+  .landing-story-selector > span:first-child,
+  .landing-story-selector > span:last-child,
+  .landing-story-selector > span:nth-child(2) > span:nth-child(2) { display: none; }
+  .landing-story-selector > span:nth-child(2) { flex: 0 1 auto; }
+  .landing-story-selector > span:nth-child(2) > span:first-child { white-space: nowrap; font-size: 11px; }
+  .landing-story-selector[aria-current="true"] { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 22%, transparent); }
+  .landing-story-index > div:last-child { grid-column: 1 / -1; gap: 12px; margin-top: 0; padding-top: 4px; }
+  .landing-story-index > div:last-child > div:last-child { gap: 6px; }
+  .landing-story-index > div:last-child button { width: 40px; height: 40px; }
   .landing-faq-answer { grid-template-columns: auto minmax(0, 1fr); }
   .landing-faq-answer > span:last-child { display: none; }
 }

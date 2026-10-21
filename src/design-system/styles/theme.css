@@ -2,7 +2,7 @@
  * REQUIRED: Add these links to your <head> to load the brand fonts:
  * <link rel="preconnect" href="https://fonts.googleapis.com">
  * <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- * <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap">
+ * <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
  */
 
 /**
@@ -38,8 +38,8 @@
   --outrazo-shadow-glow: 0px 0px 24px rgba(16, 185, 129, 0.25);
 
   /* Fonts */
-  --outrazo-font-display: "Plus Jakarta Sans", "Syne", system-ui, sans-serif;
-  --outrazo-font-body: "Inter", "DM Sans", system-ui, sans-serif;
+  --outrazo-font-display: "Manrope", system-ui, sans-serif;
+  --outrazo-font-body: "Manrope", system-ui, sans-serif;
 
   /* Radius */
   --outrazo-radius-sm: 8px;
