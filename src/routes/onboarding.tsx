@@ -21,6 +21,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/design-system/components/Button";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
+import { BrandSplash } from "@/showcase/BrandSplash";
 import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { Skeleton } from "@/design-system/components/Skeleton";
 import {
@@ -194,6 +195,7 @@ function OnboardingPage() {
   };
 
   if (!ready) return <OnboardingSkeleton />;
+  if (saving) return <BrandSplash message="Making Outrazo yours" />;
 
   return (
     <main className="onboarding-page min-h-dvh overflow-x-hidden bg-canvas text-primary-text">

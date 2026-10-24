@@ -6,12 +6,13 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/design-system/components/Button";
 
 import { useTheme } from "@/design-system/lib/use-theme";
 import { AuthProvider } from "@/showcase/auth/auth-context";
 import { SavedEventsSync } from "@/showcase/saved/SavedEventsSync";
+import { OfflinePage } from "@/showcase/OfflinePage";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -68,15 +69,33 @@ function RootShell({ children }: { children: ReactNode }) {
 // /__component) render inside it, so any chrome leaks into every frame.
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [isOnline, setIsOnline] = useState(true);
   // Applies the dark-default / light theme class to <html> on every route.
   useTheme();
+
+  useEffect(() => {
+    const updateConnection = () => setIsOnline(navigator.onLine);
+    updateConnection();
+    window.addEventListener("online", updateConnection);
+    window.addEventListener("offline", updateConnection);
+    return () => {
+      window.removeEventListener("online", updateConnection);
+      window.removeEventListener("offline", updateConnection);
+    };
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <SavedEventsSync />
+        {isOnline ? (
+          <>
+            <Outlet />
+            <SavedEventsSync />
+          </>
+        ) : (
+          <OfflinePage online={isOnline} onRetry={() => setIsOnline(navigator.onLine)} />
+        )}
       </AuthProvider>
     </QueryClientProvider>
   );

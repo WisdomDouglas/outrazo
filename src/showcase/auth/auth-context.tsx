@@ -1,5 +1,5 @@
 import type { Session, User } from "@supabase/supabase-js";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/external-client";
 
@@ -22,6 +22,7 @@ interface AuthContextValue {
   session: Session | null;
   user: User | null;
   profile: UserProfile | null;
+  profileError: Error | null;
   loading: boolean;
   /** True when nobody is signed in — the app stays usable with demo data. */
   isDemoMode: boolean;
@@ -35,19 +36,47 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profileError, setProfileError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authInitialized, setAuthInitialized] = useState(false);
+  const authUserId = useRef<string | null>(null);
 
   useEffect(() => {
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setLoading(Boolean(nextSession));
+      const nextUserId = nextSession?.user.id ?? null;
+      const userChanged = authUserId.current !== nextUserId;
+      authUserId.current = nextUserId;
       setSession(nextSession);
-      if (!nextSession) setProfile(null);
+      if (userChanged) {
+        setProfile(null);
+        setProfileError(null);
+        setLoading(Boolean(nextSession));
+      } else if (!nextSession) {
+        setProfile(null);
+        setLoading(false);
+      }
     });
 
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      if (!data.session) setLoading(false);
-    }).catch(() => setLoading(false));
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) throw error;
+      setAuthInitialized(true);
+      const nextSession = data.session;
+      const nextUserId = nextSession?.user.id ?? null;
+      const userChanged = authUserId.current !== nextUserId;
+      authUserId.current = nextUserId;
+      setSession(nextSession);
+      if (userChanged) {
+        setProfile(null);
+        setProfileError(null);
+        setLoading(Boolean(nextSession));
+      } else if (!nextSession) {
+        setLoading(false);
+      }
+    }).catch((error: unknown) => {
+      console.error("Unable to restore the Outrazo session.", error);
+      setAuthInitialized(true);
+      setLoading(false);
+    });
 
     return () => subscription.subscription.unsubscribe();
   }, []);
@@ -57,20 +86,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = useCallback(async () => {
     if (!userId) {
       setProfile(null);
-      setLoading(false);
       return;
     }
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, name, email, avatar_url, location, onboarding_completed")
-      .eq("id", userId)
-      .maybeSingle();
-    setProfile((data as UserProfile | null) ?? null);
-    setLoading(false);
+    setProfileError(null);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, name, email, avatar_url, location, onboarding_completed")
+        .eq("id", userId)
+        .maybeSingle();
+      if (error) throw error;
+      if (authUserId.current !== userId) return;
+      setProfile((data as UserProfile | null) ?? null);
+    } catch (error) {
+      setProfileError(error instanceof Error ? error : new Error("Unable to load the Outrazo profile."));
+      throw error;
+    }
   }, [userId]);
 
   useEffect(() => {
-    void loadProfile();
+    let active = true;
+    const refresh = async () => {
+      try {
+        await loadProfile();
+      } catch (error) {
+        console.error("Unable to load the Outrazo profile.", error);
+        if (active) {
+          setProfile(null);
+          setProfileError(error instanceof Error ? error : new Error("Unable to load the Outrazo profile."));
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    void refresh();
+    return () => {
+      active = false;
+    };
   }, [loadProfile]);
 
   const signOut = useCallback(async () => {
@@ -84,7 +137,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       user,
       profile,
-      loading,
+      profileError,
+      loading: loading || !authInitialized,
       isDemoMode: !session,
       displayName:
         profile?.name ??
@@ -94,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       refreshProfile: loadProfile,
     };
-  }, [session, profile, loading, signOut, loadProfile]);
+  }, [session, profile, profileError, loading, authInitialized, signOut, loadProfile]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

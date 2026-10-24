@@ -5,16 +5,18 @@ import { useEffect, useState, type FormEvent } from "react";
 
 import { Button } from "@/design-system/components/Button";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
+import { ErrorState } from "@/design-system/components/ErrorState";
 import { Input } from "@/design-system/components/Input";
 import { supabase } from "@/integrations/supabase/external-client";
 import explorer from "@/assets/auth-explorer.webp";
+import { BrandSplash } from "@/showcase/BrandSplash";
 import { useAuth } from "./auth-context";
 
 export type AuthMode = "signin" | "signup";
 
 export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const navigate = useNavigate();
-  const { session, profile, loading: authLoading } = useAuth();
+  const { session, profile, profileError, loading: authLoading, refreshProfile } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,12 +27,29 @@ export function AuthPage({ initialMode }: { initialMode: AuthMode }) {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && session) {
+    if (!authLoading && session && !profileError) {
       const returnTo = profile?.onboarding_completed ? takeReturnTo() : null;
       if (returnTo) void navigate({ href: returnTo, replace: true });
       else void navigate({ to: profile?.onboarding_completed ? "/app" : "/onboarding", replace: true });
     }
-  }, [authLoading, navigate, profile?.onboarding_completed, session]);
+  }, [authLoading, navigate, profile?.onboarding_completed, profileError, session]);
+
+  if (authLoading && session) return <BrandSplash message="Welcome back — finding your next moment" />;
+  if (profileError && session) {
+    return (
+      <main className="grid min-h-dvh place-items-center bg-canvas px-md">
+        <ErrorState
+          title="We couldn’t load your profile."
+          description="Your account is still safe. Check your connection and try again."
+          onRetry={() => {
+            void refreshProfile().catch((error: unknown) => {
+              console.error("Unable to retry loading the Outrazo profile.", error);
+            });
+          }}
+        />
+      </main>
+    );
+  }
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
