@@ -394,7 +394,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      replace_event_ticket_tiers_v1: {
+        Args: {
+          p_event_id: string
+          p_tiers: Json
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

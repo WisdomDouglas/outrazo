@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
 import { supabase } from "@/integrations/supabase/external-client";
+import { CopilotPanel } from "@/showcase/copilot/CopilotPanel";
 import { CATEGORIES } from "@/showcase/discovery/categories";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { rememberReturnTo } from "@/showcase/saved/saved-events-store";
@@ -102,6 +103,14 @@ function CreateEventPage() {
     setValues((current) => ({ ...current, [field]: value }));
     setErrors((current) => ({ ...current, [field]: "" }));
     setSuccess(null);
+  };
+
+  const applyCopilot = (fields: { title: string; summary: string; description: string; category: string }) => {
+    // Only Apply may change form fields, and only these four. Tags are
+    // display-only because the database has no tags column. Save-success
+    // messages are left untouched.
+    setValues((current) => ({ ...current, ...fields }));
+    setErrors((current) => ({ ...current, title: "", summary: "", description: "", category: "" }));
   };
 
   const selectCover = (event: ChangeEvent<HTMLInputElement>) => {
@@ -275,31 +284,32 @@ function CreateEventPage() {
       setSavedImageUrl(imageUrl);
       setCover(null);
 
-      const { error: clearTiersError } = await supabase
-        .from("event_ticket_tiers")
-        .delete()
-        .eq("event_id", eventId);
-      if (clearTiersError) throw new Error(`The event draft was saved, but ticket tiers could not be updated: ${clearTiersError.message}`);
-
-      if (values.eventType === "paid") {
-        const { error: tierError } = await supabase.from("event_ticket_tiers").insert(
-          tiers.map((tier) => ({
-            event_id: eventId,
-            name: tier.name.trim(),
-            price: Number(tier.price),
-            quantity: Number(tier.quantity),
-          })),
-        );
-        if (tierError) throw new Error(`The event draft was saved, but ticket tiers could not be saved: ${tierError.message}`);
+      const { error: tiersError } = await supabase.rpc("replace_event_ticket_tiers_v1", {
+        p_event_id: eventId,
+        p_tiers: values.eventType === "paid"
+          ? tiers.map((tier) => ({
+              name: tier.name.trim(),
+              price: Number(tier.price),
+              quantity: Number(tier.quantity),
+            }))
+          : [],
+      });
+      if (tiersError) {
+        throw new Error(`The event draft was saved, but ticket tiers could not be saved: ${tiersError.message}`);
       }
 
       if (intent === "publish") {
-        const { error: publishError } = await supabase
+        const { data: publishedEvent, error: publishError } = await supabase
           .from("events")
           .update({ published: true })
           .eq("id", eventId)
-          .eq("created_by", session.user.id);
+          .eq("created_by", session.user.id)
+          .select("id, published")
+          .single();
         if (publishError) throw new Error(`Your draft was saved, but publishing failed: ${publishError.message}`);
+        if (!publishedEvent?.published) {
+          throw new Error("Your draft was saved, but the event could not be confirmed as published.");
+        }
         setSuccess("Your event is published. Opening its event page…");
         await new Promise((resolve) => window.setTimeout(resolve, 900));
         await navigate({ to: "/events/$eventId", params: { eventId } });
@@ -345,6 +355,7 @@ function CreateEventPage() {
           void saveEvent("publish");
         }}
       >
+        <CopilotPanel accessToken={session?.access_token ?? null} onApply={applyCopilot} />
         <FormSection title="Event details" description="Give people a clear picture of what they can expect.">
           <Input label="Event title" value={values.title} maxLength={120} error={errors.title} placeholder="e.g. Lagos Night Market" onChange={(event) => update("title", event.currentTarget.value)} />
           <Input label="Short summary" value={values.summary} maxLength={220} error={errors.summary} placeholder="A one-line introduction for event cards." onChange={(event) => update("summary", event.currentTarget.value)} />
