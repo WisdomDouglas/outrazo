@@ -10,6 +10,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
+    "test": "node --import ./tests/register.mjs ./tests/nl-discovery.test.mjs",
     "lint": "eslint .",
     "vercel-build": "node scripts/vercel-build.mjs"
   },

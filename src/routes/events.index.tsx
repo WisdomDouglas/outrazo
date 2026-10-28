@@ -18,6 +18,9 @@ import {
   type EventFilters,
 } from "@/showcase/discovery/EventFiltersPanel";
 import { useDiscovery } from "@/showcase/discovery/use-discovery";
+import { NLSearchBox } from "@/showcase/discovery/NLSearchBox";
+import { interpretDiscoveryQuery } from "@/showcase/discovery/interpretDiscoveryQuery";
+import { describeNLFilters, matchNLQuery, type NLDiscoveryFilters } from "@/showcase/discovery/nl-matching";
 import {
   CITIES,
   getOrganizer,
@@ -98,6 +101,11 @@ function ExploreEvents() {
   const { q, category: categoryParam } = Route.useSearch();
   const navigate = useNavigate();
   const [query, setQuery] = useState(q ?? "");
+  const [nlInput, setNlInput] = useState("");
+  const [nlFilters, setNlFilters] = useState<NLDiscoveryFilters | null>(null);
+  const [nlLoading, setNlLoading] = useState(false);
+  const [nlError, setNlError] = useState<string | null>(null);
+  const nlRequestId = useRef(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const [draftFilters, setDraftFilters] = useState<EventFilters>(INITIAL_FILTERS);
@@ -119,13 +127,16 @@ function ExploreEvents() {
 
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    if (!needle) return filteredEvents;
-    return filteredEvents.filter((event) =>
-      `${event.title} ${event.location} ${event.city} ${getOrganizer(event.organizerId).name}`
-        .toLowerCase()
-        .includes(needle),
-    );
-  }, [filteredEvents, query]);
+    const keyworded = !needle
+      ? filteredEvents
+      : filteredEvents.filter((event) =>
+          `${event.title} ${event.location} ${event.city} ${getOrganizer(event.organizerId).name}`
+            .toLowerCase()
+            .includes(needle),
+        );
+    if (!nlFilters) return keyworded;
+    return keyworded.filter((event) => matchNLQuery(event, nlFilters));
+  }, [filteredEvents, query, nlFilters]);
 
   const draftResultCount = useMemo(
     () => filterEvents(discovery.events, draftFilters, discovery.city).length,
@@ -153,16 +164,58 @@ function ExploreEvents() {
     setFiltersOpen(true);
   }, [appliedFilters]);
 
+  const clearNL = useCallback(() => {
+    nlRequestId.current += 1;
+    setNlInput("");
+    setNlFilters(null);
+    setNlError(null);
+  }, []);
+
+  const submitNL = useCallback(() => {
+    const text = nlInput.trim();
+    if (!text || nlLoading) return;
+    const mine = nlRequestId.current + 1;
+    nlRequestId.current = mine;
+    setNlLoading(true);
+    setNlError(null);
+    interpretDiscoveryQuery({ data: { query: text } }).then(
+      (filters) => {
+        if (nlRequestId.current !== mine) return;
+        setNlFilters(filters);
+        setNlLoading(false);
+      },
+      (caught: unknown) => {
+        if (nlRequestId.current !== mine) return;
+        setNlFilters(null);
+        setNlLoading(false);
+        const message = caught instanceof Error ? caught.message : "";
+        setNlError(
+          /failed to fetch|network|load failed/i.test(message)
+            ? "Could not reach the server. Check your connection and try again."
+            : message || "Something went wrong. Please try again.",
+        );
+      },
+    );
+  }, [nlInput, nlLoading]);
+
   const resetAll = useCallback(() => {
     setQuery("");
+    clearNL();
     setAppliedFilters(INITIAL_FILTERS);
     setDraftFilters(INITIAL_FILTERS);
     discovery.reset();
     navigate({ to: "/events", search: {} });
-  }, [discovery, navigate]);
+  }, [clearNL, discovery, navigate]);
 
-  const emptyState = query.trim()
+  const emptyState = nlFilters
     ? {
+        title: "No events match that description.",
+        description: "Try fewer details, another city, or a different date.",
+        label: "Clear AI search",
+        action: clearNL,
+      }
+    : query.trim()
+      ? {
         title: "Nothing matches your search.",
         description: "Try a different keyword or explore another category.",
         label: "Clear search",
@@ -242,6 +295,15 @@ function ExploreEvents() {
             </div>
           </div>
 
+          <NLSearchBox
+            value={nlInput}
+            onChange={setNlInput}
+            onSubmit={submitNL}
+            loading={nlLoading}
+            error={nlError}
+            activeSummary={nlFilters ? describeNLFilters(nlFilters) : null}
+            onClear={clearNL}
+          />
           <form
             onSubmit={(event) => {
               event.preventDefault();
