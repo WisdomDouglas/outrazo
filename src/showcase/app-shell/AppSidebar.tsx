@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Compass,
   Home,
+  LayoutDashboard,
   Settings,
   Ticket,
   UserRound,
@@ -20,7 +21,7 @@ import { useAuth } from "@/showcase/auth/auth-context";
 
 interface NavItem {
   label: string;
-  to: "/app" | "/app/explore" | "/events" | "/app/saved" | "/app/tickets" | "/app/create-event" | "/app/profile" | "/app/settings";
+  to: "/app" | "/app/explore" | "/events" | "/app/saved" | "/app/tickets" | "/app/create-event" | "/app/profile" | "/app/settings" | "/app/organizer";
   icon: LucideIcon;
   exact?: boolean;
 }
@@ -34,6 +35,7 @@ const PRIMARY_NAV: NavItem[] = [
 ];
 
 const ACCOUNT_NAV: NavItem[] = [
+  { label: "Organizer Dashboard", to: "/app/organizer", icon: LayoutDashboard },
   { label: "Profile", to: "/app/profile", icon: UserRound },
   { label: "Settings", to: "/app/settings", icon: Settings },
 ];

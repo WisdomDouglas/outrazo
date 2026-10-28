@@ -48,7 +48,7 @@ const toTicketTier = (row: TierRow): TicketTier => ({
   quantity: row.quantity,
 });
 
-function toEvent(row: EventRow, organizer?: OrganizerRow, tiers: TierRow[] = []): EventDetails {
+export function toEvent(row: EventRow, organizer?: OrganizerRow, tiers: TierRow[] = []): EventDetails {
   const city = row.city ?? "";
   const venueName = row.venue_name ?? row.address ?? city;
   const address = row.address ?? venueName;

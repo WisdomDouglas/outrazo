@@ -21,6 +21,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppCreateEventRouteImport } from './routes/app.create-event'
 import { Route as AppExploreRouteImport } from './routes/app.explore'
+import { Route as AppOrganizerRouteImport } from './routes/app.organizer'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppSavedRouteImport } from './routes/app.saved'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
@@ -30,6 +31,14 @@ import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
 import { Route as OrganizersOrganizerIdRouteImport } from './routes/organizers.$organizerId'
 import { Route as Char91__componentChar93PreviewSplatRouteImport } from './routes/[__component].preview.$'
 import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
+import { Route as AppOrganizerIndexRouteImport } from './routes/app.organizer.index'
+import { Route as AppOrganizerAttendeesRouteImport } from './routes/app.organizer.attendees'
+import { Route as AppOrganizerEventsRouteImport } from './routes/app.organizer.events'
+import { Route as AppOrganizerPaymentDetailsRouteImport } from './routes/app.organizer.payment-details'
+import { Route as AppOrganizerPayoutsRouteImport } from './routes/app.organizer.payouts'
+import { Route as AppOrganizerPromotionsRouteImport } from './routes/app.organizer.promotions'
+import { Route as AppOrganizerSalesRouteImport } from './routes/app.organizer.sales'
+import { Route as AppOrganizerSettingsRouteImport } from './routes/app.organizer.settings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -91,6 +100,11 @@ const AppExploreRoute = AppExploreRouteImport.update({
   path: '/explore',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOrganizerRoute = AppOrganizerRouteImport.update({
+  id: '/organizer',
+  path: '/organizer',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -138,6 +152,47 @@ const Char91__mockupChar93PreviewSplatRoute =
     path: '/__mockup/preview/$',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppOrganizerIndexRoute = AppOrganizerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppOrganizerRoute,
+} as any)
+const AppOrganizerAttendeesRoute = AppOrganizerAttendeesRouteImport.update({
+  id: '/attendees',
+  path: '/attendees',
+  getParentRoute: () => AppOrganizerRoute,
+} as any)
+const AppOrganizerEventsRoute = AppOrganizerEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AppOrganizerRoute,
+} as any)
+const AppOrganizerPaymentDetailsRoute =
+  AppOrganizerPaymentDetailsRouteImport.update({
+    id: '/payment-details',
+    path: '/payment-details',
+    getParentRoute: () => AppOrganizerRoute,
+  } as any)
+const AppOrganizerPayoutsRoute = AppOrganizerPayoutsRouteImport.update({
+  id: '/payouts',
+  path: '/payouts',
+  getParentRoute: () => AppOrganizerRoute,
+} as any)
+const AppOrganizerPromotionsRoute = AppOrganizerPromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => AppOrganizerRoute,
+} as any)
+const AppOrganizerSalesRoute = AppOrganizerSalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
+  getParentRoute: () => AppOrganizerRoute,
+} as any)
+const AppOrganizerSettingsRoute = AppOrganizerSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppOrganizerRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -151,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
+  '/app/organizer': typeof AppOrganizerRouteWithChildren
   '/app/profile': typeof AppProfileRoute
   '/app/saved': typeof AppSavedRoute
   '/app/settings': typeof AppSettingsRoute
@@ -161,6 +217,14 @@ export interface FileRoutesByFullPath {
   '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
+  '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
+  '/app/organizer/events': typeof AppOrganizerEventsRoute
+  '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
+  '/app/organizer/payouts': typeof AppOrganizerPayoutsRoute
+  '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
+  '/app/organizer/sales': typeof AppOrganizerSalesRoute
+  '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/app/organizer/': typeof AppOrganizerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -182,6 +246,14 @@ export interface FileRoutesByTo {
   '/events': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
+  '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
+  '/app/organizer/events': typeof AppOrganizerEventsRoute
+  '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
+  '/app/organizer/payouts': typeof AppOrganizerPayoutsRoute
+  '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
+  '/app/organizer/sales': typeof AppOrganizerSalesRoute
+  '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/app/organizer': typeof AppOrganizerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -196,6 +268,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
+  '/app/organizer': typeof AppOrganizerRouteWithChildren
   '/app/profile': typeof AppProfileRoute
   '/app/saved': typeof AppSavedRoute
   '/app/settings': typeof AppSettingsRoute
@@ -206,6 +279,14 @@ export interface FileRoutesById {
   '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
+  '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
+  '/app/organizer/events': typeof AppOrganizerEventsRoute
+  '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
+  '/app/organizer/payouts': typeof AppOrganizerPayoutsRoute
+  '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
+  '/app/organizer/sales': typeof AppOrganizerSalesRoute
+  '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/app/organizer/': typeof AppOrganizerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +302,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/app/create-event'
     | '/app/explore'
+    | '/app/organizer'
     | '/app/profile'
     | '/app/saved'
     | '/app/settings'
@@ -231,6 +313,14 @@ export interface FileRouteTypes {
     | '/events/'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
+    | '/app/organizer/attendees'
+    | '/app/organizer/events'
+    | '/app/organizer/payment-details'
+    | '/app/organizer/payouts'
+    | '/app/organizer/promotions'
+    | '/app/organizer/sales'
+    | '/app/organizer/settings'
+    | '/app/organizer/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -252,6 +342,14 @@ export interface FileRouteTypes {
     | '/events'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
+    | '/app/organizer/attendees'
+    | '/app/organizer/events'
+    | '/app/organizer/payment-details'
+    | '/app/organizer/payouts'
+    | '/app/organizer/promotions'
+    | '/app/organizer/sales'
+    | '/app/organizer/settings'
+    | '/app/organizer'
   id:
     | '__root__'
     | '/'
@@ -265,6 +363,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/app/create-event'
     | '/app/explore'
+    | '/app/organizer'
     | '/app/profile'
     | '/app/saved'
     | '/app/settings'
@@ -275,6 +374,14 @@ export interface FileRouteTypes {
     | '/events/'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
+    | '/app/organizer/attendees'
+    | '/app/organizer/events'
+    | '/app/organizer/payment-details'
+    | '/app/organizer/payouts'
+    | '/app/organizer/promotions'
+    | '/app/organizer/sales'
+    | '/app/organizer/settings'
+    | '/app/organizer/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -378,6 +485,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppExploreRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/organizer': {
+      id: '/app/organizer'
+      path: '/organizer'
+      fullPath: '/app/organizer'
+      preLoaderRoute: typeof AppOrganizerRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/profile': {
       id: '/app/profile'
       path: '/profile'
@@ -441,12 +555,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91__mockupChar93PreviewSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/organizer/': {
+      id: '/app/organizer/'
+      path: '/'
+      fullPath: '/app/organizer/'
+      preLoaderRoute: typeof AppOrganizerIndexRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/app/organizer/attendees': {
+      id: '/app/organizer/attendees'
+      path: '/attendees'
+      fullPath: '/app/organizer/attendees'
+      preLoaderRoute: typeof AppOrganizerAttendeesRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/app/organizer/events': {
+      id: '/app/organizer/events'
+      path: '/events'
+      fullPath: '/app/organizer/events'
+      preLoaderRoute: typeof AppOrganizerEventsRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/app/organizer/payment-details': {
+      id: '/app/organizer/payment-details'
+      path: '/payment-details'
+      fullPath: '/app/organizer/payment-details'
+      preLoaderRoute: typeof AppOrganizerPaymentDetailsRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/app/organizer/payouts': {
+      id: '/app/organizer/payouts'
+      path: '/payouts'
+      fullPath: '/app/organizer/payouts'
+      preLoaderRoute: typeof AppOrganizerPayoutsRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/app/organizer/promotions': {
+      id: '/app/organizer/promotions'
+      path: '/promotions'
+      fullPath: '/app/organizer/promotions'
+      preLoaderRoute: typeof AppOrganizerPromotionsRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/app/organizer/sales': {
+      id: '/app/organizer/sales'
+      path: '/sales'
+      fullPath: '/app/organizer/sales'
+      preLoaderRoute: typeof AppOrganizerSalesRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/app/organizer/settings': {
+      id: '/app/organizer/settings'
+      path: '/settings'
+      fullPath: '/app/organizer/settings'
+      preLoaderRoute: typeof AppOrganizerSettingsRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
   }
 }
+
+interface AppOrganizerRouteChildren {
+  AppOrganizerAttendeesRoute: typeof AppOrganizerAttendeesRoute
+  AppOrganizerEventsRoute: typeof AppOrganizerEventsRoute
+  AppOrganizerPaymentDetailsRoute: typeof AppOrganizerPaymentDetailsRoute
+  AppOrganizerPayoutsRoute: typeof AppOrganizerPayoutsRoute
+  AppOrganizerPromotionsRoute: typeof AppOrganizerPromotionsRoute
+  AppOrganizerSalesRoute: typeof AppOrganizerSalesRoute
+  AppOrganizerSettingsRoute: typeof AppOrganizerSettingsRoute
+  AppOrganizerIndexRoute: typeof AppOrganizerIndexRoute
+}
+
+const AppOrganizerRouteChildren: AppOrganizerRouteChildren = {
+  AppOrganizerAttendeesRoute: AppOrganizerAttendeesRoute,
+  AppOrganizerEventsRoute: AppOrganizerEventsRoute,
+  AppOrganizerPaymentDetailsRoute: AppOrganizerPaymentDetailsRoute,
+  AppOrganizerPayoutsRoute: AppOrganizerPayoutsRoute,
+  AppOrganizerPromotionsRoute: AppOrganizerPromotionsRoute,
+  AppOrganizerSalesRoute: AppOrganizerSalesRoute,
+  AppOrganizerSettingsRoute: AppOrganizerSettingsRoute,
+  AppOrganizerIndexRoute: AppOrganizerIndexRoute,
+}
+
+const AppOrganizerRouteWithChildren = AppOrganizerRoute._addFileChildren(
+  AppOrganizerRouteChildren,
+)
 
 interface AppRouteChildren {
   AppCreateEventRoute: typeof AppCreateEventRoute
   AppExploreRoute: typeof AppExploreRoute
+  AppOrganizerRoute: typeof AppOrganizerRouteWithChildren
   AppProfileRoute: typeof AppProfileRoute
   AppSavedRoute: typeof AppSavedRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -457,6 +654,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppCreateEventRoute: AppCreateEventRoute,
   AppExploreRoute: AppExploreRoute,
+  AppOrganizerRoute: AppOrganizerRouteWithChildren,
   AppProfileRoute: AppProfileRoute,
   AppSavedRoute: AppSavedRoute,
   AppSettingsRoute: AppSettingsRoute,

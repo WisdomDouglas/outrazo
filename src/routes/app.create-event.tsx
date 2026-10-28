@@ -49,7 +49,15 @@ const initialTier = (): TierDraft => ({
   quantity: "",
 });
 
+const toLocalInputValue = (iso: string): string => {
+  const date = new Date(iso);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+};
+
 export const Route = createFileRoute("/app/create-event")({
+  validateSearch: (search: Record<string, unknown>): { edit?: string } => ({
+    edit: typeof search.edit === "string" && search.edit.length > 0 ? search.edit : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Create your event — Outrazo" },
@@ -65,6 +73,8 @@ export const Route = createFileRoute("/app/create-event")({
 
 function CreateEventPage() {
   const navigate = useNavigate();
+  const { edit: editId } = Route.useSearch();
+  const isEditing = editId !== undefined;
   const { session, profile, displayName, loading: authLoading } = useAuth();
   const [values, setValues] = useState(INITIAL_VALUES);
   const [tiers, setTiers] = useState<TierDraft[]>(() => [initialTier()]);
@@ -75,13 +85,15 @@ function CreateEventPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [busy, setBusy] = useState<"draft" | "publish" | null>(null);
   const [draftId, setDraftId] = useState<string | null>(null);
+  const [editLoading, setEditLoading] = useState(Boolean(editId));
+  const [editError, setEditError] = useState<string | null>(null);
   const [savedImageUrl, setSavedImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading || session) return;
-    rememberReturnTo("/app/create-event");
+    rememberReturnTo(editId ? `/app/create-event?edit=${editId}` : "/app/create-event");
     void navigate({ to: "/login", replace: true });
-  }, [authLoading, navigate, session]);
+  }, [authLoading, editId, navigate, session]);
 
   useEffect(() => {
     if (!cover) {
@@ -92,6 +104,64 @@ function CreateEventPage() {
     setCoverPreview(preview);
     return () => URL.revokeObjectURL(preview);
   }, [cover, savedImageUrl]);
+
+  useEffect(() => {
+    if (!editId || !session) return;
+    let active = true;
+    setEditLoading(true);
+    setEditError(null);
+    void (async () => {
+      try {
+        const { data: row, error: rowError } = await supabase
+          .from("events")
+          .select("*")
+          .eq("id", editId)
+          .maybeSingle();
+        if (rowError) throw new Error(rowError.message);
+        if (!row || row.created_by !== session.user.id) {
+          throw new Error("This event couldn't be loaded. It may not exist, may belong to another account, or the organizer dashboard database update may not be applied yet.");
+        }
+        const { data: tierRows, error: tierError } = await supabase
+          .from("event_ticket_tiers")
+          .select("*")
+          .eq("event_id", row.id)
+          .order("price", { ascending: true });
+        if (tierError) throw new Error(tierError.message);
+        if (!active) return;
+        setValues({
+          title: row.title ?? "",
+          summary: row.summary ?? "",
+          description: row.description ?? "",
+          category: row.category ?? "",
+          eventType: row.event_type === "paid" ? "paid" : "free",
+          startsAt: row.starts_at ? toLocalInputValue(row.starts_at) : "",
+          endsAt: row.ends_at ? toLocalInputValue(row.ends_at) : "",
+          venueName: row.venue_name ?? "",
+          address: row.address ?? "",
+          city: row.city ?? "",
+          capacity: row.capacity === null || row.capacity === undefined ? "" : String(row.capacity),
+        });
+        setTiers(tierRows.length > 0
+          ? tierRows.map((tier) => ({
+              key: crypto.randomUUID(),
+              name: tier.name ?? "",
+              price: tier.price === null || tier.price === undefined ? "" : String(tier.price),
+              quantity: tier.quantity === null || tier.quantity === undefined ? "" : String(tier.quantity),
+            }))
+          : [initialTier()]);
+        setDraftId(row.id);
+        setSavedImageUrl(row.image_url ?? null);
+      } catch (caught: unknown) {
+        if (!active) return;
+        setEditError(caught instanceof Error ? caught.message : "Could not load this event for editing.");
+      } finally {
+        if (active) setEditLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [editId, session]);
 
   const minDateTime = useMemo(() => {
     const now = new Date();
@@ -156,7 +226,7 @@ function CreateEventPage() {
     const start = values.startsAt ? new Date(values.startsAt) : null;
     const end = values.endsAt ? new Date(values.endsAt) : null;
     if (start && !Number.isFinite(start.getTime())) next.startsAt = "Enter a valid start date and time.";
-    else if (start && start.getTime() <= Date.now()) next.startsAt = "Start time must be in the future.";
+    else if (start && !isEditing && start.getTime() <= Date.now()) next.startsAt = "Start time must be in the future.";
     if (end && !Number.isFinite(end.getTime())) next.endsAt = "Enter a valid end date and time.";
     else if (start && end && end.getTime() <= start.getTime()) {
       next.endsAt = "End time must be after the start time.";
@@ -271,8 +341,11 @@ function CreateEventPage() {
         published: false,
       };
 
+      // Editing must preserve the event's published state; new rows start unpublished.
+      const updateRow: Record<string, unknown> = { ...row };
+      if (isEditing) delete updateRow.published;
       const result = draftId
-        ? await supabase.from("events").update(row).eq("id", eventId).eq("created_by", session.user.id).select("id").single()
+        ? await supabase.from("events").update((isEditing ? updateRow : row) as typeof row).eq("id", eventId).eq("created_by", session.user.id).select("id").single()
         : await supabase.from("events").insert({
             ...row,
             id: eventId,
@@ -314,7 +387,7 @@ function CreateEventPage() {
         await new Promise((resolve) => window.setTimeout(resolve, 900));
         await navigate({ to: "/events/$eventId", params: { eventId } });
       } else {
-        setSuccess("Draft saved. It will stay hidden from Explore until you publish it.");
+        setSuccess(isEditing ? "Changes saved." : "Draft saved. It will stay hidden from Explore until you publish it.");
       }
     } catch (caught) {
       let message = caught instanceof Error ? caught.message : "Something went wrong while saving your event.";
@@ -328,19 +401,32 @@ function CreateEventPage() {
     }
   };
 
-  if (authLoading || (!session && !requestError)) {
-    return <div className="grid min-h-64 place-items-center text-muted-text" aria-busy="true">Checking your account…</div>;
+  if (authLoading || (!session && !requestError) || (editId && editLoading)) {
+    return <div className="grid min-h-64 place-items-center text-muted-text" aria-busy="true">{editId ? "Loading your event…" : "Checking your account…"}</div>;
+  }
+
+  if (editId && editError) {
+    return (
+      <div className="mx-auto w-full max-w-[920px] px-md py-xl lg:px-xl lg:py-2xl">
+        <p className="type-body rounded-md border border-transactional/40 bg-transactional/10 p-md text-transactional" role="alert">
+          We couldn&apos;t open this event for editing. {editError}
+        </p>
+        <Link to="/app/organizer/events" className="focus-ring type-body mt-lg inline-flex min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text">
+          <ArrowLeft aria-hidden className="size-4" />Back to My events
+        </Link>
+      </div>
+    );
   }
 
   return (
     <div className="mx-auto w-full max-w-[920px] px-md py-xl lg:px-xl lg:py-2xl">
-      <Link to="/app" className="focus-ring type-body mb-lg inline-flex min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text">
-        <ArrowLeft aria-hidden className="size-4" />Back to Outrazo
+      <Link to={isEditing ? "/app/organizer/events" : "/app"} className="focus-ring type-body mb-lg inline-flex min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text">
+        <ArrowLeft aria-hidden className="size-4" />{isEditing ? "Back to My events" : "Back to Outrazo"}
       </Link>
       <div className="mb-xl">
         <p className="type-caption font-semibold uppercase tracking-[0.16em] text-accent">Organizer tools</p>
-        <h1 className="type-h1 mt-xs">Create an event</h1>
-        <p className="type-body-lg mt-sm max-w-[60ch] text-muted-text">Add the details, set your ticket options, then publish when everything is ready.</p>
+        <h1 className="type-h1 mt-xs">{isEditing ? "Edit event" : "Create an event"}</h1>
+        <p className="type-body-lg mt-sm max-w-[60ch] text-muted-text">{isEditing ? "Update the details below. Saving applies your changes to the existing event." : "Add the details, set your ticket options, then publish when everything is ready."}</p>
       </div>
 
       {requestError ? <p className="type-body mb-lg rounded-md border border-transactional/40 bg-transactional/10 p-md text-transactional" role="alert">{requestError}</p> : null}
@@ -404,8 +490,8 @@ function CreateEventPage() {
 
         <FormSection title="Date and location" description="Use the local time for the city where your event takes place.">
           <div className="grid gap-md sm:grid-cols-2">
-            <Input type="datetime-local" label="Starts" value={values.startsAt} min={minDateTime} error={errors.startsAt} onChange={(event) => update("startsAt", event.currentTarget.value)} />
-            <Input type="datetime-local" label="Ends" value={values.endsAt} min={values.startsAt || minDateTime} error={errors.endsAt} onChange={(event) => update("endsAt", event.currentTarget.value)} />
+            <Input type="datetime-local" label="Starts" value={values.startsAt} min={isEditing ? undefined : minDateTime} error={errors.startsAt} onChange={(event) => update("startsAt", event.currentTarget.value)} />
+            <Input type="datetime-local" label="Ends" value={values.endsAt} min={values.startsAt || (isEditing ? undefined : minDateTime)} error={errors.endsAt} onChange={(event) => update("endsAt", event.currentTarget.value)} />
           </div>
           <Input label="Venue name" value={values.venueName} error={errors.venueName} placeholder="e.g. Freedom Park" onChange={(event) => update("venueName", event.currentTarget.value)} />
           <Input label="Street address" value={values.address} error={errors.address} placeholder="Street, district or neighbourhood" onChange={(event) => update("address", event.currentTarget.value)} />

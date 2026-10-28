@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Bookmark, CalendarPlus, Settings, UserRound } from "lucide-react";
+import { Bookmark, CalendarPlus, LayoutDashboard, Settings, UserRound } from "lucide-react";
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { Badge } from "@/design-system/components/Badge";
@@ -36,6 +36,9 @@ function ProfilePage() {
         </Link>
         <Link to="/app/saved" className="focus-ring rounded-full">
           <Button variant="outline" leadingIcon={<Bookmark aria-hidden className="size-4" />}>Saved events</Button>
+        </Link>
+        <Link to="/app/organizer" className="focus-ring rounded-full">
+          <Button variant="outline" leadingIcon={<LayoutDashboard aria-hidden className="size-4" />}>Organizer dashboard</Button>
         </Link>
         <Link to="/app/settings" className="focus-ring rounded-full">
           <Button variant="ghost" leadingIcon={<Settings aria-hidden className="size-4" />}>Settings</Button>
