@@ -27,6 +27,7 @@ import { EventRail } from "@/showcase/app-shell/EventRail";
 import { LocationPicker } from "@/showcase/app-shell/LocationPicker";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { CATEGORIES } from "@/showcase/discovery/categories";
+import { displayLocationLabel, matchLocationSelection } from "@/showcase/discovery/locations";
 import {
   loadOnboardingRecord,
   saveOnboardingLocation,
@@ -199,14 +200,14 @@ function AppHome() {
       .filter((event) => {
         if (quickFilter === "tonight" && !event.tonight) return false;
         if (quickFilter === "weekend" && !/weekend/i.test(event.tag ?? "") && !/\b(Sat|Sun)\b/.test(event.date)) return false;
-        if (quickFilter === "nearby" && event.city !== location) return false;
+        if (quickFilter === "nearby" && !matchLocationSelection(location, event.city)) return false;
         if (quickFilter === "free" && event.price) return false;
         if (searchTerm && !`${event.title} ${event.location} ${event.city}`.toLowerCase().includes(searchTerm)) return false;
         return true;
       })
       .sort(
         (a, b) =>
-          Number(b.city === location) - Number(a.city === location) ||
+          Number(matchLocationSelection(location, b.city)) - Number(matchLocationSelection(location, a.city)) ||
           Number(Boolean(b.tonight)) - Number(Boolean(a.tonight)) ||
           b.attendeeCount - a.attendeeCount,
       )
@@ -216,7 +217,7 @@ function AppHome() {
   const nearYou = useMemo(() => {
     const alreadyFeatured = new Set(featured.map((event) => event.id));
     return catalog.events
-      .filter((event) => event.city === location && !alreadyFeatured.has(event.id))
+      .filter((event) => matchLocationSelection(location, event.city) && !alreadyFeatured.has(event.id))
       .sort((a, b) => b.attendeeCount - a.attendeeCount)
       .slice(0, 3);
   }, [catalog.events, featured, location]);
@@ -229,7 +230,7 @@ function AppHome() {
       .filter((event) => interestCategories.includes(event.category))
       .sort(
         (a, b) =>
-          Number(b.city === location) - Number(a.city === location) ||
+          Number(matchLocationSelection(location, b.city)) - Number(matchLocationSelection(location, a.city)) ||
           b.attendeeCount - a.attendeeCount,
       )
       .slice(0, 4);
@@ -392,10 +393,10 @@ function AppHome() {
         />
         <a
           className="nearby-map-card focus-ring"
-          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${location}, Nigeria`)}`}
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${displayLocationLabel(location)}, Nigeria`)}`}
           target="_blank"
           rel="noreferrer"
-          aria-label={`Open ${location} in Google Maps`}
+          aria-label={`Open ${displayLocationLabel(location)} in Google Maps`}
         >
           <span className="nearby-map-art" aria-hidden="true">
             <span className="nearby-map-road nearby-map-road--one" />
@@ -405,15 +406,15 @@ function AppHome() {
           </span>
           <span className="nearby-map-copy">
             <span className="nearby-map-kicker"><Navigation className="size-3.5" /> Explore the area</span>
-            <strong>Find your next plan in {location}</strong>
-            <span>Open this city in Google Maps <ArrowRight className="size-4" /></span>
+            <strong>Find your next plan in {displayLocationLabel(location)}</strong>
+            <span>Open this location in Google Maps <ArrowRight className="size-4" /></span>
           </span>
         </a>
         {nearYou.length ? (
-          <AppEventGrid events={nearYou} className="nearby-event-list" label={`Events near ${location}`} />
+          <AppEventGrid events={nearYou} className="nearby-event-list" label={`Events near ${displayLocationLabel(location)}`} />
         ) : (
           <EmptyState
-            title={`Nothing happening in ${location} just yet.`}
+            title={`Nothing happening in ${displayLocationLabel(location)} just yet.`}
             icon={<img src={emptyArt} alt="" loading="lazy" width={816} height={816} className="size-10" />}
             action={<Link to="/events" search={{}}><Button variant="outline">Explore other locations</Button></Link>}
           />

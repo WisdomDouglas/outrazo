@@ -31,6 +31,8 @@ import {
   type OnboardingDraft,
 } from "@/showcase/onboarding-storage";
 import { EVENTS } from "@/showcase/sample-data";
+import { POPULAR_STATE_NAMES, displayLocationLabel } from "@/showcase/discovery/locations";
+import { StateSearchList } from "@/showcase/discovery/StateSearchList";
 import { supabase } from "@/integrations/supabase/external-client";
 import { useAuth } from "@/showcase/auth/auth-context";
 import explorer from "@/assets/auth-explorer.webp";
@@ -84,8 +86,6 @@ const INTERESTS: SelectableOption[] = [
   { id: "community", label: "Community", icon: Users },
 ];
 
-const LOCATIONS = ["Lagos", "Port Harcourt", "Abuja", "Ibadan"];
-
 const PREFERENCES: SelectableOption[] = [
   { id: "free", label: "Free events", icon: Sparkles },
   { id: "near", label: "Near me", icon: MapPin },
@@ -102,7 +102,7 @@ const STEP_COPY = [
   },
   {
     title: "Where do you want to discover events?",
-    subtitle: "Choose the city you want to explore first. You can change this later.",
+    subtitle: "Choose the state you want to explore first. You can change this later.",
   },
   {
     title: "What sounds good?",
@@ -365,42 +365,61 @@ function LocationStep({
   onOpen: () => void;
   onSelect: (value: string) => void;
 }) {
+  const [showAllStates, setShowAllStates] = useState(false);
   return (
     <fieldset>
       <legend className="sr-only">Choose a location</legend>
       <div className="mb-lg flex flex-wrap items-center justify-between gap-md rounded-md border border-line bg-card p-md">
         <span className="inline-flex items-center gap-sm text-accent">
           <MapPin aria-hidden className="size-5" />
-          <span className="type-h3 text-primary-text">{location}</span>
+          <span className="type-h3 text-primary-text">{displayLocationLabel(location)}</span>
         </span>
         <Button type="button" variant="ghost" size="sm" onClick={onOpen}>
           Change location
         </Button>
       </div>
       {open ? (
-        <div className="grid gap-sm sm:grid-cols-2">
-          {LOCATIONS.map((city) => {
-            const active = city === location;
-            return (
-              <Button
-                key={city}
-                type="button"
-                variant={active ? "primary" : "outline"}
-                className="w-full justify-between"
-                aria-pressed={active}
-                onClick={() => onSelect(city)}
-              >
-                <span className="inline-flex items-center gap-sm">
-                  <MapPin aria-hidden className="size-4" />
-                  {city}
-                </span>
-                {active ? <Check aria-hidden className="size-4" /> : null}
-              </Button>
-            );
-          })}
-        </div>
+        <>
+          <div className="grid gap-sm sm:grid-cols-2">
+            {POPULAR_STATE_NAMES.map((name) => {
+              const active = name === location;
+              return (
+                <Button
+                  key={name}
+                  type="button"
+                  variant={active ? "primary" : "outline"}
+                  className="w-full justify-between"
+                  aria-pressed={active}
+                  onClick={() => onSelect(name)}
+                >
+                  <span className="inline-flex items-center gap-sm">
+                    <MapPin aria-hidden className="size-4" />
+                    {displayLocationLabel(name)}
+                  </span>
+                  {active ? <Check aria-hidden className="size-4" /> : null}
+                </Button>
+              );
+            })}
+          </div>
+          <div className="mt-md">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAllStates((value) => !value)}
+              aria-expanded={showAllStates}
+            >
+              {showAllStates ? "Hide all states" : "Choose another state"}
+            </Button>
+            {showAllStates ? (
+              <div className="mt-sm rounded-md border border-line bg-card p-sm">
+                <StateSearchList selected={location} onSelect={onSelect} />
+              </div>
+            ) : null}
+          </div>
+        </>
       ) : null}
-      <p className="type-caption mt-md text-muted-text">Mock locations for now. No location access is requested.</p>
+      <p className="type-caption mt-md text-muted-text">No location access is requested.</p>
     </fieldset>
   );
 }
@@ -438,7 +457,7 @@ function OnboardingVisual({
   const featured = EVENTS.slice(0, 3);
   const caption = step === 1
     ? interestLabels.length > 0 ? interestLabels.slice(0, 3).join(" · ") : "Your kind of events"
-    : step === 2 ? `Discover ${location}` : "Made for your mood";
+    : step === 2 ? `Discover ${displayLocationLabel(location)}` : "Made for your mood";
 
   return (
     <aside className="onboarding-visual relative flex min-h-[190px] flex-col justify-between overflow-hidden rounded-lg border border-line bg-card p-lg lg:min-h-[520px] lg:p-xl" aria-label="Event inspiration">
@@ -489,5 +508,5 @@ function OnboardingSkeleton() {
 }
 
 function draftLabel(step: number) {
-  return step === 1 ? "INTERESTS" : step === 2 ? "YOUR CITY" : "YOUR MOOD";
+  return step === 1 ? "INTERESTS" : step === 2 ? "YOUR LOCATION" : "YOUR MOOD";
 }

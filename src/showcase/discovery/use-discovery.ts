@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
+import { matchLocationSelection } from "./locations";
 import { mergeEventCatalog } from "../event-data";
 import { EVENTS, type CategoryId, type OutrazoEvent } from "../sample-data";
 import { useEventCatalog } from "../use-event-catalog";
@@ -41,7 +42,7 @@ export function useDiscovery(source: OutrazoEvent[] = EVENTS): DiscoveryState {
       allEvents.filter(
         (event) =>
           (category === "all" || event.category === category) &&
-          (!city || event.city === city),
+          (!city || matchLocationSelection(city, event.city)),
       ),
     [allEvents, category, city],
   );

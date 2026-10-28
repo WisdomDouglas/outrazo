@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { CATEGORIES } from "@/showcase/discovery/categories";
-import { CITIES } from "@/showcase/sample-data";
+import { placesPromptReference, resolvePlace } from "@/showcase/discovery/locations";
 import {
   addLagosDays,
   describeChatPayload,
@@ -51,7 +51,6 @@ const SUPPORTED_CATEGORY_IDS = CATEGORIES.map((category) => category.id).filter(
 if (SUPPORTED_CATEGORY_IDS.length === 0) {
   throw new Error("Discovery misconfigured: the app defines no event categories.");
 }
-const KNOWN_CITY_NAMES = CITIES.map((city) => city.name);
 
 const DATE_PRESETS = [
   "any",
@@ -75,7 +74,8 @@ const categorySchema = z.enum(categoryOptions as [string, ...string[]]);
  * only validated, fully resolved filters.
  */
 const interpretationSchema = z.object({
-  city: z.string().max(60),
+  location: z.string().max(80),
+  locationKind: z.enum(["city", "state", "none"]),
   category: categorySchema,
   datePreset: z.enum(DATE_PRESETS),
   dateFrom: z.string().max(10),
@@ -87,7 +87,8 @@ const interpretationSchema = z.object({
 const INTERPRETATION_JSON_SCHEMA = {
   type: "object",
   properties: {
-    city: { type: "string" },
+    location: { type: "string" },
+    locationKind: { type: "string", enum: ["city", "state", "none"] },
     category: { type: "string", enum: [...SUPPORTED_CATEGORY_IDS, "any"] },
     datePreset: { type: "string", enum: [...DATE_PRESETS] },
     dateFrom: { type: "string" },
@@ -95,14 +96,15 @@ const INTERPRETATION_JSON_SCHEMA = {
     price: { type: "string", enum: ["any", "free", "paid"] },
     keywords: { type: "array", items: { type: "string" } },
   },
-  required: ["city", "category", "datePreset", "dateFrom", "dateTo", "price", "keywords"],
+  required: ["location", "locationKind", "category", "datePreset", "dateFrom", "dateTo", "price", "keywords"],
 };
 
 function buildDeveloperInstruction(now: Date): string {
   return [
     "You are Outrazo's discovery assistant. Convert the visitor's request into search filters as JSON matching the schema.",
     `Today is ${lagosWeekdayName(now)}, ${lagosDayOfInstant(now)} in Lagos, Nigeria (Africa/Lagos).`,
-    `city: the requested city, or "" when none is mentioned. Prefer these known cities and fix obvious abbreviations: ${KNOWN_CITY_NAMES.join(", ")} ("PH" or "PH City" means Port Harcourt). If another Nigerian city is clearly named, return it as written.`,
+    `location: the requested place, or "" when none is mentioned. Use canonical names from this reference:\n${placesPromptReference()}`,
+    `locationKind: "city" when a city or town is named; "state" when a state is named, including bare names shared with their capital (Lagos, Enugu, Kano and the like read as the state) and "FCT" for the Federal Capital Territory; "none" together with "" when no place is mentioned, for "near me" (the app already knows the user's location), or when the place is genuinely unclear. If a specific non-Nigerian place is named, return it as kind "city" exactly as written. Never invent or substitute places.`,
     `category: exactly one of: ${[...SUPPORTED_CATEGORY_IDS, "any"].join(", ")}. Pick the closest match ("tech", "developers", "builders", and meetups suggest tech; concerts and live music suggest music; parties and nightlife suggest parties). When unsure, use "any".`,
     `datePreset: "today" for today or tonight; "this_weekend" for this weekend, Saturday, or Sunday; "next_weekend" for next weekend; "this_week" for this week; "next_7_days" for the next 7 days; otherwise "any". For explicit calendar dates (for example "October 31" or "Dec 25"), put them in dateFrom and dateTo as YYYY-MM-DD instead and keep datePreset "any". Never compute relative dates yourself.`,
     `dateFrom and dateTo: "" unless the request names explicit calendar dates or a date range.`,
@@ -269,8 +271,25 @@ export const interpretDiscoveryQuery = createServerFn({ method: "POST" })
     const keywords = [...new Set(
       parsed.data.keywords.map((keyword) => keyword.trim()).filter(Boolean),
     )].slice(0, 6);
+    const placeText = parsed.data.location.trim();
+    const placeKind = parsed.data.locationKind;
+    let location: string | null = null;
+    let locationKind: "city" | "state" = "city";
+    if (placeText && placeKind !== "none") {
+      const resolved = resolvePlace(placeText);
+      if (resolved) {
+        location = resolved.name;
+        locationKind = resolved.kind;
+      } else {
+        // Unknown place: echo it through so matching honestly finds nothing
+        // rather than substituting an unrelated location.
+        location = placeText;
+        locationKind = placeKind === "state" ? "state" : "city";
+      }
+    }
     return {
-      city: parsed.data.city.trim() || null,
+      location,
+      locationKind,
       category: parsed.data.category,
       dateFrom: bounds.from,
       dateTo: bounds.to,

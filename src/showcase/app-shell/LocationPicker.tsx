@@ -1,10 +1,9 @@
-import { Check, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/design-system/lib/utils";
-
-/** Mock location list — replace with a real places source later. */
-export const DEMO_LOCATIONS = ["Lagos", "Port Harcourt", "Abuja", "Ibadan"];
+import { displayLocationLabel } from "@/showcase/discovery/locations";
+import { StateSearchList } from "@/showcase/discovery/StateSearchList";
 
 export interface LocationPickerProps {
   location: string;
@@ -12,7 +11,7 @@ export interface LocationPickerProps {
   className?: string;
 }
 
-/** Location context chip with a small mock location switcher. */
+/** Location context chip with a searchable Nigerian state switcher. */
 export function LocationPicker({ location, onChange, className }: LocationPickerProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +36,7 @@ export function LocationPicker({ location, onChange, className }: LocationPicker
     <div ref={containerRef} className={cn("relative inline-flex items-center gap-xs", className)}>
       <span className="type-body inline-flex min-h-11 items-center gap-xs text-muted-text">
         <MapPin aria-hidden className="size-4 text-accent" strokeWidth={2} />
-        {location}
+        {displayLocationLabel(location)}
       </span>
       <button
         type="button"
@@ -49,29 +48,15 @@ export function LocationPicker({ location, onChange, className }: LocationPicker
         Change
       </button>
       {open ? (
-        <ul
-          role="listbox"
-          aria-label="Choose a location"
-          className="absolute top-[calc(100%+var(--spacing-xs))] left-0 z-20 w-48 overflow-hidden rounded-md border border-line bg-card p-xs shadow-card"
-        >
-          {DEMO_LOCATIONS.map((city) => (
-            <li key={city}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={city === location}
-                onClick={() => {
-                  onChange(city);
-                  setOpen(false);
-                }}
-                className="focus-ring type-body flex min-h-11 w-full items-center justify-between rounded-sm px-sm text-left transition-colors hover:bg-accent/10"
-              >
-                {city}
-                {city === location ? <Check aria-hidden className="size-4 text-accent" /> : null}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="absolute top-[calc(100%+var(--spacing-xs))] left-0 z-20 w-72 max-w-[80vw] rounded-md border border-line bg-card p-sm shadow-card">
+          <StateSearchList
+            selected={location}
+            onSelect={(stateName) => {
+              onChange(stateName);
+              setOpen(false);
+            }}
+          />
+        </div>
       ) : null}
     </div>
   );

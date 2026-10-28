@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, MapPin, SearchX, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, ChevronDown, MapPin, SearchX, SlidersHorizontal } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
@@ -20,7 +20,8 @@ import {
 import { useDiscovery } from "@/showcase/discovery/use-discovery";
 import { NLSearchBox } from "@/showcase/discovery/NLSearchBox";
 import { interpretDiscoveryQuery } from "@/showcase/discovery/interpretDiscoveryQuery";
-import { describeNLFilters, matchNLQuery, type NLDiscoveryFilters } from "@/showcase/discovery/nl-matching";
+import { describeNLFilters, matchNLQuery, nlLocationLabel, type NLDiscoveryFilters } from "@/showcase/discovery/nl-matching";
+import { displayLocationLabel, matchLocationSelection, NIGERIAN_STATES } from "@/showcase/discovery/locations";
 import {
   CITIES,
   getOrganizer,
@@ -59,12 +60,12 @@ function matchesDate(event: OutrazoEvent, dateFilter: EventFilters["date"]) {
 function filterEvents(events: OutrazoEvent[], filters: EventFilters, city: string | null) {
   return events.filter((event) => {
     const matchesLocation = city
-      ? event.city === city
+      ? matchLocationSelection(city, event.city)
       : filters.location === "any"
         ? true
         : filters.location === "other"
-          ? event.city !== DEMO_LOCATION
-          : event.city === DEMO_LOCATION;
+          ? !matchLocationSelection(DEMO_LOCATION, event.city)
+          : matchLocationSelection(DEMO_LOCATION, event.city);
     const matchesPrice =
       filters.price === "any" ||
       (filters.price === "free" ? !event.price : Boolean(event.price));
@@ -107,6 +108,7 @@ function ExploreEvents() {
   const [nlError, setNlError] = useState<string | null>(null);
   const nlRequestId = useRef(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [showAllStates, setShowAllStates] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const [draftFilters, setDraftFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
@@ -125,18 +127,31 @@ function ExploreEvents() {
     [appliedFilters, discovery.city, discovery.events],
   );
 
+  // An explicit NL location replaces the selected-location constraints for
+  // that search; every other manual filter still applies. Clearing the NL
+  // search restores normal browsing automatically.
+  const nlLocationOverride = Boolean(nlFilters?.location);
+  const nlBaseEvents = useMemo(() => {
+    if (!nlLocationOverride) return filteredEvents;
+    const byCategory =
+      discovery.category === "all"
+        ? discovery.allEvents
+        : discovery.allEvents.filter((event) => event.category === discovery.category);
+    return filterEvents(byCategory, { ...appliedFilters, location: "any" }, null);
+  }, [nlLocationOverride, filteredEvents, discovery.allEvents, discovery.category, appliedFilters]);
+
   const results = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const keyworded = !needle
-      ? filteredEvents
-      : filteredEvents.filter((event) =>
+      ? nlBaseEvents
+      : nlBaseEvents.filter((event) =>
           `${event.title} ${event.location} ${event.city} ${getOrganizer(event.organizerId).name}`
             .toLowerCase()
             .includes(needle),
         );
     if (!nlFilters) return keyworded;
     return keyworded.filter((event) => matchNLQuery(event, nlFilters));
-  }, [filteredEvents, query, nlFilters]);
+  }, [nlBaseEvents, query, nlFilters]);
 
   const draftResultCount = useMemo(
     () => filterEvents(discovery.events, draftFilters, discovery.city).length,
@@ -148,11 +163,12 @@ function ExploreEvents() {
   ).length + (appliedFilters.location === "near" ? 0 : 1);
 
   const displayedLocation = discovery.city
-    ?? (appliedFilters.location === "other"
+    ? displayLocationLabel(discovery.city)
+    : appliedFilters.location === "other"
       ? "Other locations"
       : appliedFilters.location === "any"
         ? "All locations"
-        : DEMO_LOCATION);
+        : DEMO_LOCATION;
 
   const closeFilters = useCallback(() => {
     setFiltersOpen(false);
@@ -207,10 +223,11 @@ function ExploreEvents() {
     navigate({ to: "/events", search: {} });
   }, [clearNL, discovery, navigate]);
 
+  const nlPlaceLabel = nlFilters ? nlLocationLabel(nlFilters) : null;
   const emptyState = nlFilters
     ? {
-        title: "No events match that description.",
-        description: "Try fewer details, another city, or a different date.",
+        title: nlPlaceLabel ? `No events found in ${nlPlaceLabel}.` : "No events match that description.",
+        description: "Try fewer details, clear the AI search, or browse everything instead.",
         label: "Clear AI search",
         action: clearNL,
       }
@@ -362,14 +379,14 @@ function ExploreEvents() {
           <div className="mb-lg flex items-center gap-sm">
             <Badge variant="accent">
               <MapPin aria-hidden className="size-3.5" />
-              {discovery.city}
+              {displayLocationLabel(discovery.city)}
             </Badge>
             <button
               type="button"
               onClick={() => discovery.setCity(null)}
               className="focus-ring type-caption rounded-full text-muted-text hover:text-primary-text"
             >
-              Clear city
+              Clear location
             </button>
           </div>
         ) : null}
@@ -400,7 +417,7 @@ function ExploreEvents() {
         )}
 
         <section className="pt-section">
-          <h2 className="type-h2 mb-lg">Browse by city</h2>
+          <h2 className="type-h2 mb-lg">Browse by location</h2>
           <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
             {CITIES.map((city) => (
               <CityCard
@@ -416,6 +433,42 @@ function ExploreEvents() {
                 }}
               />
             ))}
+          </div>
+          <div className="mt-lg">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAllStates((value) => !value)}
+              aria-expanded={showAllStates}
+              leadingIcon={
+                <ChevronDown
+                  aria-hidden
+                  className={`size-4 transition-transform ${showAllStates ? "rotate-180" : ""}`}
+                />
+              }
+            >
+              {showAllStates ? "Hide all states" : "Browse all states"}
+            </Button>
+            {showAllStates ? (
+              <div className="mt-md flex flex-wrap gap-sm" role="group" aria-label="All Nigerian states">
+                {NIGERIAN_STATES.map((state) => {
+                  const active = discovery.city === state.name;
+                  return (
+                    <CategoryChip
+                      key={state.name}
+                      active={active}
+                      onClick={() => {
+                        discovery.setCity(active ? null : state.name);
+                        setAppliedFilters({ ...appliedFilters, location: "any" });
+                      }}
+                    >
+                      {displayLocationLabel(state.name)}
+                    </CategoryChip>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
         </section>
       </main>

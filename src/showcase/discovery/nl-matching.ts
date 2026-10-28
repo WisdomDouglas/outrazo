@@ -1,4 +1,5 @@
 import { EVENTS, getOrganizer, type OutrazoEvent } from "@/showcase/sample-data";
+import { normalizePlace, shortStateLabel, stateMatchesEventCity } from "./locations";
 
 /**
  * Natural-language discovery matching.
@@ -9,7 +10,13 @@ import { EVENTS, getOrganizer, type OutrazoEvent } from "@/showcase/sample-data"
  */
 
 export interface NLDiscoveryFilters {
-  city: string | null;
+  /** Explicitly requested place, or null when the query names none. */
+  location: string | null;
+  /**
+   * "city" matches one city exactly; "state" matches every known city in
+   * the state. Ignored when location is null.
+   */
+  locationKind: "city" | "state";
   category: string;
   /** Inclusive YYYY-MM-DD bounds in Africa/Lagos. Both set or both null. */
   dateFrom: string | null;
@@ -84,11 +91,12 @@ export function isDemoEventId(id: string): boolean {
  * bounds are ignored rather than excluding everything.
  */
 export function matchNLQuery(event: OutrazoEvent, filters: NLDiscoveryFilters): boolean {
-  if (
-    filters.city &&
-    event.city.trim().toLowerCase() !== filters.city.trim().toLowerCase()
-  ) {
-    return false;
+  if (filters.location) {
+    if (filters.locationKind === "state") {
+      if (!stateMatchesEventCity(filters.location, event.city)) return false;
+    } else if (normalizePlace(event.city) !== normalizePlace(filters.location)) {
+      return false;
+    }
   }
   if (filters.category !== "any" && event.category !== filters.category) {
     return false;
@@ -133,6 +141,14 @@ function formatDay(value: string): string {
   }).format(new Date(`${value}T00:00:00Z`));
 }
 
+/** Short display label for an interpreted location, or null when none. */
+export function nlLocationLabel(filters: NLDiscoveryFilters): string | null {
+  if (!filters.location) return null;
+  return filters.locationKind === "state"
+    ? shortStateLabel(filters.location)
+    : filters.location;
+}
+
 /** One-line summary of the active interpretation, composed from validated values. */
 export function describeNLFilters(filters: NLDiscoveryFilters): string {
   const parts: string[] = [];
@@ -141,7 +157,8 @@ export function describeNLFilters(filters: NLDiscoveryFilters): string {
   if (filters.category !== "any") {
     parts.push(filters.category.charAt(0).toUpperCase() + filters.category.slice(1));
   }
-  if (filters.city) parts.push(filters.city);
+  const locationLabel = nlLocationLabel(filters);
+  if (locationLabel) parts.push(`Location: ${locationLabel}, Nigeria`);
   if (filters.dateFrom && filters.dateTo) {
     parts.push(
       filters.dateFrom === filters.dateTo
