@@ -248,9 +248,13 @@ CREATE POLICY "Event organizers read attendee profiles"
     )
   );
 
+-- SECURITY DEFINER: attendees cannot UPDATE events under RLS (they are not
+-- creators), so the count bump runs with the function owner's rights. The
+-- locked search_path below keeps that safe.
 CREATE OR REPLACE FUNCTION public.sync_event_attendee_count()
 RETURNS trigger
 LANGUAGE plpgsql
+SECURITY DEFINER
 SET search_path = public, pg_temp
 AS $$
 BEGIN

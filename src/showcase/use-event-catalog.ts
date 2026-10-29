@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { fetchPublishedEvents, mergeEventCatalog } from "./event-data";
+import { useLiveCountsMap } from "./rsvp/live-count-store";
 import { EVENTS } from "./sample-data";
 
 export function useEventCatalog() {
   const [remoteEvents, setRemoteEvents] = useState<typeof EVENTS>([]);
   const [error, setError] = useState<string | null>(null);
   const [request, setRequest] = useState(0);
+  const liveCounts = useLiveCountsMap();
 
   useEffect(() => {
     let active = true;
@@ -23,7 +25,14 @@ export function useEventCatalog() {
     };
   }, [request]);
 
-  const events = useMemo(() => mergeEventCatalog(remoteEvents), [remoteEvents]);
+  const events = useMemo(
+    () =>
+      mergeEventCatalog(remoteEvents).map((event) => {
+        const live = liveCounts.get(event.id);
+        return live === undefined || live === event.attendeeCount ? event : { ...event, attendeeCount: live };
+      }),
+    [remoteEvents, liveCounts],
+  );
   const refresh = useCallback(() => setRequest((current) => current + 1), []);
 
   return {

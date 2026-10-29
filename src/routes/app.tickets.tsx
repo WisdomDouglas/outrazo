@@ -8,6 +8,7 @@ import { ErrorState } from "@/design-system/components/ErrorState";
 import { Skeleton } from "@/design-system/components/Skeleton";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { cancelReservation, fetchMyReservations, type MyReservation } from "@/showcase/rsvp/rsvp";
+import { refreshLiveCount } from "@/showcase/rsvp/live-count-store";
 import { classifyReservationError, formatReservationDate } from "@/showcase/rsvp/reservation-helpers";
 import { rememberReturnTo } from "@/showcase/saved/saved-events-store";
 
@@ -67,6 +68,7 @@ function TicketsPage() {
     try {
       await cancelReservation(eventId, userId);
       setTickets((current) => current.filter((ticket) => ticket.eventId !== eventId));
+      void refreshLiveCount(eventId);
       setNotice("Reservation cancelled.");
     } catch (caught: unknown) {
       setError(classifyReservationError(caught, "cancel").message);

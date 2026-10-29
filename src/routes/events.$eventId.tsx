@@ -14,6 +14,7 @@ import { EventCard } from "@/design-system/components/EventCard";
 import { EventShareMenu } from "@/design-system/components/EventShareMenu";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { fetchPublishedEventDetails } from "@/showcase/event-data";
+import { useLiveCount } from "@/showcase/rsvp/live-count-store";
 import { getRelatedEvents, toEventCardProps, type EventDetails } from "@/showcase/sample-data";
 
 function EventNotFound() {
@@ -67,6 +68,8 @@ export const Route = createFileRoute("/events/$eventId")({
 
 function EventDetailsPage() {
   const event = Route.useLoaderData();
+  const loadedEvent = event as EventDetails | undefined;
+  const liveCount = useLiveCount(loadedEvent?.id, loadedEvent?.attendeeCount);
   const [bookingOpen, setBookingOpen] = useState(false);
   const { isSaved, toggle } = useSavedItems();
   const related = getRelatedEvents(event);
@@ -98,7 +101,7 @@ function EventDetailsPage() {
               <div className="grid gap-md border-y border-line py-lg">
                 <DetailRow icon={<CalendarDays aria-hidden className="size-5" />} label="Date and time" value={`${event.date} · ${event.time}${event.endTime ? ` – ${event.endTime}` : ""}`} />
                 <DetailRow icon={<MapPin aria-hidden className="size-5" />} label="Location" value={`${event.venue.name}, ${event.city}`} />
-                <DetailRow icon={<Users aria-hidden className="size-5" />} label="People going" value={`${event.attendeeCount.toLocaleString()} people going`} />
+                <DetailRow icon={<Users aria-hidden className="size-5" />} label="People going" value={`${liveCount.toLocaleString()} people going`} />
               </div>
               <Button variant={event.ticketTiers.length ? "transactional" : "primary"} size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />} onClick={() => setBookingOpen(true)}>{actionLabel}</Button>
               <div className="sm:hidden"><EventShareMenu title={event.title} /></div>
@@ -116,7 +119,7 @@ function EventDetailsPage() {
                 <div className="flex items-start gap-md"><Avatar name={event.organizer.name} src={event.organizer.avatarSrc} size="lg" /><div className="min-w-0 flex-1"><h3 className="type-h3">{event.organizer.name}</h3><p className="type-body mt-xs text-muted-text">{event.organizer.description ?? event.organizer.community}</p><Link to="/organizers/$organizerId" params={{ organizerId: event.organizer.id }} className="focus-ring type-body mt-md inline-flex min-h-11 items-center gap-xs rounded-full text-accent">View Organizer<ChevronRight aria-hidden className="size-4" /></Link></div></div>
               </ContentSection>
               <ContentSection title="People going">
-                <div className="flex flex-wrap items-center gap-md"><AvatarStack people={event.attendees} totalCount={event.attendeeCount} max={5} size="md" /><strong className="type-body">{event.attendeeCount.toLocaleString()} people going</strong></div>
+                <div className="flex flex-wrap items-center gap-md"><AvatarStack people={event.attendees} totalCount={liveCount} max={5} size="md" /><strong className="type-body">{liveCount.toLocaleString()} people going</strong></div>
               </ContentSection>
             </div>
             <ContentSection title="Location">

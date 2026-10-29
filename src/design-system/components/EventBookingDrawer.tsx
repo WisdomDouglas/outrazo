@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/showcase/auth/auth-context";
 import type { EventDetails } from "@/showcase/sample-data";
 import { cancelReservation, createReservation, fetchReservation } from "@/showcase/rsvp/rsvp";
+import { refreshLiveCount } from "@/showcase/rsvp/live-count-store";
 import { classifyReservationError } from "@/showcase/rsvp/reservation-helpers";
 import { isDatabaseEventId, rememberReturnTo } from "@/showcase/saved/saved-events-store";
 import { Button } from "./Button";
@@ -99,6 +100,7 @@ export function EventBookingDrawer({ event, open, onClose, onReservationsChanged
     try {
       await createReservation(event.id, userId);
       setFreeState("reserved");
+      void refreshLiveCount(event.id);
       router.invalidate();
       onReservationsChanged?.();
     } catch (caught: unknown) {
@@ -106,6 +108,7 @@ export function EventBookingDrawer({ event, open, onClose, onReservationsChanged
       if (failure.kind === "already-reserved") {
         // A second tap (or device) won the race; the spot is still saved.
         setFreeState("reserved");
+        void refreshLiveCount(event.id);
         router.invalidate();
         onReservationsChanged?.();
       } else {
@@ -123,6 +126,7 @@ export function EventBookingDrawer({ event, open, onClose, onReservationsChanged
       await cancelReservation(event.id, userId);
       setFreeState("none");
       setCancelledNotice(true);
+      void refreshLiveCount(event.id);
       router.invalidate();
       onReservationsChanged?.();
     } catch (caught: unknown) {

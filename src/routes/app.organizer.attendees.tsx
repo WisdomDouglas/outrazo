@@ -10,6 +10,7 @@ import { Skeleton } from "@/design-system/components/Skeleton";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { useOrganizerEvents } from "@/showcase/organizer/use-organizer-events";
 import { fetchEventAttendees, type EventAttendee } from "@/showcase/rsvp/rsvp";
+import { useLiveAttendeesSignal } from "@/showcase/rsvp/live-count-store";
 import { attendeeDisplayName, classifyReservationError, formatReservationDate } from "@/showcase/rsvp/reservation-helpers";
 
 export const Route = createFileRoute("/app/organizer/attendees")({
@@ -31,6 +32,7 @@ function OrganizerAttendeesPage() {
   const [request, setRequest] = useState(0);
 
   const activeId = selectedId ?? events[0]?.id ?? null;
+  const attendeeSignal = useLiveAttendeesSignal(userId ? activeId : null);
 
   useEffect(() => {
     if (!activeId || !userId) {
@@ -55,7 +57,7 @@ function OrganizerAttendeesPage() {
     return () => {
       active = false;
     };
-  }, [activeId, userId, request]);
+  }, [activeId, attendeeSignal, userId, request]);
 
   if (eventsLoading) {
     return (
