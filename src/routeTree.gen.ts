@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CreateRouteImport } from './routes/create'
@@ -18,6 +19,12 @@ import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAttendeesRouteImport } from './routes/admin.attendees'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminEventsRouteImport } from './routes/admin.events'
+import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppCreateEventRouteImport } from './routes/app.create-event'
 import { Route as AppExploreRouteImport } from './routes/app.explore'
@@ -43,6 +50,11 @@ import { Route as AppOrganizerSettingsRouteImport } from './routes/app.organizer
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -84,6 +96,36 @@ const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAttendeesRoute = AdminAttendeesRouteImport.update({
+  id: '/attendees',
+  path: '/attendees',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
@@ -196,6 +238,7 @@ const AppOrganizerSettingsRoute = AppOrganizerSettingsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/create': typeof CreateRoute
@@ -204,6 +247,11 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/signup': typeof SignupRoute
+  '/admin/attendees': typeof AdminAttendeesRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/users': typeof AdminUsersRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/organizer': typeof AppOrganizerRouteWithChildren
@@ -213,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/app/tickets': typeof AppTicketsRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
@@ -234,6 +283,11 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/signup': typeof SignupRoute
+  '/admin/attendees': typeof AdminAttendeesRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/users': typeof AdminUsersRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/profile': typeof AppProfileRoute
@@ -242,6 +296,7 @@ export interface FileRoutesByTo {
   '/app/tickets': typeof AppTicketsRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
   '/events': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
@@ -258,6 +313,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/create': typeof CreateRoute
@@ -266,6 +322,11 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/signup': typeof SignupRoute
+  '/admin/attendees': typeof AdminAttendeesRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/events': typeof AdminEventsRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/users': typeof AdminUsersRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/organizer': typeof AppOrganizerRouteWithChildren
@@ -275,6 +336,7 @@ export interface FileRoutesById {
   '/app/tickets': typeof AppTicketsRoute
   '/events/$eventId': typeof EventsEventIdRoute
   '/organizers/$organizerId': typeof OrganizersOrganizerIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
@@ -292,6 +354,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/app'
     | '/auth'
     | '/create'
@@ -300,6 +363,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/signup'
+    | '/admin/attendees'
+    | '/admin/audit'
+    | '/admin/events'
+    | '/admin/roles'
+    | '/admin/users'
     | '/app/create-event'
     | '/app/explore'
     | '/app/organizer'
@@ -309,6 +377,7 @@ export interface FileRouteTypes {
     | '/app/tickets'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/admin/'
     | '/app/'
     | '/events/'
     | '/__component/preview/$'
@@ -330,6 +399,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/signup'
+    | '/admin/attendees'
+    | '/admin/audit'
+    | '/admin/events'
+    | '/admin/roles'
+    | '/admin/users'
     | '/app/create-event'
     | '/app/explore'
     | '/app/profile'
@@ -338,6 +412,7 @@ export interface FileRouteTypes {
     | '/app/tickets'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/admin'
     | '/app'
     | '/events'
     | '/__component/preview/$'
@@ -353,6 +428,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/app'
     | '/auth'
     | '/create'
@@ -361,6 +437,11 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/signup'
+    | '/admin/attendees'
+    | '/admin/audit'
+    | '/admin/events'
+    | '/admin/roles'
+    | '/admin/users'
     | '/app/create-event'
     | '/app/explore'
     | '/app/organizer'
@@ -370,6 +451,7 @@ export interface FileRouteTypes {
     | '/app/tickets'
     | '/events/$eventId'
     | '/organizers/$organizerId'
+    | '/admin/'
     | '/app/'
     | '/events/'
     | '/__component/preview/$'
@@ -386,6 +468,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
   CreateRoute: typeof CreateRoute
@@ -406,6 +489,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -463,6 +553,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/attendees': {
+      id: '/admin/attendees'
+      path: '/attendees'
+      fullPath: '/admin/attendees'
+      preLoaderRoute: typeof AdminAttendeesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/app/': {
       id: '/app/'
@@ -614,6 +746,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminAttendeesRoute: typeof AdminAttendeesRoute
+  AdminAuditRoute: typeof AdminAuditRoute
+  AdminEventsRoute: typeof AdminEventsRoute
+  AdminRolesRoute: typeof AdminRolesRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAttendeesRoute: AdminAttendeesRoute,
+  AdminAuditRoute: AdminAuditRoute,
+  AdminEventsRoute: AdminEventsRoute,
+  AdminRolesRoute: AdminRolesRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface AppOrganizerRouteChildren {
   AppOrganizerAttendeesRoute: typeof AppOrganizerAttendeesRoute
   AppOrganizerEventsRoute: typeof AppOrganizerEventsRoute
@@ -679,6 +831,7 @@ const EventsRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
   CreateRoute: CreateRoute,
