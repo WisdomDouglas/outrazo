@@ -39,8 +39,11 @@ import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
 import { Route as OrganizersOrganizerIdRouteImport } from './routes/organizers.$organizerId'
 import { Route as Char91__componentChar93PreviewSplatRouteImport } from './routes/[__component].preview.$'
 import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
+import { Route as AdminEventsIndexRouteImport } from './routes/admin.events.index'
 import { Route as AdminEventsEventIdRouteImport } from './routes/admin.events.$eventId'
+import { Route as AdminOrganizersIndexRouteImport } from './routes/admin.organizers.index'
 import { Route as AdminOrganizersOrganizerIdRouteImport } from './routes/admin.organizers.$organizerId'
+import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
 import { Route as AppOrganizerIndexRouteImport } from './routes/app.organizer.index'
 import { Route as AppOrganizerAttendeesRouteImport } from './routes/app.organizer.attendees'
@@ -203,10 +206,20 @@ const Char91__mockupChar93PreviewSplatRoute =
     path: '/__mockup/preview/$',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminEventsRoute,
+} as any)
 const AdminEventsEventIdRoute = AdminEventsEventIdRouteImport.update({
   id: '/$eventId',
   path: '/$eventId',
   getParentRoute: () => AdminEventsRoute,
+} as any)
+const AdminOrganizersIndexRoute = AdminOrganizersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminOrganizersRoute,
 } as any)
 const AdminOrganizersOrganizerIdRoute =
   AdminOrganizersOrganizerIdRouteImport.update({
@@ -214,6 +227,11 @@ const AdminOrganizersOrganizerIdRoute =
     path: '/$organizerId',
     getParentRoute: () => AdminOrganizersRoute,
   } as any)
+const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminUsersRoute,
+} as any)
 const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
   id: '/$userId',
   path: '/$userId',
@@ -302,6 +320,9 @@ export interface FileRoutesByFullPath {
   '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
   '/app/organizer/sales': typeof AppOrganizerSalesRoute
   '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/admin/events/': typeof AdminEventsIndexRoute
+  '/admin/organizers/': typeof AdminOrganizersIndexRoute
+  '/admin/users/': typeof AdminUsersIndexRoute
   '/app/organizer/': typeof AppOrganizerIndexRoute
 }
 export interface FileRoutesByTo {
@@ -314,10 +335,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/admin/attendees': typeof AdminAttendeesRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/events': typeof AdminEventsRouteWithChildren
-  '/admin/organizers': typeof AdminOrganizersRouteWithChildren
   '/admin/roles': typeof AdminRolesRoute
-  '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/profile': typeof AppProfileRoute
@@ -341,6 +359,9 @@ export interface FileRoutesByTo {
   '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
   '/app/organizer/sales': typeof AppOrganizerSalesRoute
   '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/admin/events': typeof AdminEventsIndexRoute
+  '/admin/organizers': typeof AdminOrganizersIndexRoute
+  '/admin/users': typeof AdminUsersIndexRoute
   '/app/organizer': typeof AppOrganizerIndexRoute
 }
 export interface FileRoutesById {
@@ -385,6 +406,9 @@ export interface FileRoutesById {
   '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
   '/app/organizer/sales': typeof AppOrganizerSalesRoute
   '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/admin/events/': typeof AdminEventsIndexRoute
+  '/admin/organizers/': typeof AdminOrganizersIndexRoute
+  '/admin/users/': typeof AdminUsersIndexRoute
   '/app/organizer/': typeof AppOrganizerIndexRoute
 }
 export interface FileRouteTypes {
@@ -430,6 +454,9 @@ export interface FileRouteTypes {
     | '/app/organizer/promotions'
     | '/app/organizer/sales'
     | '/app/organizer/settings'
+    | '/admin/events/'
+    | '/admin/organizers/'
+    | '/admin/users/'
     | '/app/organizer/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -442,10 +469,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/attendees'
     | '/admin/audit'
-    | '/admin/events'
-    | '/admin/organizers'
     | '/admin/roles'
-    | '/admin/users'
     | '/app/create-event'
     | '/app/explore'
     | '/app/profile'
@@ -469,6 +493,9 @@ export interface FileRouteTypes {
     | '/app/organizer/promotions'
     | '/app/organizer/sales'
     | '/app/organizer/settings'
+    | '/admin/events'
+    | '/admin/organizers'
+    | '/admin/users'
     | '/app/organizer'
   id:
     | '__root__'
@@ -512,6 +539,9 @@ export interface FileRouteTypes {
     | '/app/organizer/promotions'
     | '/app/organizer/sales'
     | '/app/organizer/settings'
+    | '/admin/events/'
+    | '/admin/organizers/'
+    | '/admin/users/'
     | '/app/organizer/'
   fileRoutesById: FileRoutesById
 }
@@ -743,6 +773,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91__mockupChar93PreviewSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/events/': {
+      id: '/admin/events/'
+      path: '/'
+      fullPath: '/admin/events/'
+      preLoaderRoute: typeof AdminEventsIndexRouteImport
+      parentRoute: typeof AdminEventsRoute
+    }
     '/admin/events/$eventId': {
       id: '/admin/events/$eventId'
       path: '/$eventId'
@@ -750,12 +787,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEventsEventIdRouteImport
       parentRoute: typeof AdminEventsRoute
     }
+    '/admin/organizers/': {
+      id: '/admin/organizers/'
+      path: '/'
+      fullPath: '/admin/organizers/'
+      preLoaderRoute: typeof AdminOrganizersIndexRouteImport
+      parentRoute: typeof AdminOrganizersRoute
+    }
     '/admin/organizers/$organizerId': {
       id: '/admin/organizers/$organizerId'
       path: '/$organizerId'
       fullPath: '/admin/organizers/$organizerId'
       preLoaderRoute: typeof AdminOrganizersOrganizerIdRouteImport
       parentRoute: typeof AdminOrganizersRoute
+    }
+    '/admin/users/': {
+      id: '/admin/users/'
+      path: '/'
+      fullPath: '/admin/users/'
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof AdminUsersRoute
     }
     '/admin/users/$userId': {
       id: '/admin/users/$userId'
@@ -825,10 +876,12 @@ declare module '@tanstack/react-router' {
 
 interface AdminEventsRouteChildren {
   AdminEventsEventIdRoute: typeof AdminEventsEventIdRoute
+  AdminEventsIndexRoute: typeof AdminEventsIndexRoute
 }
 
 const AdminEventsRouteChildren: AdminEventsRouteChildren = {
   AdminEventsEventIdRoute: AdminEventsEventIdRoute,
+  AdminEventsIndexRoute: AdminEventsIndexRoute,
 }
 
 const AdminEventsRouteWithChildren = AdminEventsRoute._addFileChildren(
@@ -837,10 +890,12 @@ const AdminEventsRouteWithChildren = AdminEventsRoute._addFileChildren(
 
 interface AdminOrganizersRouteChildren {
   AdminOrganizersOrganizerIdRoute: typeof AdminOrganizersOrganizerIdRoute
+  AdminOrganizersIndexRoute: typeof AdminOrganizersIndexRoute
 }
 
 const AdminOrganizersRouteChildren: AdminOrganizersRouteChildren = {
   AdminOrganizersOrganizerIdRoute: AdminOrganizersOrganizerIdRoute,
+  AdminOrganizersIndexRoute: AdminOrganizersIndexRoute,
 }
 
 const AdminOrganizersRouteWithChildren = AdminOrganizersRoute._addFileChildren(
@@ -849,10 +904,12 @@ const AdminOrganizersRouteWithChildren = AdminOrganizersRoute._addFileChildren(
 
 interface AdminUsersRouteChildren {
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
 }
 
 const AdminUsersRouteChildren: AdminUsersRouteChildren = {
   AdminUsersUserIdRoute: AdminUsersUserIdRoute,
+  AdminUsersIndexRoute: AdminUsersIndexRoute,
 }
 
 const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(

@@ -129,7 +129,7 @@ function OnboardingPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && session && profile?.onboarding_completed) void navigate({ to: "/app", replace: true });
+    if (authLoading) return; else if (!session) void navigate({ to: "/login", replace: true }); else if (profile?.onboarding_completed) void navigate({ to: "/app", replace: true });
   }, [authLoading, navigate, profile?.onboarding_completed, session]);
 
   useEffect(() => {
@@ -195,7 +195,7 @@ function OnboardingPage() {
   };
 
   if (!ready) return <OnboardingSkeleton />;
-  if (saving) return <BrandSplash message="Making Outrazo yours" />;
+  if (saving || (!authLoading && !session)) return <BrandSplash message={saving ? "Making Outrazo yours" : undefined} />;
 
   return (
     <main className="onboarding-page min-h-dvh overflow-x-hidden bg-canvas text-primary-text">

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/app/profile")({
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const { user, profile, displayName, isDemoMode, signOut } = useAuth();
+  const { user, profile, displayName, signOut } = useAuth();
 
   return (
     <div className="mx-auto w-full max-w-[760px] px-md py-xl lg:px-xl lg:py-2xl">
@@ -56,11 +56,7 @@ function ProfilePage() {
         <span className="grid size-12 place-items-center rounded-full bg-accent/12 text-accent"><UserRound aria-hidden className="size-5" /></span>
         <Badge variant="outline">Coming next</Badge>
         <p className="type-body text-muted-text">Profile editing and saved preferences arrive with the next release.</p>
-        {isDemoMode ? (
-          <Link to="/login" className="focus-ring rounded-full"><Button>Sign in</Button></Link>
-        ) : (
-          <Button variant="outline" onClick={async () => { await signOut(); await navigate({ to: "/", replace: true }); }}>Sign out</Button>
-        )}
+        <Button variant="outline" onClick={async () => { await signOut(); await navigate({ to: "/", replace: true }); }}>Sign out</Button>
       </div>
     </div>
   );

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 import { AppHeader } from "./AppHeader";
 import { AppSidebar } from "./AppSidebar";
-import { DemoModeBanner } from "./DemoModeBanner";
 import { MobileBottomNav } from "./MobileBottomNav";
 
 export function AppShell() {
@@ -28,7 +27,6 @@ export function AppShell() {
   return (
     <div className="app-shell flex h-dvh flex-col overflow-hidden bg-canvas text-primary-text">
       <AppHeader />
-      <DemoModeBanner />
       <div className="app-shell-content flex min-h-0 flex-1 overflow-hidden">
         <AppSidebar collapsed={navigationCollapsed} onToggle={toggleNavigation} />
         <main id="app-scroll-area" className="app-main min-w-0 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-[calc(88px+var(--spacing-md))] md:pb-0">

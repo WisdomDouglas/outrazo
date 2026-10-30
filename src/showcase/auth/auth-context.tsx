@@ -6,8 +6,8 @@ import { supabase } from "@/integrations/supabase/external-client";
 /**
  * Single source of truth for the signed-in session.
  *
- * The app still runs without a session (demo mode) so every existing screen
- * keeps working while backend-backed features are added incrementally.
+ * The /app shell requires a real session; signed-out visitors are redirected
+ * to /login. Public discovery pages may still render without one.
  */
 export interface UserProfile {
   id: string;
@@ -24,8 +24,6 @@ interface AuthContextValue {
   profile: UserProfile | null;
   profileError: Error | null;
   loading: boolean;
-  /** True when nobody is signed in — the app stays usable with demo data. */
-  isDemoMode: boolean;
   displayName: string;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -139,12 +137,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       profileError,
       loading: loading || !authInitialized,
-      isDemoMode: !session,
       displayName:
         profile?.name ??
         (user?.user_metadata?.["name"] as string | undefined) ??
         user?.email?.split("@")[0] ??
-        "Demo User",
+        "Outrazo member",
       signOut,
       refreshProfile: loadProfile,
     };
