@@ -44,6 +44,8 @@ function asAuthedContext(context: unknown): AuthedContext {
 type ProfilesTable = Database["public"]["Tables"]["profiles"];
 type EventsTable = Database["public"]["Tables"]["events"];
 type AttendeesTable = Database["public"]["Tables"]["event_attendees"];
+type OrganizersTable = Database["public"]["Tables"]["organizers"];
+type EventTiersTable = Database["public"]["Tables"]["event_ticket_tiers"];
 
 type AdminRolesRow = {
   user_id: string;
@@ -114,6 +116,8 @@ export interface AdminPhase1Db {
       profiles: ProfilesTable;
       events: EventsTable;
       event_attendees: AttendeesTable;
+      organizers: OrganizersTable;
+      event_ticket_tiers: EventTiersTable;
     };
     Views: Database["public"]["Views"];
     Enums: Database["public"]["Enums"];

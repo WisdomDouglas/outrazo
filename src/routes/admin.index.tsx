@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/design-system/components/Button";
@@ -10,11 +10,18 @@ import {
   useAccessToken,
   useMyAdminRole,
 } from "@/showcase/admin/admin-client";
-import { listAuditLog, type AuditLogRow } from "@/showcase/admin/admin-functions";
+import {
+  getAdminDashboardMetrics,
+  listAuditLog,
+  type AdminDashboardMetrics,
+  type AuditLogRow,
+} from "@/showcase/admin/admin-functions";
 import {
   ADMIN_ROLE_LABELS,
+  METRIC_PERMISSIONS,
   ROLE_PERMISSIONS,
   roleHasPermission,
+  type DashboardMetric,
 } from "@/showcase/admin/permissions";
 
 export const Route = createFileRoute("/admin/")({
@@ -28,6 +35,7 @@ export const Route = createFileRoute("/admin/")({
 const SECTIONS = [
   { label: "Users", to: "/admin/users", description: "Search and inspect user accounts.", permission: "users.read" },
   { label: "Events", to: "/admin/events", description: "All events across organizers.", permission: "events.read" },
+  { label: "Organizers", to: "/admin/organizers", description: "Organizer profiles and their events.", permission: "events.read" },
   { label: "RSVPs", to: "/admin/attendees", description: "Reservations across events.", permission: "attendees.read" },
   { label: "Roles", to: "/admin/roles", description: "Grant or revoke staff roles.", permission: "roles.read" },
   { label: "Audit log", to: "/admin/audit", description: "Who changed what, and when.", permission: "audit.read" },
@@ -36,34 +44,61 @@ const SECTIONS = [
 function AdminOverviewPage() {
   const token = useAccessToken();
   const { role } = useMyAdminRole();
+  const [metrics, setMetrics] = useState<AdminDashboardMetrics | null>(null);
+  const [metricsLoading, setMetricsLoading] = useState(true);
+  const [metricsError, setMetricsError] = useState<string | null>(null);
   const [entries, setEntries] = useState<AuditLogRow[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [auditLoading, setAuditLoading] = useState(true);
+  const [auditError, setAuditError] = useState<string | null>(null);
 
   const canReadAudit = role !== null && roleHasPermission(role, "audit.read");
 
+  const refreshMetrics = useCallback(async () => {
+    if (!token) {
+      setMetricsError("Sign in to use the admin console.");
+      setMetricsLoading(false);
+      return;
+    }
+    setMetricsLoading(true);
+    setMetricsError(null);
+    try {
+      const result = await getAdminDashboardMetrics({
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMetrics(result);
+    } catch (caught) {
+      setMetricsError(friendlyAdminError(caught));
+    } finally {
+      setMetricsLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    void refreshMetrics();
+  }, [refreshMetrics]);
+
   useEffect(() => {
     if (!token) {
-      setError("Sign in to use the admin console.");
-      setLoading(false);
+      setAuditError("Sign in to use the admin console.");
+      setAuditLoading(false);
       return;
     }
     if (!canReadAudit) {
-      setLoading(false);
+      setAuditLoading(false);
       return;
     }
     let cancelled = false;
-    setLoading(true);
-    setError(null);
+    setAuditLoading(true);
+    setAuditError(null);
     listAuditLog({ data: { limit: 5 }, headers: { Authorization: `Bearer ${token}` } })
       .then((result) => {
         if (!cancelled) setEntries(result.entries);
       })
       .catch((caught: unknown) => {
-        if (!cancelled) setError(friendlyAdminError(caught));
+        if (!cancelled) setAuditError(friendlyAdminError(caught));
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setAuditLoading(false);
       });
     return () => {
       cancelled = true;
@@ -71,6 +106,15 @@ function AdminOverviewPage() {
   }, [token, canReadAudit]);
 
   if (!role) return null;
+
+  const cards: Array<{ label: string; value: number | null; metric: DashboardMetric; caption: string }> = [
+    { label: "Registered users", value: metrics?.users ?? null, metric: "users", caption: "User accounts" },
+    { label: "Organizers", value: metrics?.organizers ?? null, metric: "organizers", caption: "Organizer profiles" },
+    { label: "Total events", value: metrics?.eventsTotal ?? null, metric: "events", caption: "Drafts and published" },
+    { label: "Published events", value: metrics?.eventsPublished ?? null, metric: "events", caption: "Visible in discovery" },
+    { label: "Upcoming events", value: metrics?.eventsUpcoming ?? null, metric: "events", caption: "Starting in the future" },
+    { label: "RSVPs", value: metrics?.rsvps ?? null, metric: "rsvps", caption: "Attendee records" },
+  ];
 
   return (
     <div className="grid gap-xl">
@@ -85,6 +129,42 @@ function AdminOverviewPage() {
           ))}
         </div>
       </div>
+
+      {metricsLoading ? (
+        <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3" aria-label="Loading metrics">
+          {[0, 1, 2, 3, 4, 5].map((key) => (
+            <Skeleton key={key} className="h-28 rounded-lg" />
+          ))}
+        </div>
+      ) : metricsError ? (
+        <ErrorState
+          title="We couldn't load dashboard metrics."
+          description={metricsError}
+          onRetry={() => void refreshMetrics()}
+        />
+      ) : (
+        <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3">
+          {cards.map((card) => (
+            <div key={card.label} className="rounded-lg border border-line bg-card p-lg shadow-card">
+              {card.value === null ? (
+                <>
+                  <p className="type-h3 text-muted-text">Unavailable</p>
+                  <p className="type-body mt-xs font-medium">{card.label}</p>
+                  <p className="type-caption mt-xs text-muted-text">
+                    Requires the {METRIC_PERMISSIONS[card.metric]} permission.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="type-h1">{card.value}</p>
+                  <p className="type-body mt-xs font-medium">{card.label}</p>
+                  <p className="type-caption mt-xs text-muted-text">{card.caption}</p>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3">
         {SECTIONS.filter((section) => roleHasPermission(role, section.permission)).map((section) => (
@@ -113,10 +193,10 @@ function AdminOverviewPage() {
               <Button variant="outline" size="sm">View full log</Button>
             </Link>
           </div>
-          {loading ? (
+          {auditLoading ? (
             <Skeleton className="h-40 rounded-lg" />
-          ) : error ? (
-            <ErrorState title="We couldn't load recent activity." description={error} onRetry={() => window.location.reload()} />
+          ) : auditError ? (
+            <ErrorState title="We couldn't load recent activity." description={auditError} onRetry={() => window.location.reload()} />
           ) : entries && entries.length > 0 ? (
             <ul className="grid gap-xs">
               {entries.map((entry) => (

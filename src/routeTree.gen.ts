@@ -23,6 +23,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAttendeesRouteImport } from './routes/admin.attendees'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
+import { Route as AdminOrganizersRouteImport } from './routes/admin.organizers'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -38,6 +39,9 @@ import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
 import { Route as OrganizersOrganizerIdRouteImport } from './routes/organizers.$organizerId'
 import { Route as Char91__componentChar93PreviewSplatRouteImport } from './routes/[__component].preview.$'
 import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
+import { Route as AdminEventsEventIdRouteImport } from './routes/admin.events.$eventId'
+import { Route as AdminOrganizersOrganizerIdRouteImport } from './routes/admin.organizers.$organizerId'
+import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
 import { Route as AppOrganizerIndexRouteImport } from './routes/app.organizer.index'
 import { Route as AppOrganizerAttendeesRouteImport } from './routes/app.organizer.attendees'
 import { Route as AppOrganizerEventsRouteImport } from './routes/app.organizer.events'
@@ -117,6 +121,11 @@ const AdminEventsRoute = AdminEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOrganizersRoute = AdminOrganizersRouteImport.update({
+  id: '/organizers',
+  path: '/organizers',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRolesRoute = AdminRolesRouteImport.update({
   id: '/roles',
   path: '/roles',
@@ -194,6 +203,22 @@ const Char91__mockupChar93PreviewSplatRoute =
     path: '/__mockup/preview/$',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminEventsEventIdRoute = AdminEventsEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => AdminEventsRoute,
+} as any)
+const AdminOrganizersOrganizerIdRoute =
+  AdminOrganizersOrganizerIdRouteImport.update({
+    id: '/$organizerId',
+    path: '/$organizerId',
+    getParentRoute: () => AdminOrganizersRoute,
+  } as any)
+const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => AdminUsersRoute,
+} as any)
 const AppOrganizerIndexRoute = AppOrganizerIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -249,9 +274,10 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/admin/attendees': typeof AdminAttendeesRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/events': typeof AdminEventsRoute
+  '/admin/events': typeof AdminEventsRouteWithChildren
+  '/admin/organizers': typeof AdminOrganizersRouteWithChildren
   '/admin/roles': typeof AdminRolesRoute
-  '/admin/users': typeof AdminUsersRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/organizer': typeof AppOrganizerRouteWithChildren
@@ -266,6 +292,9 @@ export interface FileRoutesByFullPath {
   '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
+  '/admin/events/$eventId': typeof AdminEventsEventIdRoute
+  '/admin/organizers/$organizerId': typeof AdminOrganizersOrganizerIdRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
   '/app/organizer/events': typeof AppOrganizerEventsRoute
   '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
@@ -285,9 +314,10 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/admin/attendees': typeof AdminAttendeesRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/events': typeof AdminEventsRoute
+  '/admin/events': typeof AdminEventsRouteWithChildren
+  '/admin/organizers': typeof AdminOrganizersRouteWithChildren
   '/admin/roles': typeof AdminRolesRoute
-  '/admin/users': typeof AdminUsersRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/profile': typeof AppProfileRoute
@@ -301,6 +331,9 @@ export interface FileRoutesByTo {
   '/events': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
+  '/admin/events/$eventId': typeof AdminEventsEventIdRoute
+  '/admin/organizers/$organizerId': typeof AdminOrganizersOrganizerIdRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
   '/app/organizer/events': typeof AppOrganizerEventsRoute
   '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
@@ -324,9 +357,10 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/admin/attendees': typeof AdminAttendeesRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/events': typeof AdminEventsRoute
+  '/admin/events': typeof AdminEventsRouteWithChildren
+  '/admin/organizers': typeof AdminOrganizersRouteWithChildren
   '/admin/roles': typeof AdminRolesRoute
-  '/admin/users': typeof AdminUsersRoute
+  '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/organizer': typeof AppOrganizerRouteWithChildren
@@ -341,6 +375,9 @@ export interface FileRoutesById {
   '/events/': typeof EventsIndexRoute
   '/__component/preview/$': typeof Char91__componentChar93PreviewSplatRoute
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
+  '/admin/events/$eventId': typeof AdminEventsEventIdRoute
+  '/admin/organizers/$organizerId': typeof AdminOrganizersOrganizerIdRoute
+  '/admin/users/$userId': typeof AdminUsersUserIdRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
   '/app/organizer/events': typeof AppOrganizerEventsRoute
   '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
@@ -366,6 +403,7 @@ export interface FileRouteTypes {
     | '/admin/attendees'
     | '/admin/audit'
     | '/admin/events'
+    | '/admin/organizers'
     | '/admin/roles'
     | '/admin/users'
     | '/app/create-event'
@@ -382,6 +420,9 @@ export interface FileRouteTypes {
     | '/events/'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
+    | '/admin/events/$eventId'
+    | '/admin/organizers/$organizerId'
+    | '/admin/users/$userId'
     | '/app/organizer/attendees'
     | '/app/organizer/events'
     | '/app/organizer/payment-details'
@@ -402,6 +443,7 @@ export interface FileRouteTypes {
     | '/admin/attendees'
     | '/admin/audit'
     | '/admin/events'
+    | '/admin/organizers'
     | '/admin/roles'
     | '/admin/users'
     | '/app/create-event'
@@ -417,6 +459,9 @@ export interface FileRouteTypes {
     | '/events'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
+    | '/admin/events/$eventId'
+    | '/admin/organizers/$organizerId'
+    | '/admin/users/$userId'
     | '/app/organizer/attendees'
     | '/app/organizer/events'
     | '/app/organizer/payment-details'
@@ -440,6 +485,7 @@ export interface FileRouteTypes {
     | '/admin/attendees'
     | '/admin/audit'
     | '/admin/events'
+    | '/admin/organizers'
     | '/admin/roles'
     | '/admin/users'
     | '/app/create-event'
@@ -456,6 +502,9 @@ export interface FileRouteTypes {
     | '/events/'
     | '/__component/preview/$'
     | '/__mockup/preview/$'
+    | '/admin/events/$eventId'
+    | '/admin/organizers/$organizerId'
+    | '/admin/users/$userId'
     | '/app/organizer/attendees'
     | '/app/organizer/events'
     | '/app/organizer/payment-details'
@@ -582,6 +631,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEventsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/organizers': {
+      id: '/admin/organizers'
+      path: '/organizers'
+      fullPath: '/admin/organizers'
+      preLoaderRoute: typeof AdminOrganizersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/roles': {
       id: '/admin/roles'
       path: '/roles'
@@ -687,6 +743,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91__mockupChar93PreviewSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/events/$eventId': {
+      id: '/admin/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/admin/events/$eventId'
+      preLoaderRoute: typeof AdminEventsEventIdRouteImport
+      parentRoute: typeof AdminEventsRoute
+    }
+    '/admin/organizers/$organizerId': {
+      id: '/admin/organizers/$organizerId'
+      path: '/$organizerId'
+      fullPath: '/admin/organizers/$organizerId'
+      preLoaderRoute: typeof AdminOrganizersOrganizerIdRouteImport
+      parentRoute: typeof AdminOrganizersRoute
+    }
+    '/admin/users/$userId': {
+      id: '/admin/users/$userId'
+      path: '/$userId'
+      fullPath: '/admin/users/$userId'
+      preLoaderRoute: typeof AdminUsersUserIdRouteImport
+      parentRoute: typeof AdminUsersRoute
+    }
     '/app/organizer/': {
       id: '/app/organizer/'
       path: '/'
@@ -746,21 +823,59 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminEventsRouteChildren {
+  AdminEventsEventIdRoute: typeof AdminEventsEventIdRoute
+}
+
+const AdminEventsRouteChildren: AdminEventsRouteChildren = {
+  AdminEventsEventIdRoute: AdminEventsEventIdRoute,
+}
+
+const AdminEventsRouteWithChildren = AdminEventsRoute._addFileChildren(
+  AdminEventsRouteChildren,
+)
+
+interface AdminOrganizersRouteChildren {
+  AdminOrganizersOrganizerIdRoute: typeof AdminOrganizersOrganizerIdRoute
+}
+
+const AdminOrganizersRouteChildren: AdminOrganizersRouteChildren = {
+  AdminOrganizersOrganizerIdRoute: AdminOrganizersOrganizerIdRoute,
+}
+
+const AdminOrganizersRouteWithChildren = AdminOrganizersRoute._addFileChildren(
+  AdminOrganizersRouteChildren,
+)
+
+interface AdminUsersRouteChildren {
+  AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
+}
+
+const AdminUsersRouteChildren: AdminUsersRouteChildren = {
+  AdminUsersUserIdRoute: AdminUsersUserIdRoute,
+}
+
+const AdminUsersRouteWithChildren = AdminUsersRoute._addFileChildren(
+  AdminUsersRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminAttendeesRoute: typeof AdminAttendeesRoute
   AdminAuditRoute: typeof AdminAuditRoute
-  AdminEventsRoute: typeof AdminEventsRoute
+  AdminEventsRoute: typeof AdminEventsRouteWithChildren
+  AdminOrganizersRoute: typeof AdminOrganizersRouteWithChildren
   AdminRolesRoute: typeof AdminRolesRoute
-  AdminUsersRoute: typeof AdminUsersRoute
+  AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAttendeesRoute: AdminAttendeesRoute,
   AdminAuditRoute: AdminAuditRoute,
-  AdminEventsRoute: AdminEventsRoute,
+  AdminEventsRoute: AdminEventsRouteWithChildren,
+  AdminOrganizersRoute: AdminOrganizersRouteWithChildren,
   AdminRolesRoute: AdminRolesRoute,
-  AdminUsersRoute: AdminUsersRoute,
+  AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }
 

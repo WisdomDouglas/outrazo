@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import {
+  Building2,
   CalendarDays,
   LayoutDashboard,
   ScrollText,
@@ -37,6 +38,7 @@ interface AdminTab {
     | "/admin"
     | "/admin/users"
     | "/admin/events"
+    | "/admin/organizers"
     | "/admin/attendees"
     | "/admin/roles"
     | "/admin/audit";
@@ -49,6 +51,7 @@ const TABS: AdminTab[] = [
   { label: "Overview", to: "/admin", icon: LayoutDashboard, permission: null, exact: true },
   { label: "Users", to: "/admin/users", icon: Users, permission: "users.read" },
   { label: "Events", to: "/admin/events", icon: CalendarDays, permission: "events.read" },
+  { label: "Organizers", to: "/admin/organizers", icon: Building2, permission: "events.read" },
   { label: "RSVPs", to: "/admin/attendees", icon: Ticket, permission: "attendees.read" },
   { label: "Roles", to: "/admin/roles", icon: ShieldCheck, permission: "roles.read" },
   { label: "Audit log", to: "/admin/audit", icon: ScrollText, permission: "audit.read" },

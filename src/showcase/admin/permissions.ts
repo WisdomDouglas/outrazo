@@ -16,7 +16,9 @@ export type AdminRole = (typeof ADMIN_ROLES)[number];
 
 export const ADMIN_PERMISSIONS = [
   "users.read",
+  "users.manage",
   "events.read",
+  "events.manage",
   "attendees.read",
   "roles.read",
   "roles.manage",
@@ -34,18 +36,22 @@ export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
 
 // Least-privilege map. Phase 1 has no finance data yet, so finance_admin can
 // only read events, attendees, and the audit log; roles.manage and audit.read
-// stay super-admin-only except where noted.
+// stay super-admin-only except where noted. events.manage (Phase 2A) covers
+// content writes on others' events — publish, unpublish, cancel, reopen —
+// and belongs to super_admin plus moderation_admin only.
 export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
   super_admin: [
     "users.read",
+    "users.manage",
     "events.read",
+    "events.manage",
     "attendees.read",
     "roles.read",
     "roles.manage",
     "audit.read",
   ],
   finance_admin: ["events.read", "attendees.read", "audit.read"],
-  moderation_admin: ["events.read", "attendees.read"],
+  moderation_admin: ["users.read", "users.manage", "events.read", "events.manage", "attendees.read"],
   support_readonly: ["users.read", "events.read", "attendees.read"],
 };
 
@@ -61,4 +67,23 @@ export function roleHasPermission(
   permission: AdminPermission,
 ): boolean {
   return ROLE_PERMISSIONS[role].includes(permission);
+}
+
+// Dashboard metrics reuse the existing read permissions instead of adding new
+// ones: each metric is visible only to roles holding its mapped permission,
+// and the server returns null (shown as "Unavailable") otherwise — never a
+// misleading zero.
+export const DASHBOARD_METRICS = ["users", "organizers", "events", "rsvps"] as const;
+
+export type DashboardMetric = (typeof DASHBOARD_METRICS)[number];
+
+export const METRIC_PERMISSIONS: Record<DashboardMetric, AdminPermission> = {
+  users: "users.read",
+  organizers: "events.read",
+  events: "events.read",
+  rsvps: "attendees.read",
+};
+
+export function canSeeMetric(role: AdminRole, metric: DashboardMetric): boolean {
+  return roleHasPermission(role, METRIC_PERMISSIONS[metric]);
 }

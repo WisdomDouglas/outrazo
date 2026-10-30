@@ -77,6 +77,17 @@ describe("requirePermission", () => {
     );
   });
 
+  it("rejects read-only support staff from user moderation", async () => {
+    await assert.rejects(
+      requirePermission(contextWith(okRpc("support_readonly")), "users.manage"),
+      (error) => {
+        assert.ok(error instanceof AdminForbiddenError);
+        assert.match(error.message, /users\.manage/);
+        return true;
+      },
+    );
+  });
+
   it("passes the service client only after the check succeeds", async () => {
     const grant = await requirePermission(contextWith(okRpc("support_readonly")), "users.read");
     assert.equal(grant.role, "support_readonly");
@@ -88,7 +99,9 @@ describe("requirePermission", () => {
   it("lets super_admin through every permission", async () => {
     for (const permission of [
       "users.read",
+      "users.manage",
       "events.read",
+      "events.manage",
       "attendees.read",
       "roles.read",
       "roles.manage",

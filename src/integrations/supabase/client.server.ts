@@ -38,7 +38,7 @@ function createSupabaseAdminClient() {
       ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
       ...(!SUPABASE_SERVICE_ROLE_KEY ? ['SUPABASE_SERVICE_ROLE_KEY'] : []),
     ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Set them as server-only variables: your local .env file for development, or environment settings on your hosting provider. Never expose a service-role key to the browser.`;
     console.error(`[Supabase] ${message}`);
     throw new Error(message);
   }

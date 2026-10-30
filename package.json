@@ -10,7 +10,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
-    "test": "node --import ./tests/register.mjs --test ./tests/nl-discovery.test.mjs ./tests/rsvp.test.mjs ./tests/live-counts.test.mjs ./tests/admin-permissions.test.mjs ./tests/admin-guard.test.mjs ./tests/migration-safeguards.test.mjs",
+    "test": "node --import ./tests/register.mjs --test ./tests/nl-discovery.test.mjs ./tests/rsvp.test.mjs ./tests/live-counts.test.mjs ./tests/admin-permissions.test.mjs ./tests/admin-guard.test.mjs ./tests/migration-safeguards.test.mjs ./tests/admin-env.test.mjs ./tests/event-transitions.test.mjs ./tests/user-moderation.test.mjs",
     "lint": "eslint .",
     "vercel-build": "node scripts/vercel-build.mjs"
   },
