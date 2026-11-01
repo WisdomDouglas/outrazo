@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
-import { ArrowLeft, Bookmark, CalendarDays, ChevronRight, Heart, MapPin, Navigation, Ticket, Users } from "lucide-react";
+import { ArrowLeft, Bookmark, CalendarDays, ChevronRight, Flag, Heart, MapPin, Navigation, Ticket, Users } from "lucide-react";
 import { useState } from "react";
 
 import { Avatar } from "@/design-system/components/Avatar";
@@ -14,7 +14,9 @@ import { EventCard } from "@/design-system/components/EventCard";
 import { EventShareMenu } from "@/design-system/components/EventShareMenu";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { fetchPublishedEventDetails } from "@/showcase/event-data";
+import { ReportEventDialog } from "@/showcase/moderation/ReportEventDialog";
 import { useLiveCount } from "@/showcase/rsvp/live-count-store";
+import { isDatabaseEventId } from "@/showcase/saved/saved-events-store";
 import { getRelatedEvents, toEventCardProps, type EventDetails } from "@/showcase/sample-data";
 
 function EventNotFound() {
@@ -71,6 +73,7 @@ function EventDetailsPage() {
   const loadedEvent = event as EventDetails | undefined;
   const liveCount = useLiveCount(loadedEvent?.id, loadedEvent?.attendeeCount);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const { isSaved, toggle } = useSavedItems();
   const related = getRelatedEvents(event);
   const saved = isSaved(event.id);
@@ -105,9 +108,29 @@ function EventDetailsPage() {
               </div>
               <Button variant={event.ticketTiers.length ? "transactional" : "primary"} size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />} onClick={() => setBookingOpen(true)}>{actionLabel}</Button>
               <div className="sm:hidden"><EventShareMenu title={event.title} /></div>
+              {loadedEvent && isDatabaseEventId(loadedEvent.id) ? (
+                <button
+                  type="button"
+                  onClick={() => setReportOpen(true)}
+                  className="focus-ring type-body inline-flex min-h-11 items-center justify-center gap-xs rounded-full text-muted-text hover:text-primary-text sm:hidden"
+                >
+                  <Flag aria-hidden className="size-4" />
+                  Report this event
+                </button>
+              ) : null}
               <div className="hidden grid-cols-2 gap-sm sm:grid">
                 <Button type="button" variant="outline" leadingIcon={<Bookmark aria-hidden className={saved ? "size-4 fill-accent" : "size-4"} />} onClick={() => toggle(event.id)}>{saved ? "Saved" : "Save"}</Button>
                 <EventShareMenu title={event.title} />
+                {loadedEvent && isDatabaseEventId(loadedEvent.id) ? (
+                  <button
+                    type="button"
+                    onClick={() => setReportOpen(true)}
+                    className="focus-ring type-body col-span-2 inline-flex min-h-11 items-center justify-center gap-xs rounded-full text-muted-text hover:text-primary-text"
+                  >
+                    <Flag aria-hidden className="size-4" />
+                    Report this event
+                  </button>
+                ) : null}
               </div>
             </div>
           </section>
@@ -134,6 +157,9 @@ function EventDetailsPage() {
 
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-canvas/95 p-md backdrop-blur-md lg:hidden"><Button variant={event.ticketTiers.length ? "transactional" : "primary"} size="lg" className="w-full" onClick={() => setBookingOpen(true)}>{actionLabel}</Button></div>
       <EventBookingDrawer event={event} open={bookingOpen} onClose={() => setBookingOpen(false)} />
+      {loadedEvent && isDatabaseEventId(loadedEvent.id) ? (
+        <ReportEventDialog eventId={loadedEvent.id} eventTitle={loadedEvent.title} open={reportOpen} onClose={() => setReportOpen(false)} />
+      ) : null}
     </div>
   );
 }

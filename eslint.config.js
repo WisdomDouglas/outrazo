@@ -24,23 +24,31 @@ export default tseslint.config(
     },
   },
   {
-    // Privileged-client boundary: the service-role Supabase client (and the
-    // admin guard built on it) may only be imported by server-only modules
-    // and the one server-function bridge module below. UI routes and
-    // components must go through server functions instead.
+    // Privileged-client boundary: the service-role Supabase client, the
+    // Bachs payments client and webhook handler, and the admin guard built
+    // on them may only be imported by server-only modules and the two
+    // server-function bridge modules below. UI routes and components must go
+    // through server functions instead.
     files: ["src/**/*.{ts,tsx}"],
     ignores: [
       "src/**/*.server.{ts,tsx}",
       "src/integrations/supabase/**",
       "src/showcase/admin/admin-functions.ts",
+      "src/showcase/promotions/promotion-functions.ts",
     ],
     rules: {
       "no-restricted-imports": ["error", {
         patterns: [
           {
-            group: ["**/client.server", "**/require-permission.server"],
+            group: [
+              "**/client.server",
+              "**/require-permission.server",
+              "**/bachs-webhook.server",
+              "**/promotion-checkout.server",
+              "**/promotion-orders.server",
+            ],
             message:
-              "The Supabase service-role client is server-only. Import it only from *.server.ts modules; UI code must call a server function instead.",
+              "Privileged server clients (Supabase service-role, Bachs) are server-only. Import them only from *.server.ts modules; UI code must call a server function instead.",
           },
         ],
       }],

@@ -25,13 +25,17 @@ describe("admin roles", () => {
     ]);
   });
 
-  it("defines exactly the eight admin permissions", () => {
+  it("defines exactly the twelve admin permissions", () => {
     assert.deepEqual([...ADMIN_PERMISSIONS], [
       "users.read",
       "users.manage",
       "events.read",
       "events.manage",
       "attendees.read",
+      "reports.read",
+      "reports.manage",
+      "promotions.read",
+      "promotions.manage",
       "roles.read",
       "roles.manage",
       "audit.read",
@@ -63,16 +67,24 @@ describe("roleHasPermission", () => {
     assert.equal(roleHasPermission("finance_admin", "users.read"), false);
     assert.equal(roleHasPermission("finance_admin", "users.manage"), false);
     assert.equal(roleHasPermission("finance_admin", "events.manage"), false);
+    assert.equal(roleHasPermission("finance_admin", "reports.read"), false);
+    assert.equal(roleHasPermission("finance_admin", "reports.manage"), false);
+    assert.equal(roleHasPermission("finance_admin", "promotions.read"), false);
+    assert.equal(roleHasPermission("finance_admin", "promotions.manage"), false);
     assert.equal(roleHasPermission("finance_admin", "roles.read"), false);
     assert.equal(roleHasPermission("finance_admin", "roles.manage"), false);
   });
 
-  it("gives moderation_admin user and event management, nothing else", () => {
+  it("gives moderation_admin user, event, report, and promotion management, nothing else", () => {
     assert.equal(roleHasPermission("moderation_admin", "users.read"), true);
     assert.equal(roleHasPermission("moderation_admin", "users.manage"), true);
     assert.equal(roleHasPermission("moderation_admin", "events.read"), true);
     assert.equal(roleHasPermission("moderation_admin", "events.manage"), true);
     assert.equal(roleHasPermission("moderation_admin", "attendees.read"), true);
+    assert.equal(roleHasPermission("moderation_admin", "reports.read"), true);
+    assert.equal(roleHasPermission("moderation_admin", "reports.manage"), true);
+    assert.equal(roleHasPermission("moderation_admin", "promotions.read"), true);
+    assert.equal(roleHasPermission("moderation_admin", "promotions.manage"), true);
     assert.equal(roleHasPermission("moderation_admin", "roles.read"), false);
     assert.equal(roleHasPermission("moderation_admin", "roles.manage"), false);
     assert.equal(roleHasPermission("moderation_admin", "audit.read"), false);
@@ -84,6 +96,10 @@ describe("roleHasPermission", () => {
     assert.equal(roleHasPermission("support_readonly", "attendees.read"), true);
     assert.equal(roleHasPermission("support_readonly", "users.manage"), false);
     assert.equal(roleHasPermission("support_readonly", "events.manage"), false);
+    assert.equal(roleHasPermission("support_readonly", "reports.read"), false);
+    assert.equal(roleHasPermission("support_readonly", "reports.manage"), false);
+    assert.equal(roleHasPermission("support_readonly", "promotions.read"), false);
+    assert.equal(roleHasPermission("support_readonly", "promotions.manage"), false);
     assert.equal(roleHasPermission("support_readonly", "roles.read"), false);
     assert.equal(roleHasPermission("support_readonly", "roles.manage"), false);
     assert.equal(roleHasPermission("support_readonly", "audit.read"), false);
@@ -116,6 +132,30 @@ describe("roleHasPermission", () => {
         role === "super_admin" || role === "moderation_admin",
         role,
       );
+    }
+  });
+
+  it("grants reports.read and reports.manage only to super_admin and moderation_admin", () => {
+    for (const permission of ["reports.read", "reports.manage"]) {
+      for (const role of ADMIN_ROLES) {
+        assert.equal(
+          roleHasPermission(role, permission),
+          role === "super_admin" || role === "moderation_admin",
+          `${role} ${permission}`,
+        );
+      }
+    }
+  });
+
+  it("grants promotions.read and promotions.manage only to super_admin and moderation_admin", () => {
+    for (const permission of ["promotions.read", "promotions.manage"]) {
+      for (const role of ADMIN_ROLES) {
+        assert.equal(
+          roleHasPermission(role, permission),
+          role === "super_admin" || role === "moderation_admin",
+          `${role} ${permission}`,
+        );
+      }
     }
   });
 

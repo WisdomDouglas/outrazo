@@ -3,7 +3,9 @@ import { useEffect } from "react";
 import {
   Building2,
   CalendarDays,
+  Flag,
   LayoutDashboard,
+  Megaphone,
   ScrollText,
   ShieldCheck,
   Ticket,
@@ -27,7 +29,7 @@ import {
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [
     { title: "Admin Console — Outrazo" },
-    { name: "description", content: "Staff-only administration: users, events, RSVPs, roles, and audit log." },
+    { name: "description", content: "Staff-only administration: users, events, RSVPs, reports, promotions, roles, and audit log." },
   ] }),
   component: AdminLayout,
 });
@@ -40,6 +42,8 @@ interface AdminTab {
     | "/admin/events"
     | "/admin/organizers"
     | "/admin/attendees"
+    | "/admin/reports"
+    | "/admin/promotions"
     | "/admin/roles"
     | "/admin/audit";
   icon: typeof LayoutDashboard;
@@ -53,6 +57,8 @@ const TABS: AdminTab[] = [
   { label: "Events", to: "/admin/events", icon: CalendarDays, permission: "events.read" },
   { label: "Organizers", to: "/admin/organizers", icon: Building2, permission: "events.read" },
   { label: "RSVPs", to: "/admin/attendees", icon: Ticket, permission: "attendees.read" },
+  { label: "Reports", to: "/admin/reports", icon: Flag, permission: "reports.read" },
+  { label: "Promotions", to: "/admin/promotions", icon: Megaphone, permission: "promotions.read" },
   { label: "Roles", to: "/admin/roles", icon: ShieldCheck, permission: "roles.read" },
   { label: "Audit log", to: "/admin/audit", icon: ScrollText, permission: "audit.read" },
 ];

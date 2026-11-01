@@ -24,6 +24,8 @@ import { Route as AdminAttendeesRouteImport } from './routes/admin.attendees'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminOrganizersRouteImport } from './routes/admin.organizers'
+import { Route as AdminPromotionsRouteImport } from './routes/admin.promotions'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -43,8 +45,11 @@ import { Route as AdminEventsIndexRouteImport } from './routes/admin.events.inde
 import { Route as AdminEventsEventIdRouteImport } from './routes/admin.events.$eventId'
 import { Route as AdminOrganizersIndexRouteImport } from './routes/admin.organizers.index'
 import { Route as AdminOrganizersOrganizerIdRouteImport } from './routes/admin.organizers.$organizerId'
+import { Route as AdminReportsIndexRouteImport } from './routes/admin.reports.index'
+import { Route as AdminReportsReportIdRouteImport } from './routes/admin.reports.$reportId'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
+import { Route as ApiWebhooksPromotionsRouteImport } from './routes/api.webhooks.promotions'
 import { Route as AppOrganizerIndexRouteImport } from './routes/app.organizer.index'
 import { Route as AppOrganizerAttendeesRouteImport } from './routes/app.organizer.attendees'
 import { Route as AppOrganizerEventsRouteImport } from './routes/app.organizer.events'
@@ -53,6 +58,9 @@ import { Route as AppOrganizerPayoutsRouteImport } from './routes/app.organizer.
 import { Route as AppOrganizerPromotionsRouteImport } from './routes/app.organizer.promotions'
 import { Route as AppOrganizerSalesRouteImport } from './routes/app.organizer.sales'
 import { Route as AppOrganizerSettingsRouteImport } from './routes/app.organizer.settings'
+import { Route as AppPromotionsCancelledRouteImport } from './routes/app.promotions.cancelled'
+import { Route as AppPromotionsSuccessRouteImport } from './routes/app.promotions.success'
+import { Route as AppOrganizerPromoteEventIdRouteImport } from './routes/app.organizer.promote.$eventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -127,6 +135,16 @@ const AdminEventsRoute = AdminEventsRouteImport.update({
 const AdminOrganizersRoute = AdminOrganizersRouteImport.update({
   id: '/organizers',
   path: '/organizers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPromotionsRoute = AdminPromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminRolesRoute = AdminRolesRouteImport.update({
@@ -227,6 +245,16 @@ const AdminOrganizersOrganizerIdRoute =
     path: '/$organizerId',
     getParentRoute: () => AdminOrganizersRoute,
   } as any)
+const AdminReportsIndexRoute = AdminReportsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminReportsRoute,
+} as any)
+const AdminReportsReportIdRoute = AdminReportsReportIdRouteImport.update({
+  id: '/$reportId',
+  path: '/$reportId',
+  getParentRoute: () => AdminReportsRoute,
+} as any)
 const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -236,6 +264,11 @@ const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
   id: '/$userId',
   path: '/$userId',
   getParentRoute: () => AdminUsersRoute,
+} as any)
+const ApiWebhooksPromotionsRoute = ApiWebhooksPromotionsRouteImport.update({
+  id: '/api/webhooks/promotions',
+  path: '/api/webhooks/promotions',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppOrganizerIndexRoute = AppOrganizerIndexRouteImport.update({
   id: '/',
@@ -278,6 +311,22 @@ const AppOrganizerSettingsRoute = AppOrganizerSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppOrganizerRoute,
 } as any)
+const AppPromotionsCancelledRoute = AppPromotionsCancelledRouteImport.update({
+  id: '/promotions/cancelled',
+  path: '/promotions/cancelled',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPromotionsSuccessRoute = AppPromotionsSuccessRouteImport.update({
+  id: '/promotions/success',
+  path: '/promotions/success',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrganizerPromoteEventIdRoute =
+  AppOrganizerPromoteEventIdRouteImport.update({
+    id: '/promote/$eventId',
+    path: '/promote/$eventId',
+    getParentRoute: () => AppOrganizerRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -294,6 +343,8 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRouteWithChildren
   '/admin/organizers': typeof AdminOrganizersRouteWithChildren
+  '/admin/promotions': typeof AdminPromotionsRoute
+  '/admin/reports': typeof AdminReportsRouteWithChildren
   '/admin/roles': typeof AdminRolesRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/create-event': typeof AppCreateEventRoute
@@ -312,7 +363,9 @@ export interface FileRoutesByFullPath {
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
   '/admin/events/$eventId': typeof AdminEventsEventIdRoute
   '/admin/organizers/$organizerId': typeof AdminOrganizersOrganizerIdRoute
+  '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/api/webhooks/promotions': typeof ApiWebhooksPromotionsRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
   '/app/organizer/events': typeof AppOrganizerEventsRoute
   '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
@@ -320,10 +373,14 @@ export interface FileRoutesByFullPath {
   '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
   '/app/organizer/sales': typeof AppOrganizerSalesRoute
   '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/app/promotions/cancelled': typeof AppPromotionsCancelledRoute
+  '/app/promotions/success': typeof AppPromotionsSuccessRoute
   '/admin/events/': typeof AdminEventsIndexRoute
   '/admin/organizers/': typeof AdminOrganizersIndexRoute
+  '/admin/reports/': typeof AdminReportsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/app/organizer/': typeof AppOrganizerIndexRoute
+  '/app/organizer/promote/$eventId': typeof AppOrganizerPromoteEventIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -335,6 +392,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/admin/attendees': typeof AdminAttendeesRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
@@ -351,7 +409,9 @@ export interface FileRoutesByTo {
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
   '/admin/events/$eventId': typeof AdminEventsEventIdRoute
   '/admin/organizers/$organizerId': typeof AdminOrganizersOrganizerIdRoute
+  '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/api/webhooks/promotions': typeof ApiWebhooksPromotionsRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
   '/app/organizer/events': typeof AppOrganizerEventsRoute
   '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
@@ -359,10 +419,14 @@ export interface FileRoutesByTo {
   '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
   '/app/organizer/sales': typeof AppOrganizerSalesRoute
   '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/app/promotions/cancelled': typeof AppPromotionsCancelledRoute
+  '/app/promotions/success': typeof AppPromotionsSuccessRoute
   '/admin/events': typeof AdminEventsIndexRoute
   '/admin/organizers': typeof AdminOrganizersIndexRoute
+  '/admin/reports': typeof AdminReportsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/app/organizer': typeof AppOrganizerIndexRoute
+  '/app/organizer/promote/$eventId': typeof AppOrganizerPromoteEventIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -380,6 +444,8 @@ export interface FileRoutesById {
   '/admin/audit': typeof AdminAuditRoute
   '/admin/events': typeof AdminEventsRouteWithChildren
   '/admin/organizers': typeof AdminOrganizersRouteWithChildren
+  '/admin/promotions': typeof AdminPromotionsRoute
+  '/admin/reports': typeof AdminReportsRouteWithChildren
   '/admin/roles': typeof AdminRolesRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/create-event': typeof AppCreateEventRoute
@@ -398,7 +464,9 @@ export interface FileRoutesById {
   '/__mockup/preview/$': typeof Char91__mockupChar93PreviewSplatRoute
   '/admin/events/$eventId': typeof AdminEventsEventIdRoute
   '/admin/organizers/$organizerId': typeof AdminOrganizersOrganizerIdRoute
+  '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/api/webhooks/promotions': typeof ApiWebhooksPromotionsRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
   '/app/organizer/events': typeof AppOrganizerEventsRoute
   '/app/organizer/payment-details': typeof AppOrganizerPaymentDetailsRoute
@@ -406,10 +474,14 @@ export interface FileRoutesById {
   '/app/organizer/promotions': typeof AppOrganizerPromotionsRoute
   '/app/organizer/sales': typeof AppOrganizerSalesRoute
   '/app/organizer/settings': typeof AppOrganizerSettingsRoute
+  '/app/promotions/cancelled': typeof AppPromotionsCancelledRoute
+  '/app/promotions/success': typeof AppPromotionsSuccessRoute
   '/admin/events/': typeof AdminEventsIndexRoute
   '/admin/organizers/': typeof AdminOrganizersIndexRoute
+  '/admin/reports/': typeof AdminReportsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/app/organizer/': typeof AppOrganizerIndexRoute
+  '/app/organizer/promote/$eventId': typeof AppOrganizerPromoteEventIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -428,6 +500,8 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/organizers'
+    | '/admin/promotions'
+    | '/admin/reports'
     | '/admin/roles'
     | '/admin/users'
     | '/app/create-event'
@@ -446,7 +520,9 @@ export interface FileRouteTypes {
     | '/__mockup/preview/$'
     | '/admin/events/$eventId'
     | '/admin/organizers/$organizerId'
+    | '/admin/reports/$reportId'
     | '/admin/users/$userId'
+    | '/api/webhooks/promotions'
     | '/app/organizer/attendees'
     | '/app/organizer/events'
     | '/app/organizer/payment-details'
@@ -454,10 +530,14 @@ export interface FileRouteTypes {
     | '/app/organizer/promotions'
     | '/app/organizer/sales'
     | '/app/organizer/settings'
+    | '/app/promotions/cancelled'
+    | '/app/promotions/success'
     | '/admin/events/'
     | '/admin/organizers/'
+    | '/admin/reports/'
     | '/admin/users/'
     | '/app/organizer/'
+    | '/app/organizer/promote/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -469,6 +549,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/attendees'
     | '/admin/audit'
+    | '/admin/promotions'
     | '/admin/roles'
     | '/app/create-event'
     | '/app/explore'
@@ -485,7 +566,9 @@ export interface FileRouteTypes {
     | '/__mockup/preview/$'
     | '/admin/events/$eventId'
     | '/admin/organizers/$organizerId'
+    | '/admin/reports/$reportId'
     | '/admin/users/$userId'
+    | '/api/webhooks/promotions'
     | '/app/organizer/attendees'
     | '/app/organizer/events'
     | '/app/organizer/payment-details'
@@ -493,10 +576,14 @@ export interface FileRouteTypes {
     | '/app/organizer/promotions'
     | '/app/organizer/sales'
     | '/app/organizer/settings'
+    | '/app/promotions/cancelled'
+    | '/app/promotions/success'
     | '/admin/events'
     | '/admin/organizers'
+    | '/admin/reports'
     | '/admin/users'
     | '/app/organizer'
+    | '/app/organizer/promote/$eventId'
   id:
     | '__root__'
     | '/'
@@ -513,6 +600,8 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/events'
     | '/admin/organizers'
+    | '/admin/promotions'
+    | '/admin/reports'
     | '/admin/roles'
     | '/admin/users'
     | '/app/create-event'
@@ -531,7 +620,9 @@ export interface FileRouteTypes {
     | '/__mockup/preview/$'
     | '/admin/events/$eventId'
     | '/admin/organizers/$organizerId'
+    | '/admin/reports/$reportId'
     | '/admin/users/$userId'
+    | '/api/webhooks/promotions'
     | '/app/organizer/attendees'
     | '/app/organizer/events'
     | '/app/organizer/payment-details'
@@ -539,10 +630,14 @@ export interface FileRouteTypes {
     | '/app/organizer/promotions'
     | '/app/organizer/sales'
     | '/app/organizer/settings'
+    | '/app/promotions/cancelled'
+    | '/app/promotions/success'
     | '/admin/events/'
     | '/admin/organizers/'
+    | '/admin/reports/'
     | '/admin/users/'
     | '/app/organizer/'
+    | '/app/organizer/promote/$eventId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -559,6 +654,7 @@ export interface RootRouteChildren {
   OrganizersOrganizerIdRoute: typeof OrganizersOrganizerIdRoute
   Char91__componentChar93PreviewSplatRoute: typeof Char91__componentChar93PreviewSplatRoute
   Char91__mockupChar93PreviewSplatRoute: typeof Char91__mockupChar93PreviewSplatRoute
+  ApiWebhooksPromotionsRoute: typeof ApiWebhooksPromotionsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -666,6 +762,20 @@ declare module '@tanstack/react-router' {
       path: '/organizers'
       fullPath: '/admin/organizers'
       preLoaderRoute: typeof AdminOrganizersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/promotions': {
+      id: '/admin/promotions'
+      path: '/promotions'
+      fullPath: '/admin/promotions'
+      preLoaderRoute: typeof AdminPromotionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/roles': {
@@ -801,6 +911,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrganizersOrganizerIdRouteImport
       parentRoute: typeof AdminOrganizersRoute
     }
+    '/admin/reports/': {
+      id: '/admin/reports/'
+      path: '/'
+      fullPath: '/admin/reports/'
+      preLoaderRoute: typeof AdminReportsIndexRouteImport
+      parentRoute: typeof AdminReportsRoute
+    }
+    '/admin/reports/$reportId': {
+      id: '/admin/reports/$reportId'
+      path: '/$reportId'
+      fullPath: '/admin/reports/$reportId'
+      preLoaderRoute: typeof AdminReportsReportIdRouteImport
+      parentRoute: typeof AdminReportsRoute
+    }
     '/admin/users/': {
       id: '/admin/users/'
       path: '/'
@@ -814,6 +938,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/users/$userId'
       preLoaderRoute: typeof AdminUsersUserIdRouteImport
       parentRoute: typeof AdminUsersRoute
+    }
+    '/api/webhooks/promotions': {
+      id: '/api/webhooks/promotions'
+      path: '/api/webhooks/promotions'
+      fullPath: '/api/webhooks/promotions'
+      preLoaderRoute: typeof ApiWebhooksPromotionsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/organizer/': {
       id: '/app/organizer/'
@@ -871,6 +1002,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrganizerSettingsRouteImport
       parentRoute: typeof AppOrganizerRoute
     }
+    '/app/promotions/cancelled': {
+      id: '/app/promotions/cancelled'
+      path: '/promotions/cancelled'
+      fullPath: '/app/promotions/cancelled'
+      preLoaderRoute: typeof AppPromotionsCancelledRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/promotions/success': {
+      id: '/app/promotions/success'
+      path: '/promotions/success'
+      fullPath: '/app/promotions/success'
+      preLoaderRoute: typeof AppPromotionsSuccessRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/organizer/promote/$eventId': {
+      id: '/app/organizer/promote/$eventId'
+      path: '/promote/$eventId'
+      fullPath: '/app/organizer/promote/$eventId'
+      preLoaderRoute: typeof AppOrganizerPromoteEventIdRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
   }
 }
 
@@ -902,6 +1054,20 @@ const AdminOrganizersRouteWithChildren = AdminOrganizersRoute._addFileChildren(
   AdminOrganizersRouteChildren,
 )
 
+interface AdminReportsRouteChildren {
+  AdminReportsReportIdRoute: typeof AdminReportsReportIdRoute
+  AdminReportsIndexRoute: typeof AdminReportsIndexRoute
+}
+
+const AdminReportsRouteChildren: AdminReportsRouteChildren = {
+  AdminReportsReportIdRoute: AdminReportsReportIdRoute,
+  AdminReportsIndexRoute: AdminReportsIndexRoute,
+}
+
+const AdminReportsRouteWithChildren = AdminReportsRoute._addFileChildren(
+  AdminReportsRouteChildren,
+)
+
 interface AdminUsersRouteChildren {
   AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
@@ -921,6 +1087,8 @@ interface AdminRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
   AdminEventsRoute: typeof AdminEventsRouteWithChildren
   AdminOrganizersRoute: typeof AdminOrganizersRouteWithChildren
+  AdminPromotionsRoute: typeof AdminPromotionsRoute
+  AdminReportsRoute: typeof AdminReportsRouteWithChildren
   AdminRolesRoute: typeof AdminRolesRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -931,6 +1099,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
   AdminEventsRoute: AdminEventsRouteWithChildren,
   AdminOrganizersRoute: AdminOrganizersRouteWithChildren,
+  AdminPromotionsRoute: AdminPromotionsRoute,
+  AdminReportsRoute: AdminReportsRouteWithChildren,
   AdminRolesRoute: AdminRolesRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
@@ -947,6 +1117,7 @@ interface AppOrganizerRouteChildren {
   AppOrganizerSalesRoute: typeof AppOrganizerSalesRoute
   AppOrganizerSettingsRoute: typeof AppOrganizerSettingsRoute
   AppOrganizerIndexRoute: typeof AppOrganizerIndexRoute
+  AppOrganizerPromoteEventIdRoute: typeof AppOrganizerPromoteEventIdRoute
 }
 
 const AppOrganizerRouteChildren: AppOrganizerRouteChildren = {
@@ -958,6 +1129,7 @@ const AppOrganizerRouteChildren: AppOrganizerRouteChildren = {
   AppOrganizerSalesRoute: AppOrganizerSalesRoute,
   AppOrganizerSettingsRoute: AppOrganizerSettingsRoute,
   AppOrganizerIndexRoute: AppOrganizerIndexRoute,
+  AppOrganizerPromoteEventIdRoute: AppOrganizerPromoteEventIdRoute,
 }
 
 const AppOrganizerRouteWithChildren = AppOrganizerRoute._addFileChildren(
@@ -973,6 +1145,8 @@ interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppTicketsRoute: typeof AppTicketsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppPromotionsCancelledRoute: typeof AppPromotionsCancelledRoute
+  AppPromotionsSuccessRoute: typeof AppPromotionsSuccessRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -984,6 +1158,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppTicketsRoute: AppTicketsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppPromotionsCancelledRoute: AppPromotionsCancelledRoute,
+  AppPromotionsSuccessRoute: AppPromotionsSuccessRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -1016,6 +1192,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91__componentChar93PreviewSplatRoute:
     Char91__componentChar93PreviewSplatRoute,
   Char91__mockupChar93PreviewSplatRoute: Char91__mockupChar93PreviewSplatRoute,
+  ApiWebhooksPromotionsRoute: ApiWebhooksPromotionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

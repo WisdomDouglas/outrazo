@@ -15,6 +15,10 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import {
+  friendlyPromotionError,
+  PROMOTION_UNKNOWN_ERROR,
+} from "@/showcase/promotions/promotion-windows";
+import {
   isAdminRole,
   roleHasPermission,
   type AdminPermission,
@@ -65,11 +69,35 @@ type AuditLogDbRow = {
   metadata: Record<string, unknown>;
 };
 
-// Local shape for the Phase 1 tables plus the tables we read. The generated
-// Database types do not include admin_roles/audit_log yet, so we extend the
-// generated shape here instead of editing generated files. Every table keeps
-// the full Row/Insert/Update/Relationships shape supabase-js needs to infer
-// select() results.
+type EventPromotionRow = {
+  id: string;
+  event_id: string;
+  starts_at: string;
+  ends_at: string;
+  status: string;
+  created_at: string;
+  created_by: string | null;
+};
+
+type EventReportRow = {
+  id: string;
+  event_id: string;
+  reporter_id: string | null;
+  reason: string;
+  details: string | null;
+  status: string;
+  created_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
+  resolution_note: string | null;
+};
+
+// Local shape for the admin tables plus the tables we read. The generated
+// Database types do not include admin_roles/audit_log/event_reports yet, so we
+// extend the generated shape here instead of editing generated files. Every
+// table keeps the full Row/Insert/Update/Relationships shape supabase-js needs
+// to infer select() results. (The interface keeps its Phase 1 name to avoid
+// churning every importer; it now also covers Phase 2 tables.)
 export interface AdminPhase1Db {
   public: {
     Tables: {
@@ -118,6 +146,56 @@ export interface AdminPhase1Db {
       event_attendees: AttendeesTable;
       organizers: OrganizersTable;
       event_ticket_tiers: EventTiersTable;
+      event_promotions: {
+        Row: EventPromotionRow;
+        Insert: {
+          id?: string;
+          event_id: string;
+          starts_at: string;
+          ends_at: string;
+          status?: string;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          event_id?: string;
+          starts_at?: string;
+          ends_at?: string;
+          status?: string;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [];
+      };
+      event_reports: {
+        Row: EventReportRow;
+        Insert: {
+          id?: string;
+          event_id: string;
+          reporter_id: string;
+          reason: string;
+          details?: string | null;
+          status?: string;
+          created_at?: string;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          resolution_note?: string | null;
+        };
+        Update: {
+          id?: string;
+          event_id?: string;
+          reporter_id?: string | null;
+          reason?: string;
+          details?: string | null;
+          status?: string;
+          created_at?: string;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          resolution_note?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: Database["public"]["Views"];
     Enums: Database["public"]["Enums"];
@@ -129,6 +207,23 @@ export interface AdminPhase1Db {
         Returns: null;
       };
       revoke_admin_role: { Args: { p_user_id: string }; Returns: null };
+      resolve_event_report: {
+        Args: {
+          p_report_id: string;
+          p_resolution: string;
+          p_unpublish?: boolean;
+          p_note?: string | null;
+        };
+        Returns: null;
+      };
+      create_event_promotion: {
+        Args: { p_event_id: string; p_starts_at: string; p_ends_at: string };
+        Returns: string;
+      };
+      cancel_event_promotion: {
+        Args: { p_promotion_id: string };
+        Returns: null;
+      };
     };
   };
 }
@@ -232,4 +327,91 @@ export async function callRevokeRoleRpc(
     p_user_id: userId,
   });
   if (error) throw mapGrantRpcError(error.message);
+}
+
+function mapResolveRpcError(message: string): Error {
+  if (message.includes("may resolve reports")) {
+    return new AdminForbiddenError("Only moderation staff may resolve reports.");
+  }
+  if (message.includes("already resolved")) {
+    return new AdminBackendError(
+      "That report was already resolved. Refresh to see its current state.",
+    );
+  }
+  if (message.includes("no longer exists")) {
+    return new AdminBackendError("That report no longer exists.");
+  }
+  if (message.includes("too long")) {
+    return new AdminBackendError(
+      "The resolution note is too long (500 characters maximum).",
+    );
+  }
+  if (message.includes("Unknown resolution")) {
+    return new AdminBackendError("Unknown resolution.");
+  }
+  if (message.includes("cannot unpublish")) {
+    return new AdminBackendError(
+      "A dismissed report cannot unpublish an event. Resolve it as actioned instead.",
+    );
+  }
+  console.error("[admin] resolve report RPC failed:", message);
+  return new AdminBackendError("Could not resolve the report. Please try again.");
+}
+
+// Runs on the CALLER's own user client so auth.uid() attributes the audit row
+// to the true staff actor and the resolution + unpublish + audit stay in one
+// database transaction inside the RPC.
+export async function callResolveReportRpc(
+  userClient: SupabaseClient,
+  input: { reportId: string; resolution: string; unpublish: boolean; note?: string | null },
+): Promise<void> {
+  const { error } = await asAdminDb(userClient).rpc("resolve_event_report", {
+    p_report_id: input.reportId,
+    p_resolution: input.resolution,
+    p_unpublish: input.unpublish,
+    p_note: input.note ?? null,
+  });
+  if (error) throw mapResolveRpcError(error.message);
+}
+
+function mapPromotionRpcError(message: string): Error {
+  if (message.includes("may manage promotions")) {
+    return new AdminForbiddenError("Only moderation staff may manage promotions.");
+  }
+  const friendly = friendlyPromotionError(message);
+  if (friendly === PROMOTION_UNKNOWN_ERROR) {
+    console.error("[admin] promotion RPC failed:", message);
+  }
+  return new AdminBackendError(friendly);
+}
+
+// Runs on the CALLER's own user client so auth.uid() attributes the audit row
+// to the true staff actor and the schedule + audit stay in one database
+// transaction inside the RPC.
+export async function callCreatePromotionRpc(
+  userClient: SupabaseClient,
+  input: { eventId: string; startsAt: string; endsAt: string },
+): Promise<string> {
+  const { data, error } = await asAdminDb(userClient).rpc("create_event_promotion", {
+    p_event_id: input.eventId,
+    p_starts_at: input.startsAt,
+    p_ends_at: input.endsAt,
+  });
+  if (error || !data) {
+    if (error) throw mapPromotionRpcError(error.message);
+    throw new AdminBackendError(PROMOTION_UNKNOWN_ERROR);
+  }
+  return data;
+}
+
+// Runs on the CALLER's own user client for the same attribution and atomicity
+// reasons as creation.
+export async function callCancelPromotionRpc(
+  userClient: SupabaseClient,
+  promotionId: string,
+): Promise<void> {
+  const { error } = await asAdminDb(userClient).rpc("cancel_event_promotion", {
+    p_promotion_id: promotionId,
+  });
+  if (error) throw mapPromotionRpcError(error.message);
 }

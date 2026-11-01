@@ -20,6 +20,10 @@ export const ADMIN_PERMISSIONS = [
   "events.read",
   "events.manage",
   "attendees.read",
+  "reports.read",
+  "reports.manage",
+  "promotions.read",
+  "promotions.manage",
   "roles.read",
   "roles.manage",
   "audit.read",
@@ -38,7 +42,11 @@ export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
 // only read events, attendees, and the audit log; roles.manage and audit.read
 // stay super-admin-only except where noted. events.manage (Phase 2A) covers
 // content writes on others' events — publish, unpublish, cancel, reopen —
-// and belongs to super_admin plus moderation_admin only.
+// and belongs to super_admin plus moderation_admin only. reports.read and
+// reports.manage (Phase 2C-1) cover the moderation queue; reporter identities
+// stay visible to moderation staff alone, so support and finance are excluded.
+// promotions.read and promotions.manage (Phase 2C-2) cover homepage feature
+// scheduling the same way: curation is a moderation power.
 export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
   super_admin: [
     "users.read",
@@ -46,12 +54,26 @@ export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     "events.read",
     "events.manage",
     "attendees.read",
+    "reports.read",
+    "reports.manage",
+    "promotions.read",
+    "promotions.manage",
     "roles.read",
     "roles.manage",
     "audit.read",
   ],
   finance_admin: ["events.read", "attendees.read", "audit.read"],
-  moderation_admin: ["users.read", "users.manage", "events.read", "events.manage", "attendees.read"],
+  moderation_admin: [
+    "users.read",
+    "users.manage",
+    "events.read",
+    "events.manage",
+    "attendees.read",
+    "reports.read",
+    "reports.manage",
+    "promotions.read",
+    "promotions.manage",
+  ],
   support_readonly: ["users.read", "events.read", "attendees.read"],
 };
 

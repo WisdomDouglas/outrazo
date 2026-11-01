@@ -28,12 +28,27 @@ import {
   AdminBackendError,
   AdminForbiddenError,
   asAdminDb,
+  callCancelPromotionRpc,
+  callCreatePromotionRpc,
   callGrantRoleRpc,
   callRevokeRoleRpc,
+  callResolveReportRpc,
   getCallerRole,
   requirePermission,
   type AdminPhase1Db,
 } from "./require-permission.server";
+import {
+  REPORT_NOTE_MAX,
+  REPORT_REASONS,
+  REPORT_RESOLUTIONS,
+  type ReportReason,
+  type ReportStatus,
+} from "@/showcase/moderation/report-reasons";
+import {
+  checkPromotionWindow,
+  computePromotionStatus,
+  type PromotionDisplayStatus,
+} from "@/showcase/promotions/promotion-windows";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const pageSchema = z.object({
@@ -1129,6 +1144,392 @@ export const revokeAdminRole = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<{ ok: true }> => {
     const grant = await requirePermission(context, "roles.manage");
     await callRevokeRoleRpc(grant.userClient, data.userId);
+    return { ok: true };
+  });
+
+// ── Moderation reports (Phase 2C-1) ─────────────────────────────────────────
+// Reads go through the service-role client (RLS denies direct report reads to
+// everyone but the reporter's own rows); resolution goes through the
+// resolve_event_report RPC on the caller's own client so the audit row carries
+// the true staff actor and resolution + unpublish + audit stay atomic.
+
+export interface AdminReportRow {
+  id: string;
+  reason: ReportReason;
+  details: string | null;
+  status: ReportStatus;
+  createdAt: string;
+  eventId: string;
+  eventTitle: string;
+  eventPublished: boolean;
+  reporterId: string | null;
+  reporterName: string | null;
+  reporterEmail: string | null;
+  resolvedAt: string | null;
+  resolvedByName: string | null;
+  resolutionNote: string | null;
+}
+
+const reportListSchema = pageSchema.extend({
+  offset: z.number().int().min(0).default(0),
+  q: z.string().trim().max(120).optional(),
+  status: z.enum(["all", "pending", "dismissed", "actioned"]).default("pending"),
+  reason: z.enum(REPORT_REASONS).optional(),
+});
+
+export const listAdminReports = createServerFn({ method: "GET" })
+  .validator(reportListSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ reports: AdminReportRow[]; total: number }> => {
+    const grant = await requirePermission(context, "reports.read");
+    const db = asAdminDb(grant.supabase);
+    const term = data.q ? sanitizeSearchTerm(data.q) : "";
+    // Free-text search matches event titles first, then filters the queue to
+    // those events. Capped at 200 ids; deeper matches need a narrower term.
+    let eventIds: string[] | null = null;
+    if (term) {
+      const { data: matches, error: matchError } = await db
+        .from("events")
+        .select("id")
+        .ilike("title", `%${term}%`)
+        .limit(200);
+      if (matchError) {
+        console.error("[admin] listAdminReports event search failed:", matchError.message);
+        throw new AdminBackendError("Could not load reports. Please try again.");
+      }
+      eventIds = (matches ?? []).map((match) => match.id);
+      if (eventIds.length === 0) {
+        return { reports: [], total: 0 };
+      }
+    }
+    let query = db
+      .from("event_reports")
+      .select(
+        "id, event_id, reporter_id, reason, details, status, created_at, resolved_at, resolved_by, resolution_note",
+        { count: "exact" },
+      );
+    if (eventIds) query = query.in("event_id", eventIds);
+    if (data.status !== "all") query = query.eq("status", data.status);
+    if (data.reason) query = query.eq("reason", data.reason);
+    const { data: rows, error, count } = await query
+      .order("created_at", { ascending: false })
+      .range(data.offset, data.offset + data.limit - 1);
+    if (error) {
+      console.error("[admin] listAdminReports failed:", error.message);
+      throw new AdminBackendError("Could not load reports. Please try again.");
+    }
+    const list = rows ?? [];
+    const reportEventIds = [...new Set(list.map((row) => row.event_id))];
+    const personIds = [
+      ...new Set(
+        list.flatMap((row) => [row.reporter_id, row.resolved_by]).filter(Boolean) as string[],
+      ),
+    ];
+    const [{ data: events }, { data: profiles }] = await Promise.all([
+      reportEventIds.length > 0
+        ? db.from("events").select("id, title, published").in("id", reportEventIds)
+        : Promise.resolve({ data: [] as { id: string; title: string; published: boolean }[] }),
+      personIds.length > 0
+        ? db.from("profiles").select("id, name, email").in("id", personIds)
+        : Promise.resolve({
+            data: [] as { id: string; name: string | null; email: string | null }[],
+          }),
+    ]);
+    const eventMap = new Map((events ?? []).map((event) => [event.id, event]));
+    const people = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+    return {
+      reports: list.map((row) => ({
+        id: row.id,
+        reason: row.reason as ReportReason,
+        details: row.details,
+        status: row.status as ReportStatus,
+        createdAt: row.created_at,
+        eventId: row.event_id,
+        eventTitle: eventMap.get(row.event_id)?.title ?? "Unknown event",
+        eventPublished: eventMap.get(row.event_id)?.published ?? false,
+        reporterId: row.reporter_id,
+        reporterName: row.reporter_id ? (people.get(row.reporter_id)?.name ?? null) : null,
+        reporterEmail: row.reporter_id ? (people.get(row.reporter_id)?.email ?? null) : null,
+        resolvedAt: row.resolved_at,
+        resolvedByName: row.resolved_by ? (people.get(row.resolved_by)?.name ?? null) : null,
+        resolutionNote: row.resolution_note,
+      })),
+      total: count ?? 0,
+    };
+  });
+
+export interface AdminReportDetail {
+  id: string;
+  reason: ReportReason;
+  details: string | null;
+  status: ReportStatus;
+  createdAt: string;
+  resolvedAt: string | null;
+  resolutionNote: string | null;
+  event: { id: string; title: string; published: boolean; status: string; startsAt: string } | null;
+  reporter: { id: string | null; name: string | null; email: string | null };
+  resolvedBy: { id: string; name: string | null } | null;
+}
+
+export const getAdminReport = createServerFn({ method: "GET" })
+  .validator(z.object({ id: z.string().uuid() }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ report: AdminReportDetail }> => {
+    const grant = await requirePermission(context, "reports.read");
+    const db = asAdminDb(grant.supabase);
+    const { data: row, error } = await db
+      .from("event_reports")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error) {
+      console.error("[admin] getAdminReport failed:", error.message);
+      throw new AdminBackendError("Could not load the report. Please try again.");
+    }
+    if (!row) {
+      throw new AdminBackendError("That report no longer exists.");
+    }
+    const [eventRes, reporterRes, resolverRes] = await Promise.all([
+      db
+        .from("events")
+        .select("id, title, published, status, starts_at")
+        .eq("id", row.event_id)
+        .maybeSingle(),
+      // Anonymous reports (reporter deleted, SET NULL) skip the profile lookup.
+      row.reporter_id
+        ? db.from("profiles").select("id, name, email").eq("id", row.reporter_id).maybeSingle()
+        : Promise.resolve({ data: null, error: null }),
+      row.resolved_by
+        ? db.from("profiles").select("id, name").eq("id", row.resolved_by).maybeSingle()
+        : Promise.resolve({ data: null, error: null }),
+    ]);
+    if (eventRes.error || reporterRes.error || resolverRes.error) {
+      console.error("[admin] getAdminReport related load failed");
+      throw new AdminBackendError("Could not load the report. Please try again.");
+    }
+    return {
+      report: {
+        id: row.id,
+        reason: row.reason as ReportReason,
+        details: row.details,
+        status: row.status as ReportStatus,
+        createdAt: row.created_at,
+        resolvedAt: row.resolved_at,
+        resolutionNote: row.resolution_note,
+        event: eventRes.data
+          ? {
+              id: eventRes.data.id,
+              title: eventRes.data.title,
+              published: eventRes.data.published,
+              status: eventRes.data.status,
+              startsAt: eventRes.data.starts_at,
+            }
+          : null,
+        reporter: {
+          id: row.reporter_id,
+          name: reporterRes.data?.name ?? null,
+          email: reporterRes.data?.email ?? null,
+        },
+        resolvedBy: resolverRes.data
+          ? { id: resolverRes.data.id, name: resolverRes.data.name }
+          : null,
+      },
+    };
+  });
+
+const resolveReportSchema = z.object({
+  id: z.string().uuid(),
+  resolution: z.enum(REPORT_RESOLUTIONS),
+  unpublish: z.boolean().default(false),
+  note: z.string().trim().max(REPORT_NOTE_MAX).optional(),
+});
+
+export const resolveAdminReport = createServerFn({ method: "POST" })
+  .validator(resolveReportSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; status: ReportStatus }> => {
+    const grant = await requirePermission(context, "reports.manage");
+    const db = asAdminDb(grant.supabase);
+    // Friendly pre-check so already-resolved reports explain themselves. The
+    // RPC re-checks under a row lock, so a race between this read and the
+    // write below still cannot double-resolve.
+    const { data: current, error: readError } = await db
+      .from("event_reports")
+      .select("id, status")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readError) {
+      console.error("[admin] resolveAdminReport read failed:", readError.message);
+      throw new AdminBackendError("Could not resolve the report. Please try again.");
+    }
+    if (!current) {
+      throw new AdminBackendError("That report no longer exists.");
+    }
+    if (current.status !== "pending") {
+      throw new AdminBackendError(
+        "That report was already resolved. Refresh to see its current state.",
+      );
+    }
+    await callResolveReportRpc(grant.userClient, {
+      reportId: data.id,
+      resolution: data.resolution,
+      unpublish: data.unpublish,
+      note: data.note?.trim() ? data.note.trim() : null,
+    });
+    return { ok: true, status: data.resolution };
+  });
+
+// ── Event promotions (Phase 2C-2) ───────────────────────────────────────────
+// Reads go through the service-role client; scheduling and cancellation go
+// through the promotion RPCs on the caller's own client so the audit rows
+// carry the true staff actor and each mutation + audit stays atomic.
+
+export interface AdminPromotionRow {
+  id: string;
+  eventId: string;
+  eventTitle: string;
+  eventPublished: boolean;
+  startsAt: string;
+  endsAt: string;
+  displayStatus: PromotionDisplayStatus;
+  createdAt: string;
+  createdByName: string | null;
+}
+
+const promotionListSchema = pageSchema.extend({
+  offset: z.number().int().min(0).default(0),
+  status: z.enum(["all", "scheduled", "active", "expired", "cancelled"]).default("all"),
+});
+
+export const listAdminPromotions = createServerFn({ method: "GET" })
+  .validator(promotionListSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ promotions: AdminPromotionRow[]; total: number }> => {
+    const grant = await requirePermission(context, "promotions.read");
+    const db = asAdminDb(grant.supabase);
+    // Status filters compare against the app server clock. A few seconds of
+    // skew versus database time is immaterial for admin display: windows span
+    // hours or days, and the public boundary always uses database time.
+    const nowIso = new Date().toISOString();
+    let query = db
+      .from("event_promotions")
+      .select("id, event_id, starts_at, ends_at, status, created_at, created_by", { count: "exact" });
+    if (data.status === "cancelled") {
+      query = query.eq("status", "cancelled");
+    } else if (data.status !== "all") {
+      query = query.eq("status", "active");
+      if (data.status === "scheduled") query = query.gt("starts_at", nowIso);
+      if (data.status === "active") query = query.lte("starts_at", nowIso).gt("ends_at", nowIso);
+      if (data.status === "expired") query = query.lte("ends_at", nowIso);
+    }
+    const { data: rows, error, count } = await query
+      .order("starts_at", { ascending: false })
+      .range(data.offset, data.offset + data.limit - 1);
+    if (error) {
+      console.error("[admin] listAdminPromotions failed:", error.message);
+      throw new AdminBackendError("Could not load promotions. Please try again.");
+    }
+    const list = rows ?? [];
+    const eventIds = [...new Set(list.map((row) => row.event_id))];
+    const creatorIds = [...new Set(list.map((row) => row.created_by).filter(Boolean) as string[])];
+    const [{ data: events }, { data: profiles }] = await Promise.all([
+      eventIds.length > 0
+        ? db.from("events").select("id, title, published").in("id", eventIds)
+        : Promise.resolve({ data: [] as { id: string; title: string; published: boolean }[] }),
+      creatorIds.length > 0
+        ? db.from("profiles").select("id, name").in("id", creatorIds)
+        : Promise.resolve({ data: [] as { id: string; name: string | null }[] }),
+    ]);
+    const eventMap = new Map((events ?? []).map((event) => [event.id, event]));
+    const people = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+    return {
+      promotions: list.map((row) => ({
+        id: row.id,
+        eventId: row.event_id,
+        eventTitle: eventMap.get(row.event_id)?.title ?? "Unknown event",
+        eventPublished: eventMap.get(row.event_id)?.published ?? false,
+        startsAt: row.starts_at,
+        endsAt: row.ends_at,
+        displayStatus: computePromotionStatus(
+          { status: row.status, starts_at: row.starts_at, ends_at: row.ends_at },
+          nowIso,
+        ),
+        createdAt: row.created_at,
+        createdByName: row.created_by ? (people.get(row.created_by)?.name ?? null) : null,
+      })),
+      total: count ?? 0,
+    };
+  });
+
+const createPromotionSchema = z.object({
+  eventId: z.string().uuid(),
+  startsAt: z.string().datetime(),
+  endsAt: z.string().datetime(),
+});
+
+export const createAdminPromotion = createServerFn({ method: "POST" })
+  .validator(createPromotionSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; id: string }> => {
+    const grant = await requirePermission(context, "promotions.manage");
+    const windowError = checkPromotionWindow(data.startsAt, data.endsAt);
+    if (windowError) {
+      throw new AdminBackendError(windowError);
+    }
+    // Friendly pre-checks so common mistakes explain themselves. The RPC
+    // re-validates everything, so a race between these reads and the write
+    // below still cannot schedule an invalid or overlapping window.
+    const db = asAdminDb(grant.supabase);
+    const { data: event, error: eventError } = await db
+      .from("events")
+      .select("id, published, status")
+      .eq("id", data.eventId)
+      .maybeSingle();
+    if (eventError) {
+      console.error("[admin] createAdminPromotion event read failed:", eventError.message);
+      throw new AdminBackendError("Could not save the promotion. Please try again.");
+    }
+    if (!event) {
+      throw new AdminBackendError("That event no longer exists.");
+    }
+    if (!event.published || (event.status ?? "") === "cancelled") {
+      throw new AdminBackendError("Only published, non-cancelled events can be promoted.");
+    }
+    const id = await callCreatePromotionRpc(grant.userClient, {
+      eventId: data.eventId,
+      startsAt: data.startsAt,
+      endsAt: data.endsAt,
+    });
+    return { ok: true, id };
+  });
+
+export const cancelAdminPromotion = createServerFn({ method: "POST" })
+  .validator(z.object({ id: z.string().uuid() }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const grant = await requirePermission(context, "promotions.manage");
+    const db = asAdminDb(grant.supabase);
+    const { data: current, error: readError } = await db
+      .from("event_promotions")
+      .select("id, status, ends_at")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readError) {
+      console.error("[admin] cancelAdminPromotion read failed:", readError.message);
+      throw new AdminBackendError("Could not cancel the promotion. Please try again.");
+    }
+    if (!current) {
+      throw new AdminBackendError("That promotion no longer exists.");
+    }
+    if (current.status === "cancelled") {
+      throw new AdminBackendError(
+        "That promotion was already cancelled. Refresh to see its current state.",
+      );
+    }
+    if (new Date(current.ends_at).getTime() <= Date.now()) {
+      throw new AdminBackendError("That promotion already ended.");
+    }
+    await callCancelPromotionRpc(grant.userClient, data.id);
     return { ok: true };
   });
 

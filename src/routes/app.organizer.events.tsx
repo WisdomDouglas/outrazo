@@ -109,6 +109,17 @@ function EventRow({
         >
           {event.published ? "Unpublish" : "Publish"}
         </Button>
+        {event.published && event.status !== "cancelled" ? (
+          <Link
+            to="/app/organizer/promote/$eventId"
+            params={{ eventId: event.id }}
+            className="focus-ring rounded-full"
+          >
+            <Button type="button" variant="transactional" size="sm" disabled={actionsDisabled}>
+              Boost
+            </Button>
+          </Link>
+        ) : null}
       </div>
     </li>
   );

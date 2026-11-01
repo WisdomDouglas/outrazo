@@ -8,8 +8,11 @@ import {
   AdminAuthError,
   AdminBackendError,
   AdminForbiddenError,
+  callCancelPromotionRpc,
+  callCreatePromotionRpc,
   callGrantRoleRpc,
   callRevokeRoleRpc,
+  callResolveReportRpc,
   getCallerRole,
   requirePermission,
 } from "@/showcase/admin/require-permission.server";
@@ -103,12 +106,52 @@ describe("requirePermission", () => {
       "events.read",
       "events.manage",
       "attendees.read",
+      "reports.read",
+      "reports.manage",
+      "promotions.read",
+      "promotions.manage",
       "roles.read",
       "roles.manage",
       "audit.read",
     ]) {
       const grant = await requirePermission(contextWith(okRpc("super_admin")), permission);
       assert.equal(grant.role, "super_admin");
+    }
+  });
+
+  it("lets moderation_admin read and resolve reports", async () => {
+    for (const permission of ["reports.read", "reports.manage"]) {
+      const grant = await requirePermission(contextWith(okRpc("moderation_admin")), permission);
+      assert.equal(grant.role, "moderation_admin");
+    }
+  });
+
+  it("rejects support and finance staff from the reports queue", async () => {
+    for (const role of ["support_readonly", "finance_admin"]) {
+      for (const permission of ["reports.read", "reports.manage"]) {
+        await assert.rejects(
+          requirePermission(contextWith(okRpc(role)), permission),
+          AdminForbiddenError,
+        );
+      }
+    }
+  });
+
+  it("lets moderation_admin read and manage promotions", async () => {
+    for (const permission of ["promotions.read", "promotions.manage"]) {
+      const grant = await requirePermission(contextWith(okRpc("moderation_admin")), permission);
+      assert.equal(grant.role, "moderation_admin");
+    }
+  });
+
+  it("rejects support and finance staff from promotions", async () => {
+    for (const role of ["support_readonly", "finance_admin"]) {
+      for (const permission of ["promotions.read", "promotions.manage"]) {
+        await assert.rejects(
+          requirePermission(contextWith(okRpc(role)), permission),
+          AdminForbiddenError,
+        );
+      }
     }
   });
 
@@ -161,6 +204,113 @@ describe("role RPC mapping", () => {
       (error) => {
         assert.ok(error instanceof AdminBackendError);
         assert.doesNotMatch(error.message, /admin_roles/);
+        return true;
+      },
+    );
+  });
+});
+
+describe("resolve report RPC mapping", () => {
+  const input = { reportId: "report-1", resolution: "dismissed", unpublish: false, note: null };
+
+  it("resolves quietly on success", async () => {
+    await callResolveReportRpc({ rpc: async () => ({ error: null }) }, input);
+  });
+
+  it("maps database guard rails to friendly errors", async () => {
+    const cases = [
+      ["Only a super_admin or moderation_admin may resolve reports.", AdminForbiddenError, /moderation staff/],
+      ["That report was already resolved. Refresh to see its current state.", AdminBackendError, /already resolved/],
+      ["That report no longer exists.", AdminBackendError, /no longer exists/],
+      ["Resolution note is too long (500 characters maximum).", AdminBackendError, /too long/],
+      ["Unknown resolution.", AdminBackendError, /Unknown resolution/],
+      ["Dismissed reports cannot unpublish events.", AdminBackendError, /cannot unpublish/],
+    ];
+    for (const [message, Kind, pattern] of cases) {
+      await assert.rejects(
+        callResolveReportRpc({ rpc: failingRpc(message) }, input),
+        (error) => {
+          assert.ok(error instanceof Kind, message);
+          assert.match(error.message, pattern);
+          return true;
+        },
+      );
+    }
+  });
+
+  it("hides unexpected database wording behind a retry message", async () => {
+    await assert.rejects(
+      callResolveReportRpc(
+        { rpc: failingRpc("permission denied for table event_reports") },
+        input,
+      ),
+      (error) => {
+        assert.ok(error instanceof AdminBackendError);
+        assert.doesNotMatch(error.message, /event_reports/);
+        return true;
+      },
+    );
+  });
+});
+
+describe("promotion RPC mapping", () => {
+  const createInput = { eventId: "event-1", startsAt: "2026-11-05T12:00:00Z", endsAt: "2026-11-06T12:00:00Z" };
+
+  it("resolves quietly on success", async () => {
+    const id = await callCreatePromotionRpc(
+      { rpc: async () => ({ data: "promo-1", error: null }) },
+      createInput,
+    );
+    assert.equal(id, "promo-1");
+    await callCancelPromotionRpc({ rpc: async () => ({ error: null }) }, "promo-1");
+  });
+
+  it("maps database guard rails to friendly errors", async () => {
+    const createCases = [
+      ["Only a super_admin or moderation_admin may manage promotions.", AdminForbiddenError, /moderation staff/],
+      ["Only published, non-cancelled events can be promoted.", AdminBackendError, /published/],
+      ["That window overlaps an existing promotion.", AdminBackendError, /overlaps/],
+      ['conflicting key value violates exclusion constraint "event_promotions_no_overlap"', AdminBackendError, /overlaps/],
+      ["That event no longer exists.", AdminBackendError, /no longer exists/],
+      ["Promotion must start before it ends.", AdminBackendError, /before it ends/],
+      ["That window already ended. Choose an end time in the future.", AdminBackendError, /already ended/],
+    ];
+    for (const [message, Kind, pattern] of createCases) {
+      await assert.rejects(
+        callCreatePromotionRpc({ rpc: failingRpc(message) }, createInput),
+        (error) => {
+          assert.ok(error instanceof Kind, message);
+          assert.match(error.message, pattern);
+          return true;
+        },
+      );
+    }
+    const cancelCases = [
+      ["That promotion was already cancelled. Refresh to see its current state.", AdminBackendError, /already cancelled/],
+      ["That promotion already ended.", AdminBackendError, /already ended/],
+      ["That promotion no longer exists.", AdminBackendError, /no longer exists/],
+    ];
+    for (const [message, Kind, pattern] of cancelCases) {
+      await assert.rejects(
+        callCancelPromotionRpc({ rpc: failingRpc(message) }, "promo-1"),
+        (error) => {
+          assert.ok(error instanceof Kind, message);
+          assert.match(error.message, pattern);
+          return true;
+        },
+      );
+    }
+  });
+
+  it("hides unexpected database wording behind a retry message", async () => {
+    await assert.rejects(
+      callCreatePromotionRpc(
+        { rpc: failingRpc("permission denied for table event_promotions") },
+        createInput,
+      ),
+      (error) => {
+        assert.ok(error instanceof AdminBackendError);
+        assert.doesNotMatch(error.message, /event_promotions/);
         return true;
       },
     );
