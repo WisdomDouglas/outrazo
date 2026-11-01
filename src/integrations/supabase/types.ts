@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -63,11 +63,9 @@ export type Database = {
           created_by: string | null
           currency: string
           description: string | null
-          event_type: string
           ends_at: string | null
           id: string
           image_url: string | null
-          capacity: number
           latitude: number | null
           longitude: number | null
           organizer_id: string
@@ -89,11 +87,9 @@ export type Database = {
           created_by?: string | null
           currency?: string
           description?: string | null
-          event_type?: string
           ends_at?: string | null
           id?: string
           image_url?: string | null
-          capacity?: number
           latitude?: number | null
           longitude?: number | null
           organizer_id: string
@@ -115,11 +111,9 @@ export type Database = {
           created_by?: string | null
           currency?: string
           description?: string | null
-          event_type?: string
           ends_at?: string | null
           id?: string
           image_url?: string | null
-          capacity?: number
           latitude?: number | null
           longitude?: number | null
           organizer_id?: string
@@ -145,41 +139,6 @@ export type Database = {
             columns: ["organizer_id"]
             isOneToOne: false
             referencedRelation: "organizers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      event_ticket_tiers: {
-        Row: {
-          created_at: string
-          event_id: string
-          id: string
-          name: string
-          price: number
-          quantity: number
-        }
-        Insert: {
-          created_at?: string
-          event_id: string
-          id?: string
-          name: string
-          price: number
-          quantity: number
-        }
-        Update: {
-          created_at?: string
-          event_id?: string
-          id?: string
-          name?: string
-          price?: number
-          quantity?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "event_ticket_tiers_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]
@@ -394,13 +353,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      replace_event_ticket_tiers_v1: {
-        Args: {
-          p_event_id: string
-          p_tiers: Json
-        }
-        Returns: undefined
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
