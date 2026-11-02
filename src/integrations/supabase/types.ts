@@ -53,10 +53,46 @@ export type Database = {
           },
         ]
       }
+      event_ticket_tiers: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          name: string
+          price: number
+          quantity: number
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          name: string
+          price: number
+          quantity: number
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          name?: string
+          price?: number
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_ticket_tiers_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           address: string | null
           attendee_count: number
+          capacity: number
           category: string
           city: string | null
           created_at: string
@@ -64,6 +100,7 @@ export type Database = {
           currency: string
           description: string | null
           ends_at: string | null
+          event_type: string
           id: string
           image_url: string | null
           latitude: number | null
@@ -81,6 +118,7 @@ export type Database = {
         Insert: {
           address?: string | null
           attendee_count?: number
+          capacity?: number
           category?: string
           city?: string | null
           created_at?: string
@@ -88,6 +126,7 @@ export type Database = {
           currency?: string
           description?: string | null
           ends_at?: string | null
+          event_type?: string
           id?: string
           image_url?: string | null
           latitude?: number | null
@@ -105,6 +144,7 @@ export type Database = {
         Update: {
           address?: string | null
           attendee_count?: number
+          capacity?: number
           category?: string
           city?: string | null
           created_at?: string
@@ -112,6 +152,7 @@ export type Database = {
           currency?: string
           description?: string | null
           ends_at?: string | null
+          event_type?: string
           id?: string
           image_url?: string | null
           latitude?: number | null
@@ -205,6 +246,7 @@ export type Database = {
           location: string | null
           name: string | null
           onboarding_completed: boolean
+          preferences: Json
           updated_at: string
         }
         Insert: {
@@ -215,6 +257,7 @@ export type Database = {
           location?: string | null
           name?: string | null
           onboarding_completed?: boolean
+          preferences?: Json
           updated_at?: string
         }
         Update: {
@@ -225,6 +268,7 @@ export type Database = {
           location?: string | null
           name?: string | null
           onboarding_completed?: boolean
+          preferences?: Json
           updated_at?: string
         }
         Relationships: []
@@ -353,7 +397,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      replace_event_ticket_tiers_v1: {
+        Args: { p_event_id: string; p_tiers: Json }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
