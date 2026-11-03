@@ -27,6 +27,8 @@ export const ADMIN_PERMISSIONS = [
   "roles.read",
   "roles.manage",
   "audit.read",
+  "scout.read",
+  "scout.manage",
 ] as const;
 
 export type AdminPermission = (typeof ADMIN_PERMISSIONS)[number];
@@ -61,6 +63,8 @@ export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     "roles.read",
     "roles.manage",
     "audit.read",
+    "scout.read",
+    "scout.manage",
   ],
   finance_admin: ["events.read", "attendees.read", "audit.read"],
   moderation_admin: [
@@ -73,6 +77,8 @@ export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     "reports.manage",
     "promotions.read",
     "promotions.manage",
+    "scout.read",
+    "scout.manage",
   ],
   support_readonly: ["users.read", "events.read", "attendees.read"],
 };

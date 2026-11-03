@@ -77,7 +77,9 @@ function EventDetailsPage() {
   const { isSaved, toggle } = useSavedItems();
   const related = getRelatedEvents(event);
   const saved = isSaved(event.id);
-  const actionLabel = event.ticketTiers.length ? "Get Tickets" : "RSVP";
+  const externalTicketUrl = loadedEvent?.externalTicketUrl ?? null;
+  const tierCount = loadedEvent?.ticketTiers.length ?? 0;
+  const actionLabel = externalTicketUrl ? "Register externally" : tierCount ? "Get Tickets" : "RSVP";
 
   return (
     <div className="min-h-screen overflow-x-clip bg-canvas pb-[calc(var(--spacing-section)+var(--spacing-xl))] text-primary-text lg:pb-0">
@@ -106,7 +108,11 @@ function EventDetailsPage() {
                 <DetailRow icon={<MapPin aria-hidden className="size-5" />} label="Location" value={`${event.venue.name}, ${event.city}`} />
                 <DetailRow icon={<Users aria-hidden className="size-5" />} label="People going" value={`${liveCount.toLocaleString()} people going`} />
               </div>
-              <Button variant={event.ticketTiers.length ? "transactional" : "primary"} size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />} onClick={() => setBookingOpen(true)}>{actionLabel}</Button>
+              {externalTicketUrl ? (
+                <a href={externalTicketUrl} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="transactional" size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />}>{actionLabel}</Button></a>
+              ) : (
+                <Button variant={tierCount ? "transactional" : "primary"} size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />} onClick={() => setBookingOpen(true)}>{actionLabel}</Button>
+              )}
               <div className="sm:hidden"><EventShareMenu title={event.title} /></div>
               {loadedEvent && isDatabaseEventId(loadedEvent.id) ? (
                 <button
@@ -155,8 +161,8 @@ function EventDetailsPage() {
           </section>
         </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-canvas/95 p-md backdrop-blur-md lg:hidden"><Button variant={event.ticketTiers.length ? "transactional" : "primary"} size="lg" className="w-full" onClick={() => setBookingOpen(true)}>{actionLabel}</Button></div>
-      <EventBookingDrawer event={event} open={bookingOpen} onClose={() => setBookingOpen(false)} />
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-canvas/95 p-md backdrop-blur-md lg:hidden">{externalTicketUrl ? <a href={externalTicketUrl} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="transactional" size="lg" className="w-full">{actionLabel}</Button></a> : <Button variant={tierCount ? "transactional" : "primary"} size="lg" className="w-full" onClick={() => setBookingOpen(true)}>{actionLabel}</Button>}</div>
+      {externalTicketUrl || !loadedEvent ? null : <EventBookingDrawer event={loadedEvent} open={bookingOpen} onClose={() => setBookingOpen(false)} />}
       {loadedEvent && isDatabaseEventId(loadedEvent.id) ? (
         <ReportEventDialog eventId={loadedEvent.id} eventTitle={loadedEvent.title} open={reportOpen} onClose={() => setReportOpen(false)} />
       ) : null}

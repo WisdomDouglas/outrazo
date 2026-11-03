@@ -25,7 +25,7 @@ describe("admin roles", () => {
     ]);
   });
 
-  it("defines exactly the twelve admin permissions", () => {
+  it("defines exactly the fourteen admin permissions", () => {
     assert.deepEqual([...ADMIN_PERMISSIONS], [
       "users.read",
       "users.manage",
@@ -39,6 +39,8 @@ describe("admin roles", () => {
       "roles.read",
       "roles.manage",
       "audit.read",
+      "scout.read",
+      "scout.manage",
     ]);
   });
 
@@ -75,7 +77,7 @@ describe("roleHasPermission", () => {
     assert.equal(roleHasPermission("finance_admin", "roles.manage"), false);
   });
 
-  it("gives moderation_admin user, event, report, and promotion management, nothing else", () => {
+  it("gives moderation_admin user, event, report, promotion, and scout management, nothing else", () => {
     assert.equal(roleHasPermission("moderation_admin", "users.read"), true);
     assert.equal(roleHasPermission("moderation_admin", "users.manage"), true);
     assert.equal(roleHasPermission("moderation_admin", "events.read"), true);
@@ -85,6 +87,8 @@ describe("roleHasPermission", () => {
     assert.equal(roleHasPermission("moderation_admin", "reports.manage"), true);
     assert.equal(roleHasPermission("moderation_admin", "promotions.read"), true);
     assert.equal(roleHasPermission("moderation_admin", "promotions.manage"), true);
+    assert.equal(roleHasPermission("moderation_admin", "scout.read"), true);
+    assert.equal(roleHasPermission("moderation_admin", "scout.manage"), true);
     assert.equal(roleHasPermission("moderation_admin", "roles.read"), false);
     assert.equal(roleHasPermission("moderation_admin", "roles.manage"), false);
     assert.equal(roleHasPermission("moderation_admin", "audit.read"), false);

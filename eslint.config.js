@@ -25,16 +25,20 @@ export default tseslint.config(
   },
   {
     // Privileged-client boundary: the service-role Supabase client, the
-    // Bachs payments client and webhook handler, and the admin guard built
-    // on them may only be imported by server-only modules and the two
-    // server-function bridge modules below. UI routes and components must go
-    // through server functions instead.
+    // Bachs payments client and webhook handler, the shared Meta AI transport
+    // (it reads MODEL_API_KEY), and the admin guard built on them may only be
+    // imported by server-only modules and the server-function bridge modules
+    // below. UI routes and components must go through server functions instead.
     files: ["src/**/*.{ts,tsx}"],
     ignores: [
       "src/**/*.server.{ts,tsx}",
       "src/integrations/supabase/**",
       "src/showcase/admin/admin-functions.ts",
+      "src/showcase/admin/intelligence-functions.ts",
       "src/showcase/promotions/promotion-functions.ts",
+      "src/showcase/copilot/generateSuggestions.ts",
+      "src/showcase/discovery/interpretDiscoveryQuery.ts",
+      "src/showcase/scout/scout-functions.ts",
     ],
     rules: {
       "no-restricted-imports": ["error", {

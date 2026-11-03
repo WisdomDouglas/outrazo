@@ -39,6 +39,7 @@ const SECTIONS = [
   { label: "RSVPs", to: "/admin/attendees", description: "Reservations across events.", permission: "attendees.read" },
   { label: "Reports", to: "/admin/reports", description: "Review user-filed event flags.", permission: "reports.read" },
   { label: "Promotions", to: "/admin/promotions", description: "Schedule the homepage spotlight.", permission: "promotions.read" },
+  { label: "Intelligence", to: "/admin/intelligence", description: "Platform activity aggregates and AI event intelligence.", permission: "events.read" },
   { label: "Roles", to: "/admin/roles", description: "Grant or revoke staff roles.", permission: "roles.read" },
   { label: "Audit log", to: "/admin/audit", description: "Who changed what, and when.", permission: "audit.read" },
 ] as const;

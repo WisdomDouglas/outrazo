@@ -59,6 +59,10 @@ export function toEvent(row: EventRow, organizer?: OrganizerRow, tiers: TierRow[
   const ticketTiers = tiers.map(toTicketTier);
   const endsAt = row.ends_at ? new Date(row.ends_at) : null;
   const isPaid = row.event_type === "paid";
+  // external_ticket_url arrives with the Scout migration; read defensively so
+  // older generated types keep working.
+  const externalTicketUrl =
+    (row as unknown as { external_ticket_url?: string | null }).external_ticket_url ?? null;
 
   return {
     id: row.id,
@@ -73,6 +77,9 @@ export function toEvent(row: EventRow, organizer?: OrganizerRow, tiers: TierRow[
     ...(isPaid && row.price_from !== null
       ? { price: `₦${new Intl.NumberFormat("en-NG").format(Number(row.price_from))}` }
       : {}),
+    // Externally ticketed events must never show the "Free" badge.
+    ...(externalTicketUrl && !(isPaid && row.price_from !== null) ? { price: "External" } : {}),
+    externalTicketUrl,
     organizerId: row.organizer_id,
     organizerDetails: eventOrganizer,
     category,

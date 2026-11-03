@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { MetaError, metaChatJson } from "@/integrations/meta/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { CATEGORIES } from "@/showcase/discovery/categories";
 
@@ -17,8 +18,6 @@ import { CATEGORIES } from "@/showcase/discovery/categories";
  * server-to-Meta Authorization header.
  */
 
-const META_CHAT_COMPLETIONS_URL = "https://api.meta.ai/v1/chat/completions";
-const META_MODEL = "muse-spark-1.3";
 const META_REQUEST_TIMEOUT_MS = 30_000;
 /** Caps cost and latency; large enough for the longest allowed description. */
 const META_MAX_OUTPUT_TOKENS = 4096;
@@ -72,67 +71,56 @@ const SUGGESTION_JSON_SCHEMA = {
   required: ["title", "summary", "description", "category", "tags"],
 };
 
+/**
+ * Maps shared-transport failures to this feature's exact user-facing
+ * messages. Every string below predates the shared helper: migrating the
+ * transport must never change what organizers see.
+ */
+function mapMetaError(caught: unknown): Error {
+  if (caught instanceof MetaError) {
+    switch (caught.code) {
+      case "config":
+        return new Error("The AI copilot is not set up yet. Please try again later.");
+      case "timeout":
+        return new Error("The AI copilot took too long to answer. Please try again.");
+      case "network":
+        return new Error("Could not reach the AI service. Check your connection and try again.");
+      case "unauthorized":
+        return new Error("The AI service rejected its credentials. Please tell the site administrator.");
+      case "rate_limited":
+        return new Error("The AI copilot is busy right now. Please wait a moment and try again.");
+      case "server":
+        return new Error("The AI service is unavailable right now. Please try again later.");
+      case "malformed":
+        return new Error("The AI service returned an unreadable response. Please try again.");
+      case "bad_request":
+        return new Error("The AI copilot could not complete that request. Please try again.");
+    }
+  }
+  return caught instanceof Error
+    ? caught
+    : new Error("The AI copilot could not complete that request. Please try again.");
+}
+
 export const generateEventSuggestions = createServerFn({ method: "POST" })
   .validator(notesSchema)
   .middleware([requireSupabaseAuth])
   .handler(async ({ data }): Promise<CopilotSuggestion> => {
-    const apiKey = process.env["MODEL_API_KEY"];
-    if (!apiKey) {
-      console.error("[copilot] MODEL_API_KEY is not set; refusing to call Meta API.");
-      throw new Error("The AI copilot is not set up yet. Please try again later.");
-    }
-
-    let response: Response;
-    try {
-      response = await fetch(META_CHAT_COMPLETIONS_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: META_MODEL,
-          messages: [
-            { role: "developer", content: DEVELOPER_INSTRUCTION },
-            { role: "user", content: data.notes },
-          ],
-          response_format: {
-            type: "json_schema",
-            json_schema: { name: "EventSuggestion", schema: SUGGESTION_JSON_SCHEMA },
-          },
-          max_completion_tokens: META_MAX_OUTPUT_TOKENS,
-        }),
-        signal: AbortSignal.timeout(META_REQUEST_TIMEOUT_MS),
-      });
-    } catch (caught) {
-      console.error("[copilot] Meta API request failed:", caught);
-      if (caught instanceof DOMException && caught.name === "TimeoutError") {
-        throw new Error("The AI copilot took too long to answer. Please try again.");
-      }
-      throw new Error("Could not reach the AI service. Check your connection and try again.");
-    }
-
-    if (!response.ok) {
-      // Log only the status server-side. Provider bodies can echo request
-      // details, so they are never forwarded to the browser.
-      console.error(`[copilot] Meta API responded with status ${response.status}.`);
-      if (response.status === 401 || response.status === 403) {
-        throw new Error("The AI service rejected its credentials. Please tell the site administrator.");
-      }
-      if (response.status === 429) {
-        throw new Error("The AI copilot is busy right now. Please wait a moment and try again.");
-      }
-      if (response.status >= 500) {
-        throw new Error("The AI service is unavailable right now. Please try again later.");
-      }
-      throw new Error("The AI copilot could not complete that request. Please try again.");
-    }
-
     let payload: unknown;
     try {
-      payload = await response.json();
-    } catch {
-      throw new Error("The AI service returned an unreadable response. Please try again.");
+      ({ payload } = await metaChatJson({
+        messages: [
+          { role: "developer", content: DEVELOPER_INSTRUCTION },
+          { role: "user", content: data.notes },
+        ],
+        schemaName: "EventSuggestion",
+        jsonSchema: SUGGESTION_JSON_SCHEMA,
+        maxTokens: META_MAX_OUTPUT_TOKENS,
+        timeoutMs: META_REQUEST_TIMEOUT_MS,
+        logPrefix: "[copilot]",
+      }));
+    } catch (caught) {
+      throw mapMetaError(caught);
     }
     const content = (payload as { choices?: Array<{ message?: { content?: unknown } }> })
       .choices?.[0]?.message?.content;

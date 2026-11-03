@@ -72,6 +72,8 @@ export interface OutrazoEvent {
   city: string;
   /** Display price, e.g. "₦12,000". Omit for a free event. */
   price?: string;
+  /** External registration URL. When set, Outrazo shows a register link instead of RSVP/tickets. */
+  externalTicketUrl?: string | null;
   organizerId: string;
   category: Exclude<CategoryId, "all">;
   tag?: string;

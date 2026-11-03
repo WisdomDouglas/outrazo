@@ -50,6 +50,9 @@ type EventsTable = Database["public"]["Tables"]["events"];
 type AttendeesTable = Database["public"]["Tables"]["event_attendees"];
 type OrganizersTable = Database["public"]["Tables"]["organizers"];
 type EventTiersTable = Database["public"]["Tables"]["event_ticket_tiers"];
+type SavedEventsTable = Database["public"]["Tables"]["saved_events"];
+type TicketOrdersTable = Database["public"]["Tables"]["ticket_orders"];
+type TicketItemsTable = Database["public"]["Tables"]["ticket_items"];
 
 type AdminRolesRow = {
   user_id: string;
@@ -146,6 +149,9 @@ export interface AdminPhase1Db {
       event_attendees: AttendeesTable;
       organizers: OrganizersTable;
       event_ticket_tiers: EventTiersTable;
+      saved_events: SavedEventsTable;
+      ticket_orders: TicketOrdersTable;
+      ticket_items: TicketItemsTable;
       event_promotions: {
         Row: EventPromotionRow;
         Insert: {

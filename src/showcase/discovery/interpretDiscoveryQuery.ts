@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { MetaError, metaChatJson } from "@/integrations/meta/client.server";
 import { CATEGORIES } from "@/showcase/discovery/categories";
 import { placesPromptReference, resolvePlace } from "@/showcase/discovery/locations";
 import {
@@ -31,8 +32,6 @@ import {
  * inside the handler and sent only in the server-to-Meta Authorization header.
  */
 
-const META_CHAT_COMPLETIONS_URL = "https://api.meta.ai/v1/chat/completions";
-const META_MODEL = "muse-spark-1.3";
 const META_REQUEST_TIMEOUT_MS = 20_000;
 /**
  * Caps cost and latency. Keep generous: reasoning tokens share this budget,
@@ -161,66 +160,56 @@ export function resolveDateBounds(
   }
 }
 
+/**
+ * Maps shared-transport failures to this feature's exact user-facing
+ * messages. Every string below predates the shared helper: migrating the
+ * transport must never change what visitors see.
+ */
+function mapMetaError(caught: unknown): Error {
+  if (caught instanceof MetaError) {
+    switch (caught.code) {
+      case "config":
+        return new Error("AI search is not set up yet. You can still browse and filter events below.");
+      case "timeout":
+        return new Error("AI search took too long to answer. Please try again.");
+      case "network":
+        return new Error("Could not reach the AI service. Check your connection and try again.");
+      case "unauthorized":
+        return new Error("AI search rejected its credentials. Please tell the site administrator.");
+      case "rate_limited":
+        return new Error("AI search is busy right now. Please wait a moment and try again.");
+      case "server":
+        return new Error("AI search is unavailable right now. You can still browse and filter events below.");
+      case "malformed":
+        return new Error("AI search returned an unreadable response. Please try again.");
+      case "bad_request":
+        return new Error("AI search could not complete that request. Please try again.");
+    }
+  }
+  return caught instanceof Error
+    ? caught
+    : new Error("AI search could not complete that request. Please try again.");
+}
+
 export const interpretDiscoveryQuery = createServerFn({ method: "POST" })
   .validator(querySchema)
   .handler(async ({ data }): Promise<NLDiscoveryFilters> => {
-    const apiKey = process.env["MODEL_API_KEY"];
-    if (!apiKey) {
-      console.error("[discovery] MODEL_API_KEY is not set; refusing to call Meta API.");
-      throw new Error("AI search is not set up yet. You can still browse and filter events below.");
-    }
-
-    let response: Response;
-    try {
-      response = await fetch(META_CHAT_COMPLETIONS_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: META_MODEL,
-          messages: [
-            { role: "developer", content: buildDeveloperInstruction(new Date()) },
-            { role: "user", content: data.query },
-          ],
-          response_format: {
-            type: "json_schema",
-            json_schema: { name: "DiscoveryFilters", schema: INTERPRETATION_JSON_SCHEMA },
-          },
-          max_completion_tokens: META_MAX_OUTPUT_TOKENS,
-        }),
-        signal: AbortSignal.timeout(META_REQUEST_TIMEOUT_MS),
-      });
-    } catch (caught) {
-      console.error("[discovery] Meta API request failed:", caught);
-      if (caught instanceof DOMException && caught.name === "TimeoutError") {
-        throw new Error("AI search took too long to answer. Please try again.");
-      }
-      throw new Error("Could not reach the AI service. Check your connection and try again.");
-    }
-
-    if (!response.ok) {
-      // Log only the status server-side. Provider bodies can echo request
-      // details, so they are never forwarded to the browser.
-      console.error(`[discovery] Meta API responded with status ${response.status}.`);
-      if (response.status === 401 || response.status === 403) {
-        throw new Error("AI search rejected its credentials. Please tell the site administrator.");
-      }
-      if (response.status === 429) {
-        throw new Error("AI search is busy right now. Please wait a moment and try again.");
-      }
-      if (response.status >= 500) {
-        throw new Error("AI search is unavailable right now. You can still browse and filter events below.");
-      }
-      throw new Error("AI search could not complete that request. Please try again.");
-    }
-
+    let status: number;
     let payload: unknown;
     try {
-      payload = await response.json();
-    } catch {
-      throw new Error("AI search returned an unreadable response. Please try again.");
+      ({ status, payload } = await metaChatJson({
+        messages: [
+          { role: "developer", content: buildDeveloperInstruction(new Date()) },
+          { role: "user", content: data.query },
+        ],
+        schemaName: "DiscoveryFilters",
+        jsonSchema: INTERPRETATION_JSON_SCHEMA,
+        maxTokens: META_MAX_OUTPUT_TOKENS,
+        timeoutMs: META_REQUEST_TIMEOUT_MS,
+        logPrefix: "[discovery]",
+      }));
+    } catch (caught) {
+      throw mapMetaError(caught);
     }
     const extracted = extractChatContent(payload);
     if (!extracted.ok) {
@@ -229,7 +218,7 @@ export const interpretDiscoveryQuery = createServerFn({ method: "POST" })
       console.error(
         "[discovery] unusable Meta payload",
         JSON.stringify({
-          status: response.status,
+          status,
           reason: extracted.reason,
           queryLength: data.query.length,
           ...describeChatPayload(payload),

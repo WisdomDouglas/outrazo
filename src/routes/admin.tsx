@@ -8,6 +8,8 @@ import {
   Megaphone,
   ScrollText,
   ShieldCheck,
+  Radar,
+  Sparkles,
   Ticket,
   Users,
 } from "lucide-react";
@@ -44,6 +46,8 @@ interface AdminTab {
     | "/admin/attendees"
     | "/admin/reports"
     | "/admin/promotions"
+    | "/admin/intelligence"
+    | "/admin/scout"
     | "/admin/roles"
     | "/admin/audit";
   icon: typeof LayoutDashboard;
@@ -59,6 +63,8 @@ const TABS: AdminTab[] = [
   { label: "RSVPs", to: "/admin/attendees", icon: Ticket, permission: "attendees.read" },
   { label: "Reports", to: "/admin/reports", icon: Flag, permission: "reports.read" },
   { label: "Promotions", to: "/admin/promotions", icon: Megaphone, permission: "promotions.read" },
+  { label: "Intelligence", to: "/admin/intelligence", icon: Sparkles, permission: "events.read" },
+  { label: "Scout", to: "/admin/scout", icon: Radar, permission: "scout.read" },
   { label: "Roles", to: "/admin/roles", icon: ShieldCheck, permission: "roles.read" },
   { label: "Audit log", to: "/admin/audit", icon: ScrollText, permission: "audit.read" },
 ];
