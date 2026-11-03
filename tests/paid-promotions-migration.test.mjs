@@ -141,10 +141,13 @@ describe("promotion_orders table", () => {
       sql,
       /GRANT SELECT \(id, event_id, days, daily_amount_kobo, total_amount_kobo, currency, status, status_reason, provider, provider_reference, promotion_id, paid_at, created_at\)\s+ON public\.promotion_orders TO authenticated;/,
     );
-    assert.doesNotMatch(
-      sql,
-      /GRANT SELECT \([^)]*organizer_id[^)]*\)\s+ON public\.promotion_orders/,
-    );
+    // NOTE (order-read fix): this base list omits organizer_id and
+    // checkout_expires_at, which the organizer-facing queries select through
+    // the user client — every organizer read failed with "permission denied"
+    // until the follow-up migration completed the grant. The cross-file
+    // contract test (promotion-order-read-grants-migration.test.mjs) proves
+    // every selected column is granted; this pin stays as the historical
+    // base list only and must not re-acquire an organizer_id exclusion.
     assert.match(sql, /GRANT ALL ON public\.promotion_orders TO service_role;/);
   });
 });

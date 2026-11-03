@@ -14,7 +14,7 @@
 -- never be set accidentally.
 
 -- Statement 1: record the first daily rate (audited as admin.pricing.set).
-SELECT public.set_promotion_price(NULL);
+SELECT public.set_promotion_price(10000);
 
 -- Statement 2: verify the current price (latest effective row wins).
 SELECT daily_amount_kobo,
