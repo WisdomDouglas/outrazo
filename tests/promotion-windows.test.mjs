@@ -91,7 +91,11 @@ describe("friendlyPromotionError", () => {
   it("maps known promotion failures to safe messages", () => {
     assert.match(
       friendlyPromotionError("That window overlaps an existing promotion."),
-      /overlaps/,
+      /overlaps an existing promotion for this event/,
+    );
+    assert.doesNotMatch(
+      friendlyPromotionError("That window overlaps an existing promotion."),
+      /Only one promotion/,
     );
     assert.match(
       friendlyPromotionError('conflicting key value violates exclusion constraint "event_promotions_no_overlap"'),

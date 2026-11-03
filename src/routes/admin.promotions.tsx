@@ -33,7 +33,7 @@ import {
 export const Route = createFileRoute("/admin/promotions")({
   head: () => ({ meta: [
     { title: "Promotions — Admin Console — Outrazo" },
-    { name: "description", content: "Schedule the homepage featured-event slot. One live promotion at a time." },
+    { name: "description", content: "Schedule homepage featured events. Many events can promote at once; one live window per event." },
   ] }),
   component: AdminPromotionsPage,
 });
@@ -177,7 +177,7 @@ function AdminPromotionsPage() {
         data: { id },
         headers: { Authorization: `Bearer ${token}` },
       });
-      setActionMessage("Promotion cancelled. The homepage slot is free for that time again.");
+      setActionMessage("Promotion cancelled. That event's window is free for that time again.");
       await refresh();
     } catch (caught) {
       setActionError(friendlyAdminError(caught));
@@ -194,8 +194,8 @@ function AdminPromotionsPage() {
       <div>
         <h2 className="type-h2">Promotions</h2>
         <p className="type-body mt-xs text-muted-text">
-          One homepage spotlight slot. Only one promotion can be live at a time — overlapping
-          windows are rejected, and scheduled rows appear only inside their window.
+          Many events can be promoted at the same time. Overlapping windows are rejected
+          only for the same event, and scheduled rows appear only inside their window.
         </p>
       </div>
 

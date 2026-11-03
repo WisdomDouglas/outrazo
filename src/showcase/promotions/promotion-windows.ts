@@ -79,7 +79,7 @@ export const PROMOTION_UNKNOWN_ERROR = "Could not save the promotion. Please try
 // Used by the server RPC bridges so UI and server share one mapping.
 export function friendlyPromotionError(message: string): string {
   if (/overlaps an existing promotion|violates exclusion constraint/i.test(message)) {
-    return "That window overlaps an existing promotion. Only one promotion can run at a time.";
+    return "That window overlaps an existing promotion for this event. Different events can promote at the same time.";
   }
   if (/only published, non-cancelled events/i.test(message)) {
     return "Only published, non-cancelled events can be promoted.";

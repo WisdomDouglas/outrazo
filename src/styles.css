@@ -259,6 +259,56 @@ html.light .brand-logo-light { display: block; }
 .home-feature-date { color: #607169; }
 .home-feature-price { display: inline-flex; min-height: 24px; flex: none; align-items: center; border-radius: 999px; background: #dcf9ee; padding: 0 10px; color: #008d5c; font: 650 10px/1 var(--outrazo-font-body); }
 .home-feature-price--paid { background: #e3faf2; }
+/* Homepage Spotlight: premium promoted-event feature card + carousel. */
+.spotlight-card { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 4fr); overflow: hidden; border: 1px solid #d5e5da; border-radius: 20px; background: #fff; box-shadow: 0 8px 28px rgba(10,45,31,.08); }
+.spotlight-media { position: relative; min-height: 320px; overflow: hidden; background: #dcebe2; }
+.spotlight-media-link { display: block; height: 100%; }
+.spotlight-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 500ms ease; }
+.spotlight-card:hover .spotlight-image { transform: scale(1.03); }
+.spotlight-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,18,12,.28) 0%, rgba(4,18,12,0) 30%, rgba(4,18,12,0) 62%, rgba(4,18,12,.5) 100%); pointer-events: none; }
+.spotlight-promoted { position: absolute; top: 14px; left: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 28px; border: 1px solid rgba(108,223,173,.45); border-radius: 999px; background: rgba(7,20,14,.85); padding: 0 12px; color: #c9f2dd; font: 650 11px/1 var(--outrazo-font-body); box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+.spotlight-body { display: flex; flex-direction: column; gap: 10px; justify-content: center; min-width: 0; padding: 28px 30px; }
+.spotlight-kicker { margin: 0; color: #008d5c; font: 650 12px/1.2 var(--outrazo-font-body); }
+.spotlight-title { overflow: hidden; margin: 0; color: #10271e; font: 700 clamp(22px, 2.4vw, 30px)/1.2 var(--outrazo-font-body); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.spotlight-title-link { border-radius: 6px; text-decoration: none; }
+.spotlight-title-link:hover .spotlight-title { color: #08734e; }
+.spotlight-meta { display: flex; align-items: center; gap: 7px; margin: 0; color: #5c6f65; font: 400 12.5px/1.4 var(--outrazo-font-body); }
+.spotlight-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; }
+.spotlight-slide { animation: spotlight-in 450ms ease; }
+@keyframes spotlight-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.spotlight--static .spotlight-slide { animation: none; }
+.spotlight-controls { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.spotlight-nav { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #d5e5da; border-radius: 999px; background: #fff; color: #10271e; cursor: pointer; transition: border-color 180ms ease, color 180ms ease; }
+.spotlight-nav:hover { border-color: rgba(0,184,120,.6); color: #08734e; }
+.spotlight-dots { display: flex; align-items: center; gap: 8px; }
+.spotlight-dot { width: 8px; height: 8px; border: none; border-radius: 999px; background: #c3d4c9; cursor: pointer; padding: 0; transition: width 200ms ease, background-color 200ms ease; }
+.spotlight-dot[aria-current="true"] { width: 26px; background: #00b878; }
+.spotlight-count { color: #687870; font: 600 12px/1 var(--outrazo-font-body); font-variant-numeric: tabular-nums; }
+/* Explore promoted cards: same grid card with an emerald ring + Promoted tag. */
+.event-card--promoted { outline: 1.5px solid rgba(0,184,120,.6); outline-offset: -1.5px; }
+html:not(.light) .spotlight-card { border-color: rgba(190,219,202,.16); background: #0e2219; box-shadow: 0 10px 32px rgba(0,0,0,.35); }
+html:not(.light) .spotlight-media { background: #143024; }
+html:not(.light) .spotlight-kicker { color: #7fe3b6; }
+html:not(.light) .spotlight-title { color: #e2ece9; }
+html:not(.light) .spotlight-title-link:hover .spotlight-title { color: #7fe3b6; }
+html:not(.light) .spotlight-meta { color: #adbfb4; }
+html:not(.light) .spotlight-nav { border-color: rgba(190,219,202,.22); background: #143024; color: #e2ece9; }
+html:not(.light) .spotlight-nav:hover { border-color: rgba(108,223,173,.6); color: #7fe3b6; }
+html:not(.light) .spotlight-dot { background: rgba(190,219,202,.3); }
+html:not(.light) .spotlight-dot[aria-current="true"] { background: #34d399; }
+html:not(.light) .spotlight-count { color: #8fa39a; }
+@media (max-width: 899px) {
+  .spotlight-card { grid-template-columns: minmax(0, 1fr); border-radius: 18px; }
+  .spotlight-media { min-height: 210px; }
+  .spotlight-body { gap: 8px; padding: 18px 18px 20px; }
+  .spotlight-title { font-size: 20px; }
+  .spotlight-meta { font-size: 12px; }
+  .spotlight-controls { gap: 12px; margin-top: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-slide { animation: none; }
+  .spotlight-card .spotlight-image, .spotlight-nav, .spotlight-dot { transition: none; }
+}
 .home-secondary-section { padding: 36px 30px 8px; }
 .home-secondary-section:last-child { padding-bottom: 34px; }
 .app-home h2, .app-home h3 { letter-spacing: -.02em; }

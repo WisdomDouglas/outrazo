@@ -22,6 +22,8 @@ import { NLSearchBox } from "@/showcase/discovery/NLSearchBox";
 import { interpretDiscoveryQuery } from "@/showcase/discovery/interpretDiscoveryQuery";
 import { describeNLFilters, matchNLQuery, nlLocationLabel, type NLDiscoveryFilters } from "@/showcase/discovery/nl-matching";
 import { displayLocationLabel, matchLocationSelection, NIGERIAN_STATES } from "@/showcase/discovery/locations";
+import { boostPromotedPlacement } from "@/showcase/promotions/active-promotions";
+import { useActivePromotions } from "@/showcase/promotions/use-active-promotions";
 import {
   CITIES,
   getOrganizer,
@@ -114,6 +116,7 @@ function ExploreEvents() {
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
   const discovery = useDiscovery();
   const setCategory = discovery.setCategory;
+  const { promotions } = useActivePromotions();
 
   // Deep links such as /events?category=music preselect the category rail.
   useEffect(() => {
@@ -152,6 +155,18 @@ function ExploreEvents() {
     if (!nlFilters) return keyworded;
     return keyworded.filter((event) => matchNLQuery(event, nlFilters));
   }, [nlBaseEvents, query, nlFilters]);
+
+  // Promoted cards ride on the filtered results: only promotions matching the
+  // current search, category, and filters appear, tagged in place with at most
+  // two boosted into early slots. Filtering, ordering, and counts are intact.
+  const promotedIds = useMemo(
+    () => new Set(promotions.map((promotion) => promotion.eventId)),
+    [promotions],
+  );
+  const feed = useMemo(
+    () => boostPromotedPlacement(results, (event) => promotedIds.has(event.id)),
+    [results, promotedIds],
+  );
 
   const draftResultCount = useMemo(
     () => filterEvents(discovery.events, draftFilters, discovery.city).length,
@@ -391,12 +406,15 @@ function ExploreEvents() {
           </div>
         ) : null}
 
-        {results.length ? (
+        {feed.length ? (
           <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
-            {results.map((event, index) => (
+            {feed.map(({ item: event, promoted }, index) => (
               <Reveal key={event.id} delay={index * 40}>
                 <EventCard
                   {...toEventCardProps(event)}
+                  tag={promoted ? "Promoted" : event.tag}
+                  tagVariant={promoted ? "accent" : event.tagVariant}
+                  className={promoted ? "event-card--promoted" : undefined}
                   saved={discovery.isSaved(event.id)}
                   onToggleSave={() => discovery.toggleSave(event.id)}
                 />

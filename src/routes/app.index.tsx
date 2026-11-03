@@ -34,7 +34,8 @@ import {
   type OnboardingRecord,
 } from "@/showcase/onboarding-storage";
 import { type CategoryId, type OutrazoEvent } from "@/showcase/sample-data";
-import { useActivePromotion } from "@/showcase/promotions/use-active-promotion";
+import { SpotlightCarousel } from "@/showcase/promotions/SpotlightCarousel";
+import { useActivePromotions } from "@/showcase/promotions/use-active-promotions";
 import { useEventCatalog } from "@/showcase/use-event-catalog";
 
 /** Maps onboarding interests onto the event categories in the dataset. */
@@ -177,8 +178,23 @@ function AppHome() {
   const [query, setQuery] = useState("");
   const { isSaved, toggle } = useSavedItems();
   const catalog = useEventCatalog();
-  const promotion = useActivePromotion();
-  const promotedId = promotion?.eventId ?? null;
+  const { promotions } = useActivePromotions();
+  // Live promotions joined against the published catalog: unpublished or
+  // missing events never reach the Spotlight, and every other section skips
+  // exactly the promoted events shown there — no repeats anywhere.
+  const spotlightItems = useMemo(() => {
+    const byId = new Map(catalog.events.map((event) => [event.id, event]));
+    const items: { promotionId: string; event: OutrazoEvent }[] = [];
+    for (const promotion of promotions) {
+      const event = byId.get(promotion.eventId);
+      if (event) items.push({ promotionId: promotion.id, event });
+    }
+    return items;
+  }, [catalog.events, promotions]);
+  const promotedIds = useMemo(
+    () => new Set(spotlightItems.map((item) => item.event.id)),
+    [spotlightItems],
+  );
 
   useEffect(() => {
     setRecord(loadOnboardingRecord());
@@ -201,7 +217,7 @@ function AppHome() {
     const searchTerm = query.trim().toLowerCase();
     return [...catalog.events]
       .filter((event) => {
-        if (event.id === promotedId) return false;
+        if (promotedIds.has(event.id)) return false;
         if (quickFilter === "tonight" && !event.tonight) return false;
         if (quickFilter === "weekend" && !/weekend/i.test(event.tag ?? "") && !/\b(Sat|Sun)\b/.test(event.date)) return false;
         if (quickFilter === "nearby" && !matchLocationSelection(location, event.city)) return false;
@@ -216,21 +232,21 @@ function AppHome() {
           b.attendeeCount - a.attendeeCount,
       )
       .slice(0, 3);
-  }, [catalog.events, location, promotedId, query, quickFilter]);
+  }, [catalog.events, location, promotedIds, query, quickFilter]);
 
   const nearYou = useMemo(() => {
     const alreadyFeatured = new Set(featured.map((event) => event.id));
     return catalog.events
-      .filter((event) => matchLocationSelection(location, event.city) && !alreadyFeatured.has(event.id) && event.id !== promotedId)
+      .filter((event) => matchLocationSelection(location, event.city) && !alreadyFeatured.has(event.id) && !promotedIds.has(event.id))
       .sort((a, b) => b.attendeeCount - a.attendeeCount)
       .slice(0, 3);
-  }, [catalog.events, featured, location, promotedId]);
+  }, [catalog.events, featured, location, promotedIds]);
 
   const picked = useMemo<OutrazoEvent[]>(() => {
     if (!interestCategories.length) return [];
     const alreadyShown = new Set([...featured, ...nearYou].map((event) => event.id));
     return catalog.events
-      .filter((event) => !alreadyShown.has(event.id) && event.id !== promotedId)
+      .filter((event) => !alreadyShown.has(event.id) && !promotedIds.has(event.id))
       .filter((event) => interestCategories.includes(event.category))
       .sort(
         (a, b) =>
@@ -238,25 +254,25 @@ function AppHome() {
           b.attendeeCount - a.attendeeCount,
       )
       .slice(0, 4);
-  }, [catalog.events, featured, interestCategories, location, nearYou, promotedId]);
+  }, [catalog.events, featured, interestCategories, location, nearYou, promotedIds]);
 
   const soon = useMemo(() => {
     const alreadyShown = new Set([...featured, ...nearYou, ...picked].map((event) => event.id));
     return catalog.events
-      .filter((event) => !alreadyShown.has(event.id) && event.id !== promotedId)
+      .filter((event) => !alreadyShown.has(event.id) && !promotedIds.has(event.id))
       .sort((a, b) => a.startsAt.localeCompare(b.startsAt))
       .slice(0, 4);
-  }, [catalog.events, featured, nearYou, picked, promotedId]);
+  }, [catalog.events, featured, nearYou, picked, promotedIds]);
 
   const popular = useMemo(
     () => {
       const alreadyShown = new Set([...featured, ...nearYou, ...picked, ...soon].map((event) => event.id));
       return catalog.events
-        .filter((event) => !alreadyShown.has(event.id) && event.id !== promotedId)
+        .filter((event) => !alreadyShown.has(event.id) && !promotedIds.has(event.id))
         .sort((a, b) => b.attendeeCount - a.attendeeCount)
         .slice(0, 3);
     },
-    [catalog.events, featured, nearYou, picked, promotedId, soon],
+    [catalog.events, featured, nearYou, picked, promotedIds, soon],
   );
 
   const submitSearch = (event: FormEvent) => {
@@ -358,21 +374,15 @@ function AppHome() {
         </div>
       </section>
 
-      {promotion ? (
-        <section className="app-home-section home-featured-section" aria-label="Promoted event">
+      {spotlightItems.length ? (
+        <section className="app-home-section home-featured-section" aria-label="Promoted events">
           <div className="home-feature-heading">
             <div>
               <p className="home-section-kicker">Promoted</p>
               <h2>Spotlight</h2>
             </div>
           </div>
-          <div className="home-feature-grid">
-            <FeaturedEventCard
-              event={promotion.event}
-              saved={isSaved(promotion.eventId)}
-              onToggleSave={() => toggle(promotion.eventId)}
-            />
-          </div>
+          <SpotlightCarousel items={spotlightItems} />
         </section>
       ) : null}
 
