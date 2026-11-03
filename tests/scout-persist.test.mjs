@@ -10,6 +10,7 @@ import { describe, it } from "node:test";
 import {
   decideSearchCompletion,
   persistScoutStepDone,
+  raiseBudgetGuard,
   retryStepGuard,
 } from "@/showcase/scout/scout-run-guards";
 import { checkScoutBudget } from "@/showcase/scout/scout-search";
@@ -124,6 +125,21 @@ describe("retryStepGuard", () => {
     assert.equal(retryStepGuard(run(), null, "run-a").ok, false);
     assert.equal(retryStepGuard(run(), step({ run_id: "run-b" }), "run-a").ok, false);
     assert.equal(retryStepGuard(run({ tool_calls_made: 24 }), step(), "run-a").ok, false);
+  });
+});
+
+describe("raiseBudgetGuard", () => {
+  it("allows forward-only raises within the ceiling", () => {
+    assert.deepEqual(raiseBudgetGuard({ status: "budget_stopped", max_tool_calls: 24 }, 40, 100), { ok: true });
+    assert.deepEqual(raiseBudgetGuard({ status: "searching", max_tool_calls: 24 }, 25, 100), { ok: true });
+  });
+
+  it("rejects finished runs, sideways raises, and over-ceiling raises", () => {
+    assert.equal(raiseBudgetGuard({ status: "done", max_tool_calls: 24 }, 40, 100).ok, false);
+    assert.equal(raiseBudgetGuard({ status: "cancelled", max_tool_calls: 24 }, 40, 100).ok, false);
+    assert.equal(raiseBudgetGuard({ status: "paused", max_tool_calls: 24 }, 24, 100).ok, false);
+    assert.equal(raiseBudgetGuard({ status: "paused", max_tool_calls: 24 }, 10, 100).ok, false);
+    assert.equal(raiseBudgetGuard({ status: "paused", max_tool_calls: 24 }, 101, 100).ok, false);
   });
 });
 

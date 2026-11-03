@@ -108,13 +108,16 @@ export interface ScoutCandidatePick {
 /**
  * Picks up to `limit` unprocessed candidate URLs across done steps, in plan
  * order, deduped by normalized URL — both against already-processed rows and
- * within the batch itself. Rows without a usable URL are skipped.
+ * within the batch itself. Rows without a usable URL are skipped. Stops
+ * entirely once `maxSources` rows are already processed (the run's cap).
  */
 export function pickUnprocessedCandidates(
   stepsResults: Array<Array<{ url: string; title: string | null; domain: string; snippet: string }>>,
   processedUrls: ReadonlySet<string>,
   limit: number,
+  maxSources: number,
 ): ScoutCandidatePick[] {
+  if (processedUrls.size >= maxSources) return [];
   const picks: ScoutCandidatePick[] = [];
   const seen = new Set<string>();
   for (const results of stepsResults) {

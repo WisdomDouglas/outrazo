@@ -9,6 +9,7 @@ import {
   buildScoutAttribution,
   checkApprovalDates,
   isReviewerCoverUrl,
+  scoutDraftSlug,
   SCOUT_EVENT_CATEGORIES,
 } from "@/showcase/scout/scout-review";
 
@@ -100,5 +101,21 @@ describe("approvalOverridesSchema", () => {
       approvalOverridesSchema.safeParse({ ...valid(), externalTicketUrl: "https://tickets.example/e/1" }).success,
       true,
     );
+  });
+});
+
+describe("scoutDraftSlug", () => {
+  it("mirrors the create-event slug convention", () => {
+    assert.equal(
+      scoutDraftSlug("DevFest Port Harcourt 2026!", "8dd928b4-162e-4bac-a610-67aed83ec30f"),
+      "devfest-port-harcourt-2026-8dd928b4",
+    );
+  });
+
+  it("trims dashes, caps length, and falls back for symbol-only titles", () => {
+    assert.equal(scoutDraftSlug("  --Hello--  ", "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"), "hello-aaaaaaaa");
+    assert.equal(scoutDraftSlug("!!!", "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"), "event-aaaaaaaa");
+    const long = scoutDraftSlug(`${"a".repeat(200)} Party`, "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+    assert.equal(long, `${"a".repeat(80)}-aaaaaaaa`);
   });
 });

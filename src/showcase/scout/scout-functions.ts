@@ -40,6 +40,7 @@ import {
 import {
   decideSearchCompletion,
   persistScoutStepDone,
+  raiseBudgetGuard,
   retryStepGuard, type ScoutStepUpdateStore,
 } from "./scout-run-guards";
 import {
@@ -61,7 +62,9 @@ import {
   buildScoutAttribution,
   checkApprovalDates,
   isReviewerCoverUrl,
+  scoutDraftSlug,
 } from "./scout-review";
+import { organizerSlug } from "@/showcase/organizers";
 
 // â”€â”€ Scout table shapes (local; mirrors the S0 proposal migration) â”€â”€â”€â”€â”€â”€â”€â”€â”€
 type ScoutRunsRow = {
@@ -315,7 +318,12 @@ export interface ScoutDb {
         Relationships: [];
       };
       events: { Row: { id: string; title: string; starts_at: string; city: string | null }; Insert: ScoutEventInsert; Update: { id?: string }; Relationships: [] };
-      organizers: { Row: { id: string; owner_id: string | null }; Insert: { id?: string }; Update: { id?: string }; Relationships: [] };
+      organizers: {
+        Row: { id: string; owner_id: string | null; name: string };
+        Insert: { owner_id?: string | null; name?: string; slug?: string; community?: string | null; description?: string | null; location?: string | null };
+        Update: { id?: string };
+        Relationships: [];
+      };
       scout_event_links: { Row: { discovery_id: string; event_id: string }; Insert: { discovery_id: string; event_id: string; created_by?: string | null }; Update: { discovery_id?: string }; Relationships: [] };
     };
     Views: Record<string, never>;
@@ -326,6 +334,8 @@ export interface ScoutDb {
 };
 
 type ScoutEventInsert = {
+  id: string;
+  slug: string;
   organizer_id: string;
   created_by: string;
   title: string;
@@ -556,6 +566,88 @@ export const cancelScoutRun = createServerFn({ method: "POST" })
       metadata: { from: run.status },
     });
     return { ok: true };
+  });
+
+export const pauseScoutRun = createServerFn({ method: "POST" })
+  .validator(z.object({ runId: z.string().uuid() }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const grant = await requirePermission(context, "scout.manage");
+    const db = asScoutDb(grant.supabase);
+    const run = await getRun(db, data.runId);
+    if (!["searching", "extracting"].includes(run.status)) {
+      throw new AdminBackendError("Only active runs can be paused.");
+    }
+    const { error } = await db
+      .from("scout_runs")
+      .update({ status: "paused" })
+      .eq("id", data.runId);
+    if (error) throw scoutBackendError("pause run", error);
+    await insertScoutAudit(db, {
+      actorId: grant.userId,
+      action: "scout.run.pause",
+      entityId: data.runId,
+      metadata: { from: run.status },
+    });
+    return { ok: true };
+  });
+
+export const raiseScoutBudget = createServerFn({ method: "POST" })
+  .validator(z.object({ runId: z.string().uuid(), maxToolCalls: z.number().int().min(1) }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; status: string }> => {
+    const grant = await requirePermission(context, "scout.manage");
+    const db = asScoutDb(grant.supabase);
+    const run = await getRun(db, data.runId);
+    const guard = raiseBudgetGuard(run, data.maxToolCalls, SCOUT_MAX_TOOL_CALLS_CEILING);
+    if (!guard.ok) throw new AdminBackendError(guard.reason);
+    const { error: budgetError } = await db
+      .from("scout_runs")
+      .update({ max_tool_calls: data.maxToolCalls })
+      .eq("id", data.runId);
+    if (budgetError) throw scoutBackendError("raise budget", budgetError);
+    const { error: reviveError } = await db
+      .from("scout_run_steps")
+      .update({ status: "pending" })
+      .eq("run_id", data.runId)
+      .eq("status", "skipped_budget");
+    if (reviveError) throw scoutBackendError("raise budget", reviveError);
+    const { data: pending, error: pendingError } = await db
+      .from("scout_run_steps")
+      .select("id")
+      .eq("run_id", data.runId)
+      .eq("status", "pending")
+      .limit(1);
+    if (pendingError) throw scoutBackendError("raise budget", pendingError);
+    let next = "searching";
+    if ((pending ?? []).length === 0) {
+      const { data: finished, error: finishedError } = await db
+        .from("scout_run_steps")
+        .select("status")
+        .eq("run_id", data.runId);
+      if (finishedError) throw scoutBackendError("raise budget", finishedError);
+      if (decideSearchCompletion((finished ?? []).map((row) => row.status)) === "failed") {
+        const { error: failError } = await db
+          .from("scout_runs")
+          .update({ status: "failed", error: "Budget raised, but no search in this run succeeded." })
+          .eq("id", data.runId);
+        if (failError) throw scoutBackendError("raise budget", failError);
+        return { ok: true, status: "failed" };
+      }
+      next = "extracting";
+    }
+    const { error } = await db
+      .from("scout_runs")
+      .update({ status: next, error: null })
+      .eq("id", data.runId);
+    if (error) throw scoutBackendError("raise budget", error);
+    await insertScoutAudit(db, {
+      actorId: grant.userId,
+      action: "scout.budget.raise",
+      entityId: data.runId,
+      metadata: { from: run.max_tool_calls, to: data.maxToolCalls, status: next },
+    });
+    return { ok: true, status: next };
   });
 
 export const resumeScoutRun = createServerFn({ method: "POST" })
@@ -812,6 +904,7 @@ async function nextCandidates(db: ScoutClient, run: ScoutRunsRow, limit: number)
     (steps ?? []).map((step) => step.results ?? []),
     processed,
     limit,
+    run.max_sources,
   );
 }
 
@@ -866,9 +959,9 @@ async function runExtraction(source: { url: string; title: string | null; text: 
 /**
  * Extracts one small batch of sources concurrently: fetch, model extraction,
  * deterministic gates, duplicate check, then insert as pending or
- * auto_rejected. One counters update covers the whole batch, and transport
- * failures pause only after completed work is saved. The UI polls this
- * until no candidates remain.
+ * auto_rejected (transient failures skip the candidate, recorded for
+ * re-extract, instead of pausing). One counters update covers the whole
+ * batch. The UI polls this until no candidates remain.
  */
 export const advanceScoutExtract = createServerFn({ method: "POST" })
   .validator(z.object({ runId: z.string().uuid() }))
@@ -923,9 +1016,27 @@ export const advanceScoutExtract = createServerFn({ method: "POST" })
       });
       return { pending: false, state: null };
     }
-    // Transport errors propagate to the batch driver, which pauses only
-    // after completed work is saved; nothing processed is lost.
-    const extraction = await runExtraction({ url: candidate.url, title: candidate.title, text: fetched.text });
+    // Transport errors skip this candidate (recorded, re-extractable) instead
+    // of pausing the run; anything else still fails loudly.
+    let extraction: Awaited<ReturnType<typeof runExtraction>>;
+    try {
+      extraction = await runExtraction({ url: candidate.url, title: candidate.title, text: fetched.text });
+    } catch (caught) {
+      if (!(caught instanceof MetaError && ["timeout", "network", "server", "rate_limited"].includes(caught.code))) {
+        throw caught;
+      }
+      await insertDiscovery(db, run.id, {
+        status: "auto_rejected",
+        source_url: candidate.url,
+        source_domain: candidate.domain,
+        source_snapshot: fetched.text.slice(0, 8000),
+        fetch_status: "extracted",
+        fetched_at: new Date().toISOString(),
+        citations,
+        auto_reject_reason: `Skipped after a connection failure (${mapScoutMetaError(caught)}). Re-extract to retry.`,
+      });
+      return { pending: false, state: null };
+    }
     if (!extraction.success) {
       await insertDiscovery(db, run.id, {
         status: "auto_rejected",
@@ -1011,6 +1122,48 @@ export const advanceScoutExtract = createServerFn({ method: "POST" })
         }
       }
     }
+    const dedupeKey = fields.title ? scoutDedupeKey(fields.title, fields.startsAt ?? null, fields.city ?? null) : null;
+    // Cross-run duplicate check: an event already queued or approved from an
+    // earlier run must not consume review twice.
+    if (dedupeKey) {
+      const { data: prior, error: priorError } = await db
+        .from("scout_discoveries")
+        .select("run_id")
+        .eq("dedupe_key", dedupeKey)
+        .in("status", ["pending", "approved"])
+        .neq("run_id", run.id)
+        .limit(1);
+      if (priorError) throw scoutBackendError("dedupe", priorError);
+      if (prior && prior.length > 0) {
+        await insertDiscovery(db, run.id, {
+          status: "auto_rejected",
+          title: fields.title,
+          summary: fields.summary,
+          starts_at: fields.startsAt,
+          ends_at: fields.endsAt,
+          venue_name: fields.venueName,
+          address: fields.address,
+          city: fields.city,
+          state_code: scope.state,
+          event_type: fields.eventType,
+          price_hint: fields.priceHint,
+          external_ticket_url: fields.externalTicketUrl,
+          provenance: fields.provenance as unknown as Record<string, string>,
+          external_organizer_name: fields.organizerName,
+          source_url: candidate.url,
+          source_domain: candidate.domain,
+          source_snapshot: fetched.text.slice(0, 8000),
+          fetch_status: "extracted",
+          fetched_at: new Date().toISOString(),
+          citations,
+          dedupe_key: dedupeKey,
+          matched_event_id: matchedEventId,
+          match_confidence: matchConfidence,
+          auto_reject_reason: `Duplicate of a discovery from run ${prior[0].run_id.slice(0, 8)}.`,
+        });
+        return { pending: false, state: null };
+      }
+    }
     const externalTicketUrl =
       fields.externalTicketUrl && fields.externalTicketUrl.startsWith("https://")
         ? fields.externalTicketUrl.slice(0, 500)
@@ -1036,7 +1189,7 @@ export const advanceScoutExtract = createServerFn({ method: "POST" })
       fetch_status: "extracted",
       fetched_at: new Date().toISOString(),
       citations,
-      dedupe_key: fields.title ? scoutDedupeKey(fields.title, fields.startsAt ?? null, fields.city ?? null) : null,
+      dedupe_key: dedupeKey,
       matched_event_id: matchedEventId,
       match_confidence: matchConfidence,
     });
@@ -1218,11 +1371,98 @@ export const getScoutDiscovery = createServerFn({ method: "GET" })
 // the draft carries the reviewer's edited values plus the server-built
 // attribution block. Publishing stays a separate explicit action.
 
+export const reextractScoutDiscoveries = createServerFn({ method: "POST" })
+  .validator(z.object({ runId: z.string().uuid(), discoveryIds: z.array(z.string().uuid()).min(1).max(10) }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; requeued: number }> => {
+    const grant = await requirePermission(context, "scout.manage");
+    const db = asScoutDb(grant.supabase);
+    const run = await getRun(db, data.runId);
+    if (run.status === "cancelled") {
+      throw new AdminBackendError("Cancelled runs stay finished.");
+    }
+    const ids = [...new Set(data.discoveryIds)];
+    const { data: rows, error: rowsError } = await db
+      .from("scout_discoveries")
+      .select("id")
+      .eq("run_id", data.runId)
+      .eq("status", "auto_rejected")
+      .in("id", ids);
+    if (rowsError) throw scoutBackendError("re-extract", rowsError);
+    if (!rows || rows.length !== ids.length) {
+      throw new AdminBackendError("Only rejected discoveries from this run can be re-extracted.");
+    }
+    const { data: deleted, error: deleteError } = await db
+      .from("scout_discoveries")
+      .delete()
+      .eq("run_id", data.runId)
+      .eq("status", "auto_rejected")
+      .in("id", ids)
+      .select("id");
+    if (deleteError) throw scoutBackendError("re-extract", deleteError);
+    const requeued = deleted?.length ?? 0;
+    const { error: countError } = await db
+      .from("scout_runs")
+      .update({ sources_fetched: Math.max(0, run.sources_fetched - requeued) })
+      .eq("id", data.runId);
+    if (countError) throw scoutBackendError("re-extract", countError);
+    if (run.status === "done") {
+      const { error: reopenError } = await db
+        .from("scout_runs")
+        .update({ status: "extracting", error: null, finished_at: null })
+        .eq("id", data.runId);
+      if (reopenError) throw scoutBackendError("re-extract", reopenError);
+    }
+    await insertScoutAudit(db, {
+      actorId: grant.userId,
+      action: "scout.reextract",
+      entityId: data.runId,
+      metadata: { count: requeued, from: run.status },
+    });
+    return { ok: true, requeued };
+  });
+
+export const bulkDismissScoutDiscoveries = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      discoveryIds: z.array(z.string().uuid()).min(1).max(20),
+      reason: z.enum(["duplicate", "expired", "not_an_event", "insufficient_evidence", "out_of_scope", "other"]),
+    }),
+  )
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; dismissed: number }> => {
+    const grant = await requirePermission(context, "scout.manage");
+    const db = asScoutDb(grant.supabase);
+    const reviewedAt = new Date().toISOString();
+    const { data: updated, error } = await db
+      .from("scout_discoveries")
+      .update({
+        status: "dismissed",
+        dismissal_reason: data.reason,
+        reviewer_id: grant.userId,
+        reviewed_at: reviewedAt,
+      })
+      .in("id", [...new Set(data.discoveryIds)])
+      .eq("status", "pending")
+      .select("id");
+    if (error) throw scoutBackendError("bulk dismiss", error);
+    if (!updated || updated.length === 0) {
+      throw new AdminBackendError("Only pending discoveries can be dismissed.");
+    }
+    await insertScoutAudit(db, {
+      actorId: grant.userId,
+      action: "scout.discovery.bulk_dismiss",
+      entityId: null,
+      metadata: { count: updated.length, reason: data.reason },
+    });
+    return { ok: true, dismissed: updated.length };
+  });
+
 export const approveScoutDiscovery = createServerFn({ method: "POST" })
   .validator(
     z.object({
       discoveryId: z.string().uuid(),
-      organizerId: z.string().uuid(),
+      organizerName: z.string().trim().min(2).max(100),
       overrides: approvalOverridesSchema,
       coverImageUrl: z.string().url().max(1000),
       attributionConfirmed: z.literal(true),
@@ -1241,13 +1481,54 @@ export const approveScoutDiscovery = createServerFn({ method: "POST" })
     if (discovery.status !== "pending") {
       throw new AdminBackendError("Only pending discoveries can be approved.");
     }
-    const { data: organizer, error: orgError } = await db
+    // Editable organizer name (the form recommends "Outrazo"): reuse the
+    // reviewer's organizer with that exact name, or create it. Ownership is
+    // guaranteed because both paths scope to the reviewer.
+    const organizerName = data.organizerName.trim();
+    const { data: existingOrganizer, error: findError } = await db
       .from("organizers")
-      .select("id,owner_id")
-      .eq("id", data.organizerId)
-      .single();
-    if (orgError || !organizer || organizer.owner_id !== grant.userId) {
-      throw new AdminBackendError("Choose an organizer you own for this draft.");
+      .select("id")
+      .eq("owner_id", grant.userId)
+      .eq("name", organizerName)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (findError) throw scoutBackendError("find organizer", findError);
+    let organizerId = existingOrganizer?.id ?? null;
+    if (!organizerId) {
+      const { data: created, error: createError } = await db
+        .from("organizers")
+        .insert({
+          owner_id: grant.userId,
+          name: organizerName,
+          slug: organizerSlug(organizerName, grant.userId),
+          community: `${data.overrides.city.trim()} events`,
+          description: `Events hosted by ${organizerName}.`,
+          location: `${data.overrides.city.trim()}, Nigeria`,
+        })
+        .select("id")
+        .single();
+      if (createError) {
+        if (createError.code === "23505") {
+          const retry = await db
+            .from("organizers")
+            .select("id")
+            .eq("owner_id", grant.userId)
+            .eq("name", organizerName)
+            .order("created_at", { ascending: true })
+            .limit(1)
+            .maybeSingle();
+          if (!retry.error && retry.data) {
+            organizerId = retry.data.id;
+          } else {
+            throw new AdminBackendError("That organizer name is too similar to one you already have. Pick another name.");
+          }
+        } else {
+          throw scoutBackendError("create organizer", createError);
+        }
+      } else {
+        organizerId = created.id;
+      }
     }
     const dates = checkApprovalDates(data.overrides.startsAt, data.overrides.endsAt, Date.now());
     if (!dates.ok) throw new AdminBackendError(dates.reason);
@@ -1261,10 +1542,15 @@ export const approveScoutDiscovery = createServerFn({ method: "POST" })
       sourceUrl: discovery.source_url,
       reviewDateIso: reviewedAt,
     });
+    // events.slug is NOT NULL UNIQUE with no default: pre-generate the id
+    // so the slug carries the same unique suffix as create-event drafts.
+    const eventId = crypto.randomUUID();
     const { data: event, error: eventError } = await db
       .from("events")
       .insert({
-        organizer_id: data.organizerId,
+        id: eventId,
+        slug: scoutDraftSlug(data.overrides.title, eventId),
+        organizer_id: organizerId,
         created_by: grant.userId,
         title: data.overrides.title,
         summary: data.overrides.summary,
@@ -1303,9 +1589,32 @@ export const approveScoutDiscovery = createServerFn({ method: "POST" })
       actorId: grant.userId,
       action: "scout.discovery.approve",
       entityId: discovery.id,
-      metadata: { eventId: event.id, organizerId: data.organizerId },
+      metadata: { eventId: event.id, organizerId },
     });
     return { eventId: event.id };
+  });
+
+/**
+ * Public, unauthenticated Scout-provenance check for one event. Returns a
+ * bare boolean (no discovery rows, no PII) so the public event page can
+ * badge Scout-posted events. Follows the discovery interpretation precedent:
+ * no auth middleware, safe output only, silent false on any failure.
+ */
+export const getEventScoutBadge = createServerFn({ method: "GET" })
+  .validator(z.object({ eventId: z.string().min(1).max(100) }))
+  .handler(async ({ data }): Promise<{ isScout: boolean }> => {
+    if (!/^[0-9a-f-]{36}$/i.test(data.eventId)) return { isScout: false };
+    const db = asScoutDb(supabaseAdmin);
+    const { data: link, error } = await db
+      .from("scout_event_links")
+      .select("event_id")
+      .eq("event_id", data.eventId)
+      .limit(1);
+    if (error) {
+      console.error("[scout] badge lookup failed:", error.message);
+      return { isScout: false };
+    }
+    return { isScout: (link ?? []).length > 0 };
   });
 
 export const dismissScoutDiscovery = createServerFn({ method: "POST" })

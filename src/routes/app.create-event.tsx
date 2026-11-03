@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/external-client";
 import { CopilotPanel } from "@/showcase/copilot/CopilotPanel";
 import { CATEGORIES } from "@/showcase/discovery/categories";
 import { useAuth } from "@/showcase/auth/auth-context";
+import { buildEventUpdateRow } from "@/showcase/event-update";
 import { rememberReturnTo } from "@/showcase/saved/saved-events-store";
 
 type EventType = "free" | "paid";
@@ -264,6 +265,8 @@ function CreateEventPage() {
       .from("organizers")
       .select("*")
       .eq("owner_id", userId)
+      .order("created_at", { ascending: true })
+      .limit(1)
       .maybeSingle();
     if (lookupError) throw new Error(`Could not load your organizer profile: ${lookupError.message}`);
     if (existing) return existing;
@@ -342,8 +345,7 @@ function CreateEventPage() {
       };
 
       // Editing must preserve the event's published state; new rows start unpublished.
-      const updateRow: Record<string, unknown> = { ...row };
-      if (isEditing) delete updateRow.published;
+      const updateRow: Record<string, unknown> = buildEventUpdateRow(row, isEditing);
       const result = draftId
         ? await supabase.from("events").update((isEditing ? updateRow : row) as typeof row).eq("id", eventId).eq("created_by", session.user.id).select("id").single()
         : await supabase.from("events").insert({

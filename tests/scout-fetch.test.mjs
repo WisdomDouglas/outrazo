@@ -191,6 +191,7 @@ describe("pickUnprocessedCandidates", () => {
       [[row("https://a.example/1"), row("https://a.example/2")], [row("https://b.example/1")]],
       new Set(),
       2,
+      60,
     );
     assert.deepEqual(picks.map((pick) => pick.url), ["https://a.example/1", "https://a.example/2"]);
   });
@@ -206,13 +207,21 @@ describe("pickUnprocessedCandidates", () => {
       ]],
       processed,
       3,
+      60,
     );
     assert.deepEqual(picks.map((pick) => pick.url), ["https://a.example/new"]);
   });
 
   it("returns every remaining candidate when fewer than the limit", () => {
-    const picks = pickUnprocessedCandidates([[], [row("https://a.example/only")]], new Set(), 3);
+    const picks = pickUnprocessedCandidates([[], [row("https://a.example/only")]], new Set(), 3, 60);
     assert.equal(picks.length, 1);
     assert.equal(picks[0].title, "T");
+  });
+
+  it("stops entirely once the run source cap is reached", () => {
+    const processed = new Set(["https://a.example/1", "https://a.example/2"]);
+    assert.deepEqual(pickUnprocessedCandidates([[row("https://a.example/3")]], processed, 3, 2), []);
+    const picks = pickUnprocessedCandidates([[row("https://a.example/3")]], processed, 3, 3);
+    assert.deepEqual(picks.map((pick) => pick.url), ["https://a.example/3"]);
   });
 });

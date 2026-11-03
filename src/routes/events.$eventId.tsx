@@ -1,10 +1,11 @@
 import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, Bookmark, CalendarDays, ChevronRight, Flag, Heart, MapPin, Navigation, Ticket, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Avatar } from "@/design-system/components/Avatar";
 import { AvatarStack } from "@/design-system/components/AvatarStack";
 import { Badge } from "@/design-system/components/Badge";
+import { OrganizerName } from "@/design-system/components/OrganizerName";
 import { BrandLogo } from "@/design-system/components/BrandLogo";
 import { Button } from "@/design-system/components/Button";
 import { Carousel } from "@/design-system/components/Carousel";
@@ -14,6 +15,8 @@ import { EventCard } from "@/design-system/components/EventCard";
 import { EventShareMenu } from "@/design-system/components/EventShareMenu";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { fetchPublishedEventDetails } from "@/showcase/event-data";
+import { isOfficialOrganizerName } from "@/showcase/organizers";
+import { getEventScoutBadge } from "@/showcase/scout/scout-functions";
 import { ReportEventDialog } from "@/showcase/moderation/ReportEventDialog";
 import { useLiveCount } from "@/showcase/rsvp/live-count-store";
 import { isDatabaseEventId } from "@/showcase/saved/saved-events-store";
@@ -80,6 +83,22 @@ function EventDetailsPage() {
   const externalTicketUrl = loadedEvent?.externalTicketUrl ?? null;
   const tierCount = loadedEvent?.ticketTiers.length ?? 0;
   const actionLabel = externalTicketUrl ? "Register externally" : tierCount ? "Get Tickets" : "RSVP";
+  const [isScoutDiscovery, setIsScoutDiscovery] = useState(false);
+  const eventIdForBadge = loadedEvent?.id;
+  const organizerDisplayName = loadedEvent?.organizer.name ?? "";
+  useEffect(() => {
+    if (!eventIdForBadge) return;
+    let cancelled = false;
+    void getEventScoutBadge({ data: { eventId: eventIdForBadge } }).then(
+      (result) => {
+        if (!cancelled) setIsScoutDiscovery(result.isScout);
+      },
+      () => {},
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [eventIdForBadge]);
 
   return (
     <div className="min-h-screen overflow-x-clip bg-canvas pb-[calc(var(--spacing-section)+var(--spacing-xl))] text-primary-text lg:pb-0">
@@ -145,7 +164,7 @@ function EventDetailsPage() {
             <div className="flex flex-col gap-section">
               <ContentSection title="About this event"><p className="type-body-lg text-muted-text">{event.description}</p></ContentSection>
               <ContentSection title="Hosted by">
-                <div className="flex items-start gap-md"><Avatar name={event.organizer.name} src={event.organizer.avatarSrc} size="lg" /><div className="min-w-0 flex-1"><h3 className="type-h3">{event.organizer.name}</h3><p className="type-body mt-xs text-muted-text">{event.organizer.description ?? event.organizer.community}</p><Link to="/organizers/$organizerId" params={{ organizerId: event.organizer.id }} className="focus-ring type-body mt-md inline-flex min-h-11 items-center gap-xs rounded-full text-accent">View Organizer<ChevronRight aria-hidden className="size-4" /></Link></div></div>
+                <div className="flex items-start gap-md"><Avatar name={organizerDisplayName} src={event.organizer.avatarSrc} size="lg" /><div className="min-w-0 flex-1"><h3 className="type-h3"><OrganizerName name={organizerDisplayName} showBadge={isScoutDiscovery && isOfficialOrganizerName(organizerDisplayName)} /></h3><p className="type-body mt-xs text-muted-text">{event.organizer.description ?? event.organizer.community}</p><Link to="/organizers/$organizerId" params={{ organizerId: event.organizer.id }} className="focus-ring type-body mt-md inline-flex min-h-11 items-center gap-xs rounded-full text-accent">View Organizer<ChevronRight aria-hidden className="size-4" /></Link></div></div>
               </ContentSection>
               <ContentSection title="People going">
                 <div className="flex flex-wrap items-center gap-md"><AvatarStack people={event.attendees} totalCount={liveCount} max={5} size="md" /><strong className="type-body">{liveCount.toLocaleString()} people going</strong></div>

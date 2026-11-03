@@ -71,6 +71,32 @@ export function retryStepGuard(
   return { ok: true };
 }
 
+export interface RaiseBudgetState {
+  status: string;
+  max_tool_calls: number;
+}
+
+/**
+ * Forward-only budget raises: finished runs are immutable, the new budget
+ * must exceed the current one, and the platform ceiling always applies.
+ */
+export function raiseBudgetGuard(
+  run: RaiseBudgetState,
+  newMax: number,
+  ceiling: number,
+): { ok: true } | { ok: false; reason: string } {
+  if (["done", "cancelled"].includes(run.status)) {
+    return { ok: false, reason: `Run is ${run.status}; finished runs cannot change budget.` };
+  }
+  if (!Number.isInteger(newMax) || newMax <= run.max_tool_calls) {
+    return { ok: false, reason: "The new budget must be higher than the current one." };
+  }
+  if (newMax > ceiling) {
+    return { ok: false, reason: `Budgets top out at ${ceiling} tool calls.` };
+  }
+  return { ok: true };
+}
+
 /**
  * Persists one finished search step to exactly the intended row. Returns the
  * raw database error (null on success); the caller converts failures into a

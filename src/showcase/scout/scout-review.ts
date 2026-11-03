@@ -61,6 +61,21 @@ export function checkApprovalDates(startsAt: string, endsAt: string, nowMs: numb
 }
 
 /**
+ * Draft slug mirroring the create-event convention (title slug + id suffix),
+ * because events.slug is NOT NULL UNIQUE with no default. Falls back to
+ * "event" when the title has no URL-safe characters.
+ */
+export function scoutDraftSlug(title: string, eventId: string): string {
+  const stem =
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 80) || "event";
+  return `${stem}-${eventId.slice(0, 8)}`;
+}
+
+/**
  * Cover must be the reviewer's own upload in the event-covers bucket —
  * never a hotlinked external image.
  */

@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
 import { ErrorState } from "@/design-system/components/ErrorState";
+import { OrganizerName } from "@/design-system/components/OrganizerName";
 import { Skeleton } from "@/design-system/components/Skeleton";
 import { supabase } from "@/integrations/supabase/external-client";
 import {
@@ -16,10 +17,12 @@ import {
 } from "@/showcase/admin/admin-client";
 import { roleHasPermission } from "@/showcase/admin/permissions";
 import { useAuth } from "@/showcase/auth/auth-context";
+import { isOfficialOrganizerName, OUTRAZO_OFFICIAL_NAME } from "@/showcase/organizers";
 import {
   approveScoutDiscovery,
   dismissScoutDiscovery,
   getScoutDiscovery,
+  reextractScoutDiscoveries,
 } from "@/showcase/scout/scout-functions";
 import {
   buildScoutAttribution,
@@ -64,6 +67,9 @@ function EvidenceSection({ discovery }: { discovery: Discovery }) {
           </div>
         ))}
       </dl>
+      {discovery.summary ? (
+        <p className="type-body text-muted-text">{discovery.summary}</p>
+      ) : null}
       <div className="grid gap-xs">
         <p className="type-body">
           <span className="text-muted-text">Source: </span>
@@ -141,20 +147,11 @@ function ReviewForm({
   const [city, setCity] = useState(discovery.city ?? "");
   const [capacity, setCapacity] = useState("100");
   const [externalTicketUrl, setExternalTicketUrl] = useState(discovery.external_ticket_url ?? "");
-  const [organizers, setOrganizers] = useState<Array<{ id: string; name: string }>>([]);
-  const [organizerId, setOrganizerId] = useState("");
+  const [organizerName, setOrganizerName] = useState(OUTRAZO_OFFICIAL_NAME);
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const [attributionOk, setAttributionOk] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    void (async () => {
-      const { data } = await supabase.from("organizers").select("id,name").eq("owner_id", userId);
-      setOrganizers((data ?? []) as Array<{ id: string; name: string }>);
-      if (data && data.length > 0) setOrganizerId((current) => current || (data[0] as { id: string }).id);
-    })();
-  }, [userId]);
 
   const uploadCover = async (file: File) => {
     setBusy(true);
@@ -191,8 +188,8 @@ function ReviewForm({
       setError("Upload a cover image first.");
       return;
     }
-    if (!organizerId) {
-      setError("Choose one of your organizers for this draft.");
+    if (organizerName.trim().length < 2) {
+      setError("Enter an organizer name for this draft.");
       return;
     }
     setBusy(true);
@@ -201,7 +198,7 @@ function ReviewForm({
       const result = await approveScoutDiscovery({
         data: {
           discoveryId: discovery.id,
-          organizerId,
+          organizerName: organizerName.trim(),
           overrides: {
             title: title.trim(),
             summary: summary.trim(),
@@ -249,62 +246,80 @@ function ReviewForm({
 
   return (
     <div className="grid gap-md">
-      <form onSubmit={submit} className="grid gap-sm rounded-lg border border-line bg-card p-lg">
-        <h3 className="type-h3">Reviewer edits → unpublished draft</h3>
-        <p className="type-body text-muted-text">
-          Originals above stay preserved. Your edits below become the draft, which stays
-          unpublished until someone explicitly publishes it.
-        </p>
-        <label className="grid gap-xs"><span className="type-body font-semibold">Title</span>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required minLength={3} className={inputClass} /></label>
-        <label className="grid gap-xs"><span className="type-body font-semibold">Summary</span>
-          <textarea value={summary} onChange={(e) => setSummary(e.target.value)} required minLength={10} rows={2} className={inputClass} /></label>
-        <label className="grid gap-xs"><span className="type-body font-semibold">Description</span>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} required minLength={20} rows={4} className={inputClass} /></label>
-        <div className="grid gap-sm sm:grid-cols-2">
-          <label className="grid gap-xs"><span className="type-body font-semibold">Category</span>
-            <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
-              {SCOUT_EVENT_CATEGORIES.map((option) => (
-                <option key={option} value={option} className="capitalize">{option}</option>
-              ))}
-            </select></label>
-          <label className="grid gap-xs"><span className="type-body font-semibold">Capacity</span>
-            <input type="number" min={1} value={capacity} onChange={(e) => setCapacity(e.target.value)} required className={inputClass} /></label>
-          <label className="grid gap-xs"><span className="type-body font-semibold">Starts</span>
-            <input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} required className={inputClass} /></label>
-          <label className="grid gap-xs"><span className="type-body font-semibold">Ends</span>
-            <input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} required className={inputClass} /></label>
-          <label className="grid gap-xs"><span className="type-body font-semibold">Venue</span>
-            <input value={venueName} onChange={(e) => setVenueName(e.target.value)} required className={inputClass} /></label>
-          <label className="grid gap-xs"><span className="type-body font-semibold">City</span>
-            <input value={city} onChange={(e) => setCity(e.target.value)} required className={inputClass} /></label>
+      <form onSubmit={submit} className="grid gap-md rounded-lg border border-line bg-card p-lg">
+        <div>
+          <h3 className="type-h3">Reviewer edits → unpublished draft</h3>
+          <p className="type-body mt-xs text-muted-text">
+            Originals in the evidence panel stay preserved. Your edits below become the draft, which stays
+            unpublished until someone explicitly publishes it.
+          </p>
         </div>
-        <label className="grid gap-xs"><span className="type-body font-semibold">Address</span>
-          <input value={address} onChange={(e) => setAddress(e.target.value)} required className={inputClass} /></label>
-        <label className="grid gap-xs"><span className="type-body font-semibold">External ticket URL (https, optional)</span>
-          <input value={externalTicketUrl} onChange={(e) => setExternalTicketUrl(e.target.value)} placeholder="https://…" className={inputClass} /></label>
+        <fieldset className="grid gap-sm">
+          <legend className="type-body font-semibold">Event details</legend>
+          <label className="grid gap-xs"><span className="type-body font-semibold">Title</span>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} required minLength={3} className={inputClass} /></label>
+          <label className="grid gap-xs"><span className="type-body font-semibold">Summary</span>
+            <textarea value={summary} onChange={(e) => setSummary(e.target.value)} required minLength={10} rows={2} className={inputClass} /></label>
+          <label className="grid gap-xs"><span className="type-body font-semibold">Description</span>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} required minLength={20} rows={4} className={inputClass} /></label>
+          <div className="grid gap-sm sm:grid-cols-2">
+            <label className="grid gap-xs"><span className="type-body font-semibold">Category</span>
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputClass}>
+                {SCOUT_EVENT_CATEGORIES.map((option) => (
+                  <option key={option} value={option} className="capitalize">{option}</option>
+                ))}
+              </select></label>
+            <label className="grid gap-xs"><span className="type-body font-semibold">Capacity</span>
+              <input type="number" min={1} value={capacity} onChange={(e) => setCapacity(e.target.value)} required className={inputClass} /></label>
+          </div>
+        </fieldset>
+        <fieldset className="grid gap-sm">
+          <legend className="type-body font-semibold">Schedule &amp; place</legend>
+          <div className="grid gap-sm sm:grid-cols-2">
+            <label className="grid gap-xs"><span className="type-body font-semibold">Starts</span>
+              <input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} required className={inputClass} /></label>
+            <label className="grid gap-xs"><span className="type-body font-semibold">Ends</span>
+              <input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} required className={inputClass} /></label>
+            <label className="grid gap-xs"><span className="type-body font-semibold">Venue</span>
+              <input value={venueName} onChange={(e) => setVenueName(e.target.value)} required className={inputClass} /></label>
+            <label className="grid gap-xs"><span className="type-body font-semibold">City</span>
+              <input value={city} onChange={(e) => setCity(e.target.value)} required className={inputClass} /></label>
+          </div>
+          <label className="grid gap-xs"><span className="type-body font-semibold">Address</span>
+            <input value={address} onChange={(e) => setAddress(e.target.value)} required className={inputClass} /></label>
+        </fieldset>
+        <fieldset className="grid gap-sm">
+          <legend className="type-body font-semibold">Ticket &amp; organizer</legend>
+          <label className="grid gap-xs"><span className="type-body font-semibold">External ticket URL (https, optional)</span>
+            <input value={externalTicketUrl} onChange={(e) => setExternalTicketUrl(e.target.value)} placeholder="https://…" className={inputClass} /></label>
+          <label className="grid gap-xs"><span className="type-body font-semibold">Organizer for this draft</span>
+            <input value={organizerName} onChange={(e) => setOrganizerName(e.target.value)} required minLength={2} maxLength={100} className={inputClass} /></label>
+          {isOfficialOrganizerName(organizerName) ? (
+            <p className="type-body text-muted-text">
+              Posting as <OrganizerName name={organizerName.trim()} /> — this Scout event carries the official verification check.
+            </p>
+          ) : (
+            <p className="type-body text-muted-text">
+              Only the exact name “Outrazo” earns the verification check on the posted event.
+            </p>
+          )}
+        </fieldset>
         <div className="grid gap-xs">
           <span className="type-body font-semibold">Cover image (your own lawful upload)</span>
           {coverUrl ? (
-            <p className="type-body text-accent">Uploaded ✓ — {coverUrl.slice(0, 80)}…</p>
-          ) : (
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) void uploadCover(file);
-              }}
-              className="type-body"
-            />
-          )}
+            <img src={coverUrl} alt="Uploaded cover preview" className="h-32 w-auto rounded-lg border border-line object-cover" />
+          ) : null}
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            aria-label={coverUrl ? "Replace cover image" : "Upload cover image"}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void uploadCover(file);
+            }}
+            className="type-body"
+          />
         </div>
-        <label className="grid gap-xs"><span className="type-body font-semibold">Organizer for this draft</span>
-          <select value={organizerId} onChange={(e) => setOrganizerId(e.target.value)} required className={inputClass}>
-            {organizers.map((org) => (
-              <option key={org.id} value={org.id}>{org.name}</option>
-            ))}
-          </select></label>
         <div className="grid gap-xs rounded-lg border border-dashed border-line p-sm">
           <p className="type-body">{attribution}</p>
           <label className="flex cursor-pointer items-center gap-xs">
@@ -314,14 +329,17 @@ function ReviewForm({
         </div>
         {error ? <p className="type-body text-transactional">{error}</p> : null}
         <div className="flex flex-wrap gap-sm">
-          <Button type="submit" variant="primary" disabled={busy || !attributionOk || !coverUrl}>
-            {busy ? "Saving…" : "Approve → save unpublished draft"}
+          <Button type="submit" variant="primary" loading={busy} disabled={!attributionOk || !coverUrl}>
+            Approve → save unpublished draft
           </Button>
         </div>
       </form>
 
       <div className="grid gap-sm rounded-lg border border-line bg-card p-lg">
         <h3 className="type-h3">Dismiss instead</h3>
+        <p className="type-body text-muted-text">
+          Dismissed items stay visible in the queue with their reason. Nothing is deleted.
+        </p>
         <div className="flex flex-wrap gap-sm">
           {["duplicate", "expired", "not_an_event", "insufficient_evidence", "out_of_scope", "other"].map((reason) => (
             <Button key={reason} type="button" variant="outline" disabled={busy} onClick={() => void dismiss(reason)}>
@@ -329,6 +347,46 @@ function ReviewForm({
             </Button>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ReextractPanel({ discovery, token }: { discovery: Discovery; token: string }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <div className="grid gap-sm rounded-lg border border-line bg-card p-lg">
+      <h3 className="type-h3">Re-extract with current rules</h3>
+      <p className="type-body text-muted-text">
+        Removes this rejection and queues the source for extraction again. Nothing else changes.
+      </p>
+      {error ? <p className="type-body text-transactional">{error}</p> : null}
+      <div>
+        <Button
+          type="button"
+          variant="outline"
+          loading={busy}
+          onClick={() => {
+            setBusy(true);
+            setError(null);
+            void (async () => {
+              try {
+                await reextractScoutDiscoveries({
+                  data: { runId: discovery.run_id, discoveryIds: [discovery.id] },
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+                window.location.assign(`/admin/scout/${discovery.run_id}`);
+              } catch (caught) {
+                setError(friendlyAdminError(caught));
+              } finally {
+                setBusy(false);
+              }
+            })();
+          }}
+        >
+          Re-extract this source
+        </Button>
       </div>
     </div>
   );
@@ -399,17 +457,26 @@ function ScoutReviewPage() {
         </div>
       </div>
 
-      <EvidenceSection discovery={discovery} />
+      <div className="grid items-start gap-lg lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <div className="lg:sticky lg:top-4">
+          <EvidenceSection discovery={discovery} />
+        </div>
 
-      {discovery.status === "pending" && token && session?.user && canManage ? (
-        <ReviewForm discovery={discovery} token={token} userId={session.user.id} onDone={() => void refresh()} />
-      ) : discovery.status !== "pending" ? (
-        <p className="type-body text-muted-text">
-          This discovery is {discovery.status.replace("_", " ")}
-          {discovery.dismissal_reason ? ` (${discovery.dismissal_reason.replaceAll("_", " ")})` : ""}
-          {discovery.auto_reject_reason ? ` — ${discovery.auto_reject_reason}` : ""}. Evidence above is preserved.
-        </p>
-      ) : null}
+        {discovery.status === "pending" && token && session?.user && canManage ? (
+          <ReviewForm discovery={discovery} token={token} userId={session.user.id} onDone={() => void refresh()} />
+        ) : discovery.status !== "pending" ? (
+          <div className="grid gap-md">
+            <p className="type-body rounded-lg border border-line bg-card p-md text-muted-text">
+              This discovery is {discovery.status.replace("_", " ")}
+              {discovery.dismissal_reason ? ` (${discovery.dismissal_reason.replaceAll("_", " ")})` : ""}
+              {discovery.auto_reject_reason ? ` — ${discovery.auto_reject_reason}` : ""}. Evidence is preserved.
+            </p>
+            {discovery.status === "auto_rejected" && token && canManage ? (
+              <ReextractPanel discovery={discovery} token={token} />
+            ) : null}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
