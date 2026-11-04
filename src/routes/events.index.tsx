@@ -357,7 +357,7 @@ function ExploreEvents() {
           {/* Top Navigation Row: compact & non-wrapping on mobile */}
           <div className="flex items-center justify-between gap-2 mb-6 sm:mb-10">
             <Link
-              to="/"
+              to="/app"
               className="focus-ring group inline-flex items-center gap-1.5 rounded-full border border-line bg-card/70 backdrop-blur-md px-3 py-1.5 text-xs font-medium text-muted-text hover:text-primary-text hover:border-line-strong transition-colors shrink-0"
               aria-label="Back to home"
             >

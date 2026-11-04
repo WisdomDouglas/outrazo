@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
   Bookmark,
-  CalendarDays,
   CalendarPlus,
   ChevronLeft,
   ChevronRight,
@@ -21,7 +20,7 @@ import { useAuth } from "@/showcase/auth/auth-context";
 
 interface NavItem {
   label: string;
-  to: "/app" | "/app/explore" | "/events" | "/app/saved" | "/app/tickets" | "/app/create-event" | "/app/profile" | "/app/settings" | "/app/organizer";
+  to: "/app" | "/app/explore" | "/app/saved" | "/app/tickets" | "/app/create-event" | "/app/profile" | "/app/settings" | "/app/organizer";
   icon: LucideIcon;
   exact?: boolean;
 }
@@ -29,7 +28,6 @@ interface NavItem {
 const PRIMARY_NAV: NavItem[] = [
   { label: "Home", to: "/app", icon: Home, exact: true },
   { label: "Explore", to: "/app/explore", icon: Compass },
-  { label: "Categories", to: "/events", icon: CalendarDays },
   { label: "Saved", to: "/app/saved", icon: Bookmark },
   { label: "My Tickets", to: "/app/tickets", icon: Ticket },
 ];
@@ -45,7 +43,6 @@ function SidebarLink({ item, emphasis = false, collapsed = false }: { item: NavI
   return (
     <Link
       to={item.to}
-      {...(item.to === "/events" ? { search: {} } : {})}
       activeOptions={{ exact: item.exact }}
       className={cn(
         "focus-ring type-body group/nav flex min-h-12 items-center gap-md rounded-md px-md font-medium text-muted-text transition-[background-color,color,transform] duration-200 hover:bg-primary-text/5 hover:text-primary-text",
