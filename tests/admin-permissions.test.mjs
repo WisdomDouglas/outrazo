@@ -25,7 +25,7 @@ describe("admin roles", () => {
     ]);
   });
 
-  it("defines exactly the eighteen admin permissions", () => {
+  it("defines exactly the twenty admin permissions", () => {
     assert.deepEqual([...ADMIN_PERMISSIONS], [
       "users.read",
       "users.manage",
@@ -45,6 +45,8 @@ describe("admin roles", () => {
       "finance.read",
       "finance.commission",
       "finance.payouts",
+      "rewards.read",
+      "rewards.manage",
     ]);
   });
 
@@ -66,7 +68,7 @@ describe("roleHasPermission", () => {
     }
   });
 
-  it("gives finance_admin event, attendee, audit, promotion-price, and finance powers, nothing else", () => {
+  it("gives finance_admin event, attendee, audit, promotion-price, finance, and rewards powers, nothing else", () => {
     assert.equal(roleHasPermission("finance_admin", "events.read"), true);
     assert.equal(roleHasPermission("finance_admin", "attendees.read"), true);
     assert.equal(roleHasPermission("finance_admin", "audit.read"), true);
@@ -75,6 +77,8 @@ describe("roleHasPermission", () => {
     assert.equal(roleHasPermission("finance_admin", "finance.read"), true);
     assert.equal(roleHasPermission("finance_admin", "finance.commission"), true);
     assert.equal(roleHasPermission("finance_admin", "finance.payouts"), true);
+    assert.equal(roleHasPermission("finance_admin", "rewards.read"), true);
+    assert.equal(roleHasPermission("finance_admin", "rewards.manage"), true);
     assert.equal(roleHasPermission("finance_admin", "users.read"), false);
     assert.equal(roleHasPermission("finance_admin", "users.manage"), false);
     assert.equal(roleHasPermission("finance_admin", "events.manage"), false);
@@ -104,6 +108,8 @@ describe("roleHasPermission", () => {
     assert.equal(roleHasPermission("moderation_admin", "finance.read"), false);
     assert.equal(roleHasPermission("moderation_admin", "finance.commission"), false);
     assert.equal(roleHasPermission("moderation_admin", "finance.payouts"), false);
+    assert.equal(roleHasPermission("moderation_admin", "rewards.read"), false);
+    assert.equal(roleHasPermission("moderation_admin", "rewards.manage"), false);
   });
 
   it("gives support_readonly the three read views and nothing else", () => {
@@ -123,6 +129,8 @@ describe("roleHasPermission", () => {
     assert.equal(roleHasPermission("support_readonly", "finance.read"), false);
     assert.equal(roleHasPermission("support_readonly", "finance.commission"), false);
     assert.equal(roleHasPermission("support_readonly", "finance.payouts"), false);
+    assert.equal(roleHasPermission("support_readonly", "rewards.read"), false);
+    assert.equal(roleHasPermission("support_readonly", "rewards.manage"), false);
   });
 
   it("reserves roles.manage for super_admin alone", () => {

@@ -51,18 +51,6 @@ export function AppHeader() {
           />
         </form>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="app-header-theme-toggle shrink-0"
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-        >
-          {theme === "dark" ? <Sun aria-hidden className="size-5" /> : <Moon aria-hidden className="size-5" />}
-        </Button>
-
         <div ref={notificationRef} className="relative ml-auto lg:ml-0">
           <Button
             type="button"
@@ -95,6 +83,17 @@ export function AppHeader() {
         <Link to="/app/profile" className="focus-ring rounded-full" aria-label="Open profile">
           <Avatar name={displayName} src={profile?.avatar_url ?? undefined} size="md" className="app-header-avatar" />
         </Link>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="app-header-theme-toggle shrink-0"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          {theme === "dark" ? <Sun aria-hidden className="size-5" /> : <Moon aria-hidden className="size-5" />}
+        </Button>
       </div>
     </header>
   );

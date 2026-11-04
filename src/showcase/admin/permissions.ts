@@ -33,6 +33,8 @@ export const ADMIN_PERMISSIONS = [
   "finance.read",
   "finance.commission",
   "finance.payouts",
+  "rewards.read",
+  "rewards.manage",
 ] as const;
 
 export type AdminPermission = (typeof ADMIN_PERMISSIONS)[number];
@@ -62,6 +64,10 @@ export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
 // RPC's internal gate; finance.payouts covers recording and moving manual
 // payouts, matching the payout RPCs' internal gates. All three belong to
 // super_admin and finance_admin only.
+// rewards.read (Points V1) covers the rewards dashboard and withdrawal queue;
+// rewards.manage covers moving withdrawals, crediting points, and changing
+// rewards settings, matching the rewards RPCs' internal gates. Both belong
+// to super_admin and finance_admin only — never moderation or support.
 export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
   super_admin: [
     "users.read",
@@ -82,8 +88,10 @@ export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     "finance.read",
     "finance.commission",
     "finance.payouts",
+    "rewards.read",
+    "rewards.manage",
   ],
-  finance_admin: ["events.read", "attendees.read", "audit.read", "promotions.read", "promotions.pricing", "finance.read", "finance.commission", "finance.payouts"],
+  finance_admin: ["events.read", "attendees.read", "audit.read", "promotions.read", "promotions.pricing", "finance.read", "finance.commission", "finance.payouts", "rewards.read", "rewards.manage"],
   moderation_admin: [
     "users.read",
     "users.manage",

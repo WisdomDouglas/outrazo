@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import {
+  ArrowLeft,
   Building2,
   CalendarDays,
   Flag,
@@ -11,6 +12,7 @@ import {
   Radar,
   Sparkles,
   Ticket,
+  Trophy,
   Users,
   Wallet,
 } from "lucide-react";
@@ -48,6 +50,7 @@ interface AdminTab {
     | "/admin/reports"
     | "/admin/promotions"
     | "/admin/finance"
+    | "/admin/rewards"
     | "/admin/intelligence"
     | "/admin/scout"
     | "/admin/roles"
@@ -66,6 +69,7 @@ const TABS: AdminTab[] = [
   { label: "Reports", to: "/admin/reports", icon: Flag, permission: "reports.read" },
   { label: "Promotions", to: "/admin/promotions", icon: Megaphone, permission: "promotions.read" },
   { label: "Finance", to: "/admin/finance", icon: Wallet, permission: "finance.read" },
+  { label: "Rewards", to: "/admin/rewards", icon: Trophy, permission: "rewards.read" },
   { label: "Intelligence", to: "/admin/intelligence", icon: Sparkles, permission: "events.read" },
   { label: "Scout", to: "/admin/scout", icon: Radar, permission: "scout.read" },
   { label: "Roles", to: "/admin/roles", icon: ShieldCheck, permission: "roles.read" },
@@ -124,30 +128,67 @@ function AdminLayout() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-md py-xl lg:px-xl lg:py-2xl">
-      <p className="type-caption font-semibold tracking-[0.08em] text-accent uppercase">
-        Admin console · {ADMIN_ROLE_LABELS[role]}
-      </p>
-      <h1 className="type-h1 mt-xs">Administration</h1>
-      <p className="type-body mt-xs text-muted-text">
-        Staff-only views over real platform data. Every role change is audited.
-      </p>
-      <nav aria-label="Admin console sections" className="mt-lg flex gap-xs overflow-x-auto pb-xs">
-        {visibleTabs(role).map(({ label, to, icon: Icon, exact }) => (
-          <Link
-            key={to}
-            to={to}
-            activeOptions={{ exact: exact ?? false }}
-            activeProps={{ "aria-current": "page" }}
-            className="focus-ring inline-flex shrink-0 items-center gap-xs rounded-full border border-line bg-card px-md py-xs type-body text-muted-text transition-colors hover:text-primary-text data-[status=active]:border-accent data-[status=active]:bg-accent/12 data-[status=active]:text-accent"
-          >
-            <Icon aria-hidden className="size-4" strokeWidth={2.2} />
-            {label}
+    <div className="admin-console">
+      <aside className="admin-sidebar">
+        <Link to="/admin" className="admin-brand focus-ring rounded-lg">
+          <span className="admin-brand-mark"><ShieldCheck aria-hidden className="size-5" /></span>
+          <span className="admin-brand-copy">
+            <span className="admin-brand-name">Outrazo</span>
+            <span className="admin-brand-label">ADMIN CONSOLE</span>
+          </span>
+        </Link>
+        <div className="admin-sidebar-section-label">Workspace</div>
+        <nav aria-label="Admin console sections" className="admin-sidebar-nav">
+          {visibleTabs(role).map(({ label, to, icon: Icon, exact }) => (
+            <Link
+              key={to}
+              to={to}
+              activeOptions={{ exact: exact ?? false }}
+              activeProps={{ "aria-current": "page" }}
+              className="admin-nav-link focus-ring"
+            >
+              <Icon aria-hidden className="size-[18px] shrink-0" strokeWidth={2} />
+              <span>{label}</span>
+            </Link>
+          ))}
+        </nav>
+        <div className="admin-sidebar-footer">
+          <span className="admin-role-chip"><ShieldCheck aria-hidden className="size-4" />{ADMIN_ROLE_LABELS[role]}</span>
+          <Link to="/app" className="admin-back-link focus-ring">
+            <ArrowLeft aria-hidden className="size-4" />
+            Back to app
           </Link>
-        ))}
-      </nav>
-      <div className="mt-xl">
-        <Outlet />
+        </div>
+      </aside>
+      <div className="admin-main">
+        <header className="admin-topbar">
+          <div className="admin-topbar-title">
+            <span className="admin-topbar-kicker">Staff workspace</span>
+            <h1 className="admin-topbar-heading">Administration</h1>
+          </div>
+          <span className="admin-topbar-secure"><ShieldCheck aria-hidden className="size-4" /> Secure console</span>
+          <Link to="/app" className="admin-mobile-app-link focus-ring">
+            <ArrowLeft aria-hidden className="size-4" />
+            Back
+          </Link>
+        </header>
+        <nav aria-label="Admin console sections" className="admin-mobile-nav">
+          {visibleTabs(role).map(({ label, to, icon: Icon, exact }) => (
+            <Link
+              key={to}
+              to={to}
+              activeOptions={{ exact: exact ?? false }}
+              activeProps={{ "aria-current": "page" }}
+              className="admin-mobile-nav-link focus-ring"
+            >
+              <Icon aria-hidden className="size-4 shrink-0" strokeWidth={2} />
+              {label}
+            </Link>
+          ))}
+        </nav>
+        <main className="admin-content">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

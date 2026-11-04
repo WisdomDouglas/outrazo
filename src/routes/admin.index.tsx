@@ -1,6 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  CalendarCheck2,
+  CalendarDays,
+  Clock3,
+  Flag,
+  Megaphone,
+  Radar,
+  ScrollText,
+  ShieldCheck,
+  Sparkles,
+  Ticket,
+  Trophy,
+  Users,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 
 import { Button } from "@/design-system/components/Button";
 import { ErrorState } from "@/design-system/components/ErrorState";
@@ -33,15 +50,18 @@ export const Route = createFileRoute("/admin/")({
 });
 
 const SECTIONS = [
-  { label: "Users", to: "/admin/users", description: "Search and inspect user accounts.", permission: "users.read" },
-  { label: "Events", to: "/admin/events", description: "All events across organizers.", permission: "events.read" },
-  { label: "Organizers", to: "/admin/organizers", description: "Organizer profiles and their events.", permission: "events.read" },
-  { label: "RSVPs", to: "/admin/attendees", description: "Reservations across events.", permission: "attendees.read" },
-  { label: "Reports", to: "/admin/reports", description: "Review user-filed event flags.", permission: "reports.read" },
-  { label: "Promotions", to: "/admin/promotions", description: "Schedule the homepage spotlight.", permission: "promotions.read" },
-  { label: "Intelligence", to: "/admin/intelligence", description: "Platform activity aggregates and AI event intelligence.", permission: "events.read" },
-  { label: "Roles", to: "/admin/roles", description: "Grant or revoke staff roles.", permission: "roles.read" },
-  { label: "Audit log", to: "/admin/audit", description: "Who changed what, and when.", permission: "audit.read" },
+  { label: "Users", to: "/admin/users", description: "Search and inspect user accounts.", permission: "users.read", icon: Users },
+  { label: "Events", to: "/admin/events", description: "All events across organizers.", permission: "events.read", icon: CalendarDays },
+  { label: "Organizers", to: "/admin/organizers", description: "Organizer profiles and their events.", permission: "events.read", icon: Building2 },
+  { label: "RSVPs", to: "/admin/attendees", description: "Reservations across events.", permission: "attendees.read", icon: Ticket },
+  { label: "Reports", to: "/admin/reports", description: "Review user-filed event flags.", permission: "reports.read", icon: Flag },
+  { label: "Promotions", to: "/admin/promotions", description: "Schedule the homepage spotlight.", permission: "promotions.read", icon: Megaphone },
+  { label: "Finance", to: "/admin/finance", description: "Review ticket transactions and payouts.", permission: "finance.read", icon: Wallet },
+  { label: "Rewards", to: "/admin/rewards", description: "Review the platform rewards program.", permission: "rewards.read", icon: Trophy },
+  { label: "Intelligence", to: "/admin/intelligence", description: "Platform activity aggregates and event intelligence.", permission: "events.read", icon: Sparkles },
+  { label: "Scout", to: "/admin/scout", description: "Review event discovery runs.", permission: "scout.read", icon: Radar },
+  { label: "Roles", to: "/admin/roles", description: "Grant or revoke staff roles.", permission: "roles.read", icon: ShieldCheck },
+  { label: "Audit log", to: "/admin/audit", description: "Who changed what, and when.", permission: "audit.read", icon: ScrollText },
 ] as const;
 
 function AdminOverviewPage() {
@@ -110,33 +130,40 @@ function AdminOverviewPage() {
 
   if (!role) return null;
 
-  const cards: Array<{ label: string; value: number | null; metric: DashboardMetric; caption: string }> = [
-    { label: "Registered users", value: metrics?.users ?? null, metric: "users", caption: "User accounts" },
-    { label: "Organizers", value: metrics?.organizers ?? null, metric: "organizers", caption: "Organizer profiles" },
-    { label: "Total events", value: metrics?.eventsTotal ?? null, metric: "events", caption: "Drafts and published" },
-    { label: "Published events", value: metrics?.eventsPublished ?? null, metric: "events", caption: "Visible in discovery" },
-    { label: "Upcoming events", value: metrics?.eventsUpcoming ?? null, metric: "events", caption: "Starting in the future" },
-    { label: "RSVPs", value: metrics?.rsvps ?? null, metric: "rsvps", caption: "Attendee records" },
+  const cards: Array<{ label: string; value: number | null; metric: DashboardMetric; caption: string; icon: LucideIcon }> = [
+    { label: "Registered users", value: metrics?.users ?? null, metric: "users", caption: "User accounts", icon: Users },
+    { label: "Organizers", value: metrics?.organizers ?? null, metric: "organizers", caption: "Organizer profiles", icon: Building2 },
+    { label: "Total events", value: metrics?.eventsTotal ?? null, metric: "events", caption: "Drafts and published", icon: CalendarDays },
+    { label: "Published events", value: metrics?.eventsPublished ?? null, metric: "events", caption: "Visible in discovery", icon: CalendarCheck2 },
+    { label: "Upcoming events", value: metrics?.eventsUpcoming ?? null, metric: "events", caption: "Starting in the future", icon: Clock3 },
+    { label: "RSVPs", value: metrics?.rsvps ?? null, metric: "rsvps", caption: "Attendee records", icon: Ticket },
   ];
 
   return (
-    <div className="grid gap-xl">
-      <div className="rounded-lg border border-line bg-card p-lg shadow-card">
-        <p className="type-body text-muted-text">Signed in as</p>
-        <p className="type-h2 mt-xs">{ADMIN_ROLE_LABELS[role]}</p>
-        <div className="mt-md flex flex-wrap gap-xs" aria-label="Your permissions">
-          {ROLE_PERMISSIONS[role].map((permission) => (
-            <span key={permission} className="rounded-full border border-line bg-card px-md py-xs type-caption text-muted-text">
-              {permission}
-            </span>
-          ))}
+    <div className="admin-overview">
+      <section className="admin-overview-hero" aria-label="Admin role and permissions">
+        <div>
+          <p className="admin-section-kicker">Workspace overview</p>
+          <h2 className="type-h2 mt-xs">Your platform at a glance</h2>
+          <p className="type-body mt-xs text-muted-text">Real-time access to the tools and activity available to your role.</p>
         </div>
-      </div>
+        <div className="admin-overview-role">
+          <span className="admin-role-chip"><ShieldCheck aria-hidden className="size-4" />{ADMIN_ROLE_LABELS[role]}</span>
+          <details className="admin-permissions">
+            <summary>{ROLE_PERMISSIONS[role].length} permissions</summary>
+            <div className="admin-permission-list" aria-label="Your permissions">
+              {ROLE_PERMISSIONS[role].map((permission) => (
+                <span key={permission}>{permission}</span>
+              ))}
+            </div>
+          </details>
+        </div>
+      </section>
 
       {metricsLoading ? (
-        <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3" aria-label="Loading metrics">
+        <div className="admin-metric-grid" aria-label="Loading metrics">
           {[0, 1, 2, 3, 4, 5].map((key) => (
-            <Skeleton key={key} className="h-28 rounded-lg" />
+            <Skeleton key={key} className="h-36 rounded-xl" />
           ))}
         </div>
       ) : metricsError ? (
@@ -146,22 +173,23 @@ function AdminOverviewPage() {
           onRetry={() => void refreshMetrics()}
         />
       ) : (
-        <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3">
+        <div className="admin-metric-grid">
           {cards.map((card) => (
-            <div key={card.label} className="rounded-lg border border-line bg-card p-lg shadow-card">
+            <div key={card.label} className="admin-metric-card">
+              <span className="admin-metric-icon"><card.icon aria-hidden className="size-5" /></span>
               {card.value === null ? (
                 <>
-                  <p className="type-h3 text-muted-text">Unavailable</p>
-                  <p className="type-body mt-xs font-medium">{card.label}</p>
-                  <p className="type-caption mt-xs text-muted-text">
+                  <p className="admin-metric-value text-muted-text">Unavailable</p>
+                  <p className="admin-metric-label">{card.label}</p>
+                  <p className="admin-metric-caption">
                     Requires the {METRIC_PERMISSIONS[card.metric]} permission.
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="type-h1">{card.value}</p>
-                  <p className="type-body mt-xs font-medium">{card.label}</p>
-                  <p className="type-caption mt-xs text-muted-text">{card.caption}</p>
+                  <p className="admin-metric-value">{new Intl.NumberFormat().format(card.value)}</p>
+                  <p className="admin-metric-label">{card.label}</p>
+                  <p className="admin-metric-caption">{card.caption}</p>
                 </>
               )}
             </div>
@@ -169,26 +197,37 @@ function AdminOverviewPage() {
         </div>
       )}
 
-      <div className="grid gap-md sm:grid-cols-2 xl:grid-cols-3">
+      <section className="admin-shortcuts-section">
+        <div className="admin-section-heading">
+          <div>
+            <p className="admin-section-kicker">Quick access</p>
+            <h2 className="type-h2 mt-xs">Manage your platform</h2>
+          </div>
+          <span className="type-caption text-muted-text">Tools available to your role</span>
+        </div>
+      <div className="admin-shortcut-grid">
         {SECTIONS.filter((section) => roleHasPermission(role, section.permission)).map((section) => (
           <Link
             key={section.to}
             to={section.to}
-            className="focus-ring group rounded-lg border border-line bg-card p-lg shadow-card transition-colors hover:border-accent"
+            className="admin-shortcut-card focus-ring group"
           >
-            <span className="type-body font-semibold">{section.label}</span>
-            <span className="type-body mt-xs block text-muted-text">{section.description}</span>
-            <span className="type-body mt-md inline-flex items-center gap-xs text-accent">
-              Open <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" />
+            <span className="admin-shortcut-icon"><section.icon aria-hidden className="size-5" /></span>
+            <span className="admin-shortcut-copy">
+              <span className="admin-shortcut-title">{section.label}</span>
+              <span className="admin-shortcut-description">{section.description}</span>
             </span>
+            <ArrowRight aria-hidden className="admin-shortcut-arrow size-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
         ))}
       </div>
+      </section>
 
       {canReadAudit ? (
-        <section aria-label="Recent audit activity" className="grid gap-md">
+        <section aria-label="Recent audit activity" className="admin-activity-section">
           <div className="flex flex-wrap items-end justify-between gap-sm">
             <div>
+              <p className="admin-section-kicker">Accountability</p>
               <h2 className="type-h2">Recent activity</h2>
               <p className="type-body mt-xs text-muted-text">The latest audited admin actions.</p>
             </div>

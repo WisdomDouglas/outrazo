@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, CalendarPlus, ImagePlus, Plus, Trash2, Upload } from "lucide-react";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 
+import createHero from "@/assets/create-hero.jpg";
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
 import { supabase } from "@/integrations/supabase/external-client";
@@ -10,7 +11,7 @@ import { CATEGORIES } from "@/showcase/discovery/categories";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { buildEventUpdateRow } from "@/showcase/event-update";
 import { rememberReturnTo } from "@/showcase/saved/saved-events-store";
-import { CreateEventHeroBackdrop } from "@/showcase/create/CreateEventHeroBackdrop";
+import { SectionHero } from "@/showcase/app-shell/SectionHero";
 
 type EventType = "free" | "paid";
 type TierDraft = { key: string; name: string; price: string; quantity: string };
@@ -422,23 +423,35 @@ function CreateEventPage() {
   }
 
   return (
-    <div className="relative mx-auto w-full max-w-[920px] px-md py-xl lg:px-xl lg:py-2xl">
-      <CreateEventHeroBackdrop />
-      <Link to={isEditing ? "/app/organizer/events" : "/app"} className="focus-ring type-body mb-lg inline-flex min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text">
-        <ArrowLeft aria-hidden className="size-4" />{isEditing ? "Back to My events" : "Back to Outrazo"}
-      </Link>
-      <div className="mb-xl">
-        <p className="type-caption font-semibold uppercase tracking-[0.16em] text-accent">Organizer tools</p>
-        <h1 className="type-h1 mt-xs">{isEditing ? "Edit event" : "Create an event"}</h1>
-        <p className="type-body-lg mt-sm max-w-[60ch] text-muted-text">{isEditing ? "Update the details below. Saving applies your changes to the existing event." : "Add the details, set your ticket options, then publish when everything is ready."}</p>
-      </div>
+    <div className="create-event-page">
+      <SectionHero
+        image={createHero}
+        icon={<CalendarPlus aria-hidden className="size-5" />}
+        eyebrow="Organizer tools"
+        title={isEditing ? "Edit your event" : "Post your event"}
+        description={isEditing ? "Update your event details and keep your guests in the loop." : "Bring your event to life. Add the details, set your tickets, and publish when you’re ready."}
+        navigation={
+          <Link to={isEditing ? "/app/organizer/events" : "/app"} className="section-hero-back focus-ring">
+            <ArrowLeft aria-hidden className="size-4" />{isEditing ? "My events" : "Back to Outrazo"}
+          </Link>
+        }
+      />
+      <div className="create-event-content">
+        <div className="create-event-intro">
+          <div>
+            <p className="section-list-eyebrow">Event setup</p>
+            <h2 className="type-h2 mt-xs">{isEditing ? "Update event details" : "Let’s get your event ready"}</h2>
+            <p className="type-body mt-xs text-muted-text">Complete each section below. You can save a draft and come back any time.</p>
+          </div>
+          <span className="create-event-step">Details <span aria-hidden>→</span> Tickets <span aria-hidden>→</span> Publish</span>
+        </div>
 
       {requestError ? <p className="type-body mb-lg rounded-md border border-transactional/40 bg-transactional/10 p-md text-transactional" role="alert">{requestError}</p> : null}
       {errors.form ? <p className="type-body mb-lg rounded-md border border-transactional/40 bg-transactional/10 p-md text-transactional" role="alert">{errors.form}</p> : null}
       {success ? <p className="type-body mb-lg rounded-md border border-accent/30 bg-accent/10 p-md text-primary-text" role="status">{success}</p> : null}
 
       <form
-        className="grid gap-lg"
+        className="create-event-form grid gap-lg"
         noValidate
         onSubmit={(event: FormEvent<HTMLFormElement>) => {
           event.preventDefault();
@@ -532,7 +545,7 @@ function CreateEventPage() {
           </FormSection>
         ) : null}
 
-        <div className="sticky bottom-0 z-10 -mx-md grid grid-cols-1 gap-sm border-t border-line bg-canvas/95 p-md backdrop-blur-md sm:static sm:mx-0 sm:flex sm:justify-end sm:border-0 sm:bg-transparent sm:p-0 sm:pt-sm">
+        <div className="create-event-actions sticky bottom-0 z-10 -mx-md grid grid-cols-1 gap-sm border-t border-line bg-canvas/95 p-md backdrop-blur-md sm:static sm:mx-0 sm:flex sm:justify-end sm:border-0 sm:bg-transparent sm:p-0 sm:pt-sm">
           <Button type="button" variant="outline" className="order-2 sm:order-1" disabled={busy !== null} loading={busy === "draft"} leadingIcon={<Upload aria-hidden className="size-4" />} onClick={() => void saveEvent("draft")}>
             Save Draft
           </Button>
@@ -541,6 +554,7 @@ function CreateEventPage() {
           </Button>
         </div>
       </form>
+      </div>
     </div>
   );
 }
@@ -578,7 +592,7 @@ function CommissionHint() {
 
 function FormSection({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
   return (
-    <section className="grid gap-md rounded-lg border border-line bg-card p-md shadow-card sm:gap-lg sm:p-lg">
+    <section className="create-event-section grid gap-md rounded-lg border border-line bg-card p-md shadow-card sm:gap-lg sm:p-lg">
       <div>
         <h2 className="type-h3">{title}</h2>
         <p className="type-body mt-xs text-muted-text">{description}</p>

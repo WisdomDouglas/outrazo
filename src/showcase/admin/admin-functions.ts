@@ -31,12 +31,15 @@ import {
   callCancelPromotionRpc,
   callCreatePayoutRpc,
   callCreatePromotionRpc,
+  callCreditPointsRpc,
   callGrantRoleRpc,
   callRevokeRoleRpc,
   callResolveReportRpc,
   callSetCommissionDefaultRpc,
   callSetPromotionPriceRpc,
+  callSetRewardSettingRpc,
   callTransitionPayoutRpc,
+  callTransitionWithdrawalRpc,
   getCallerRole,
   requirePermission,
   type AdminPhase1Db,
@@ -57,6 +60,7 @@ import {
 } from "@/showcase/promotions/promotion-windows";
 import { notifyEventCancelled } from "@/showcase/notifications/notify-fanout.server";
 import { feeKobo, isPayoutStatus } from "@/showcase/finance/commission";
+import { isWithdrawalStatus } from "@/showcase/rewards/reward-points";
 import { nairaNumericToKobo } from "@/showcase/tickets/ticket-orders";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
@@ -2152,6 +2156,380 @@ export const transitionPayout = createServerFn({ method: "POST" })
       data.adminNote?.trim() ? data.adminNote.trim() : null,
     );
     return { ok: true };
+  });
+
+// ── Points rewards (Points V1) ──────────────────────────────────────────────
+// Manual-withdrawal staff tooling. Reads are permission-gated; every write
+// goes through a gated RPC that re-checks the caller's admin role, locks
+// the rows it touches, and writes the ledger + audit trail atomically.
+// Full bank account numbers leave the server only through
+// getWithdrawalDetail, which requires rewards.manage.
+
+export interface RewardsOverview {
+  totalIssuedPoints: number;
+  totalOutstandingPoints: number;
+  totalRedeemedPoints: number;
+  pendingNairaKobo: number;
+  pendingCount: number;
+  completedCount: number;
+  rejectedCount: number;
+}
+
+export const getRewardsOverview = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<RewardsOverview> => {
+    const grant = await requirePermission(context, "rewards.read");
+    const db = asAdminDb(grant.supabase);
+    // Bounded scans with honest scale notes; needs database-side aggregates
+    // if the wallet population ever outgrows them.
+    const [{ data: wallets, error: walletsError }, { data: requests, error: requestsError }] =
+      await Promise.all([
+        db.from("points_wallets").select("balance_points, lifetime_earned_points").limit(10000),
+        db.from("withdrawal_requests").select("points, naira_amount_kobo, status").limit(10000),
+      ]);
+    if (walletsError) {
+      console.error("[admin] rewards overview wallets failed:", walletsError.message);
+      throw new AdminBackendError("Could not load the rewards overview. Please try again.");
+    }
+    if (requestsError) {
+      console.error("[admin] rewards overview requests failed:", requestsError.message);
+      throw new AdminBackendError("Could not load the rewards overview. Please try again.");
+    }
+    let totalIssuedPoints = 0;
+    let totalOutstandingPoints = 0;
+    for (const row of wallets ?? []) {
+      totalIssuedPoints += row.lifetime_earned_points;
+      totalOutstandingPoints += row.balance_points;
+    }
+    let totalRedeemedPoints = 0;
+    let pendingNairaKobo = 0;
+    let pendingCount = 0;
+    let completedCount = 0;
+    let rejectedCount = 0;
+    for (const row of requests ?? []) {
+      if (row.status === "paid") {
+        totalRedeemedPoints += row.points;
+        completedCount += 1;
+      } else if (row.status === "pending" || row.status === "processing") {
+        pendingNairaKobo += row.naira_amount_kobo;
+        pendingCount += 1;
+      } else if (row.status === "rejected") {
+        rejectedCount += 1;
+      }
+    }
+    return {
+      totalIssuedPoints,
+      totalOutstandingPoints,
+      totalRedeemedPoints,
+      pendingNairaKobo,
+      pendingCount,
+      completedCount,
+      rejectedCount,
+    };
+  });
+
+export interface AdminWithdrawalRow {
+  id: string;
+  userId: string;
+  userName: string | null;
+  userEmail: string | null;
+  points: number;
+  nairaAmountKobo: number;
+  bankName: string;
+  accountName: string;
+  accountLast4: string;
+  status: string;
+  paidReference: string | null;
+  createdAt: string;
+}
+
+const withdrawalListSchema = pageSchema.extend({
+  offset: z.number().int().min(0).default(0),
+  status: z.string().optional(),
+  search: z.string().trim().max(120).optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  sort: z.enum(["date_desc", "date_asc", "amount_desc", "amount_asc"]).default("date_desc"),
+});
+
+export const listWithdrawals = createServerFn({ method: "GET" })
+  .validator(withdrawalListSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ withdrawals: AdminWithdrawalRow[]; total: number }> => {
+    const grant = await requirePermission(context, "rewards.read");
+    const db = asAdminDb(grant.supabase);
+    let userIds: string[] | null = null;
+    const term = data.search?.trim() ?? "";
+    if (term) {
+      const { data: profiles, error: searchError } = await db
+        .from("profiles")
+        .select("id")
+        .or(`name.ilike.%${term}%,email.ilike.%${term}%,id.eq.${term}`)
+        .limit(200);
+      if (searchError) {
+        console.error("[admin] withdrawal search failed:", searchError.message);
+        throw new AdminBackendError("Could not search withdrawals. Please try again.");
+      }
+      userIds = (profiles ?? []).map((profile) => profile.id);
+      if (userIds.length === 0) return { withdrawals: [], total: 0 };
+    }
+    let query = db
+      .from("withdrawal_requests")
+      .select(
+        "id, user_id, points, naira_amount_kobo, bank_name, account_name, account_last4, status, paid_reference, created_at",
+        { count: "exact" },
+      );
+    if (userIds) query = query.in("user_id", userIds);
+    if (data.status && isWithdrawalStatus(data.status)) query = query.eq("status", data.status);
+    if (data.from) query = query.gte("created_at", data.from);
+    if (data.to) query = query.lte("created_at", data.to);
+    if (data.sort === "amount_desc") query = query.order("naira_amount_kobo", { ascending: false });
+    else if (data.sort === "amount_asc") query = query.order("naira_amount_kobo", { ascending: true });
+    else if (data.sort === "date_asc") query = query.order("created_at", { ascending: true });
+    else query = query.order("created_at", { ascending: false });
+    const { data: rows, error, count } = await query.range(data.offset, data.offset + data.limit - 1);
+    if (error) {
+      console.error("[admin] listWithdrawals failed:", error.message);
+      throw new AdminBackendError("Could not load withdrawals. Please try again.");
+    }
+    const list = rows ?? [];
+    const ids = [...new Set(list.map((row) => row.user_id))];
+    const { data: profiles } =
+      ids.length > 0
+        ? await db.from("profiles").select("id, name, email").in("id", ids)
+        : { data: [] as { id: string; name: string | null; email: string | null }[] };
+    const byId = new Map((profiles ?? []).map((profile) => [profile.id, profile]));
+    return {
+      withdrawals: list.map((row) => ({
+        id: row.id,
+        userId: row.user_id,
+        userName: byId.get(row.user_id)?.name ?? null,
+        userEmail: byId.get(row.user_id)?.email ?? null,
+        points: row.points,
+        nairaAmountKobo: row.naira_amount_kobo,
+        bankName: row.bank_name,
+        accountName: row.account_name,
+        accountLast4: row.account_last4,
+        status: row.status,
+        paidReference: row.paid_reference,
+        createdAt: row.created_at,
+      })),
+      total: count ?? 0,
+    };
+  });
+
+export interface AdminWithdrawalDetail extends AdminWithdrawalRow {
+  nairaPerPoint: number;
+  statusReason: string | null;
+  accountNumber: string;
+  bankVerified: boolean;
+  paidAmountKobo: number | null;
+  paidByName: string | null;
+  paidAt: string | null;
+  updatedAt: string;
+  ledger: { id: string; type: string; points: number; balanceAfter: number; description: string; createdAt: string }[];
+}
+
+export const getWithdrawalDetail = createServerFn({ method: "GET" })
+  .validator(z.object({ requestId: z.string().uuid() }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<AdminWithdrawalDetail> => {
+    const grant = await requirePermission(context, "rewards.manage");
+    const db = asAdminDb(grant.supabase);
+    const { data: row, error } = await db
+      .from("withdrawal_requests")
+      .select("id, user_id, points, naira_per_point, naira_amount_kobo, bank_name, account_name, account_number, account_last4, status, status_reason, paid_amount_kobo, paid_reference, paid_by, paid_at, created_at, updated_at")
+      .eq("id", data.requestId)
+      .maybeSingle();
+    if (error) {
+      console.error("[admin] withdrawal detail failed:", error.message);
+      throw new AdminBackendError("Could not load the withdrawal. Please try again.");
+    }
+    if (!row) throw new AdminBackendError("Withdrawal request not found.");
+    const [{ data: user }, { data: bank }, { data: ledger }, { data: payer }] = await Promise.all([
+      db.from("profiles").select("id, name, email").eq("id", row.user_id).maybeSingle(),
+      db.from("user_bank_details").select("verified").eq("user_id", row.user_id).maybeSingle(),
+      db.from("points_ledger").select("id, type, points, balance_after, description, created_at").eq("ref_id", row.id).order("created_at", { ascending: true }).limit(20),
+      row.paid_by ? db.from("profiles").select("id, name").eq("id", row.paid_by).maybeSingle() : Promise.resolve({ data: null as { id: string; name: string | null } | null }),
+    ]);
+    const rate = typeof row.naira_per_point === "number" ? row.naira_per_point : Number(row.naira_per_point);
+    return {
+      id: row.id,
+      userId: row.user_id,
+      userName: user?.name ?? null,
+      userEmail: user?.email ?? null,
+      points: row.points,
+      nairaPerPoint: Number.isFinite(rate) ? rate : 0,
+      nairaAmountKobo: row.naira_amount_kobo,
+      bankName: row.bank_name,
+      accountName: row.account_name,
+      accountNumber: row.account_number,
+      accountLast4: row.account_last4,
+      bankVerified: bank?.verified ?? false,
+      status: row.status,
+      statusReason: row.status_reason,
+      paidAmountKobo: row.paid_amount_kobo,
+      paidReference: row.paid_reference,
+      paidByName: payer?.name ?? null,
+      paidAt: row.paid_at,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      ledger: (ledger ?? []).map((entry) => ({
+        id: entry.id,
+        type: entry.type,
+        points: entry.points,
+        balanceAfter: entry.balance_after,
+        description: entry.description,
+        createdAt: entry.created_at,
+      })),
+    };
+  });
+
+const adminTransitionWithdrawalSchema = z.object({
+  requestId: z.string().uuid(),
+  toStatus: z.string(),
+  reason: z.string().trim().max(500).optional(),
+  reference: z.string().trim().max(120).optional(),
+  paidAmountNaira: z.number().min(0).optional(),
+});
+
+export const adminTransitionWithdrawal = createServerFn({ method: "POST" })
+  .validator(adminTransitionWithdrawalSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const grant = await requirePermission(context, "rewards.manage");
+    if (!isWithdrawalStatus(data.toStatus)) {
+      throw new AdminBackendError("That withdrawal status is not valid.");
+    }
+    let paidAmountKobo: number | null = null;
+    if (data.toStatus === "paid") {
+      if (data.paidAmountNaira === undefined) {
+        throw new AdminBackendError("Enter the amount actually paid.");
+      }
+      // Defense in depth: the server re-reads the approved snapshot and
+      // compares before the RPC enforces the same match inside the lock.
+      const db = asAdminDb(grant.supabase);
+      const { data: row, error } = await db
+        .from("withdrawal_requests")
+        .select("naira_amount_kobo")
+        .eq("id", data.requestId)
+        .maybeSingle();
+      if (error || !row) {
+        throw new AdminBackendError("Withdrawal request not found.");
+      }
+      paidAmountKobo = Math.round(data.paidAmountNaira * 100);
+      if (paidAmountKobo !== row.naira_amount_kobo) {
+        throw new AdminBackendError("The recorded amount must match the approved withdrawal amount.");
+      }
+    }
+    await callTransitionWithdrawalRpc(
+      grant.userClient,
+      data.requestId,
+      data.toStatus,
+      data.reason?.trim() ? data.reason.trim() : null,
+      data.reference?.trim() ? data.reference.trim() : null,
+      paidAmountKobo,
+    );
+    return { ok: true };
+  });
+
+export interface RewardSettingRow {
+  key: string;
+  value: number | boolean | null;
+  updatedByName: string | null;
+  updatedAt: string;
+}
+
+export const listRewardSettings = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ settings: RewardSettingRow[] }> => {
+    const grant = await requirePermission(context, "rewards.read");
+    const db = asAdminDb(grant.supabase);
+    const { data: rows, error } = await db.from("reward_settings").select("key, value, updated_by, updated_at");
+    if (error) {
+      console.error("[admin] reward settings failed:", error.message);
+      throw new AdminBackendError("Could not load rewards settings. Please try again.");
+    }
+    const ids = [...new Set((rows ?? []).map((row) => row.updated_by).filter(Boolean))] as string[];
+    const { data: profiles } =
+      ids.length > 0
+        ? await db.from("profiles").select("id, name").in("id", ids)
+        : { data: [] as { id: string; name: string | null }[] };
+    const names = new Map((profiles ?? []).map((profile) => [profile.id, profile.name]));
+    return {
+      settings: (rows ?? []).map((row) => ({
+        key: row.key,
+        value: (typeof row.value === "number" || typeof row.value === "boolean" ? row.value : null) as number | boolean | null,
+        updatedByName: row.updated_by ? (names.get(row.updated_by) ?? null) : null,
+        updatedAt: row.updated_at,
+      })),
+    };
+  });
+
+const setRewardSettingSchema = z.object({
+  key: z.enum(["naira_per_point", "min_withdrawal_naira", "max_withdrawal_naira", "rewards_enabled", "withdrawals_enabled", "daily_limit_naira", "monthly_limit_naira"]),
+  value: z.union([z.number(), z.boolean(), z.null()]),
+});
+
+export const setRewardSetting = createServerFn({ method: "POST" })
+  .validator(setRewardSettingSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const grant = await requirePermission(context, "rewards.manage");
+    await callSetRewardSettingRpc(grant.userClient, data.key, data.value);
+    return { ok: true };
+  });
+
+const creditPointsSchema = z.object({
+  userId: z.string().uuid(),
+  points: z.number().int().refine((n) => n !== 0, "Credit amount must not be zero."),
+  type: z.enum(["bonus", "adjust", "earn"]),
+  description: z.string().trim().min(3).max(200),
+});
+
+export const creditUserPoints = createServerFn({ method: "POST" })
+  .validator(creditPointsSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; entryId: string }> => {
+    const grant = await requirePermission(context, "rewards.manage");
+    const entryId = await callCreditPointsRpc(
+      grant.userClient,
+      data.userId,
+      data.points,
+      data.type,
+      data.description,
+    );
+    return { ok: true, entryId };
+  });
+
+export const listUserLedger = createServerFn({ method: "GET" })
+  .validator(z.object({ userId: z.string().uuid(), limit: z.number().int().min(1).max(100).default(30) }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{
+    entries: { id: string; type: string; points: number; balanceAfter: number; description: string; createdAt: string }[];
+  }> => {
+    const grant = await requirePermission(context, "rewards.read");
+    const db = asAdminDb(grant.supabase);
+    const { data: rows, error } = await db
+      .from("points_ledger")
+      .select("id, type, points, balance_after, description, created_at")
+      .eq("user_id", data.userId)
+      .order("created_at", { ascending: false })
+      .limit(data.limit);
+    if (error) {
+      console.error("[admin] user ledger failed:", error.message);
+      throw new AdminBackendError("Could not load the ledger. Please try again.");
+    }
+    return {
+      entries: (rows ?? []).map((row) => ({
+        id: row.id,
+        type: row.type,
+        points: row.points,
+        balanceAfter: row.balance_after,
+        description: row.description,
+        createdAt: row.created_at,
+      })),
+    };
   });
 
 export type { AdminPermission };

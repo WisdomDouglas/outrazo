@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bookmark } from "lucide-react";
 
+import exploreHero from "@/assets/explore-hero.jpg";
 import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { ErrorState } from "@/design-system/components/ErrorState";
 import { EventCardSkeletonGrid } from "@/design-system/components/EventCardSkeleton";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
+import { SectionHero } from "@/showcase/app-shell/SectionHero";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { loadSavedEvents } from "@/showcase/saved/saved-events-store";
 import { useEventCatalog } from "@/showcase/use-event-catalog";
@@ -30,10 +32,16 @@ function SavedPage() {
     (Boolean(session) && (status === "idle" || status === "loading"));
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-md py-xl lg:px-xl lg:py-2xl">
-      <h1 className="type-h1">Saved events</h1>
-      <p className="type-body-lg mt-sm text-muted-text">Events you don’t want to miss.</p>
-      <div className="mt-xl">
+    <div className="section-page">
+      <SectionHero
+        image={exploreHero}
+        icon={<Bookmark aria-hidden className="size-5" />}
+        eyebrow="Your collection"
+        title="Saved events"
+        description="A little inspiration for later. Pick up where your next great plan begins."
+        meta={<span className="section-hero-count">{events.length} {events.length === 1 ? "event" : "events"} saved</span>}
+      />
+      <div className="section-page-content">
         {session && status === "error" ? (
           <ErrorState
             className="mb-lg"
@@ -51,7 +59,16 @@ function SavedPage() {
         {pending ? (
           <EventCardSkeletonGrid count={3} className="sm:grid-cols-2 xl:grid-cols-3" />
         ) : events.length ? (
-          <AppEventGrid events={events} />
+          <section aria-label="Your saved events" className="section-event-list">
+            <div className="section-list-heading">
+              <div>
+                <p className="section-list-eyebrow">Your shortlist</p>
+                <h2 className="type-h2 mt-xs">Worth coming back to</h2>
+              </div>
+              <span className="section-list-count">{events.length} {events.length === 1 ? "event" : "events"}</span>
+            </div>
+            <AppEventGrid events={events} />
+          </section>
         ) : (
           <EmptyState icon={<Bookmark aria-hidden className="size-5" />} title="Nothing saved yet." description="Save events you want to come back to." action={<Link to="/app/explore" className="focus-ring rounded-full"><Button>Explore events</Button></Link>} />
         )}

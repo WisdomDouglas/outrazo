@@ -28,6 +28,7 @@ import { Route as AdminIntelligenceRouteImport } from './routes/admin.intelligen
 import { Route as AdminOrganizersRouteImport } from './routes/admin.organizers'
 import { Route as AdminPromotionsRouteImport } from './routes/admin.promotions'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminRewardsRouteImport } from './routes/admin.rewards'
 import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -35,6 +36,7 @@ import { Route as AppCreateEventRouteImport } from './routes/app.create-event'
 import { Route as AppExploreRouteImport } from './routes/app.explore'
 import { Route as AppOrganizerRouteImport } from './routes/app.organizer'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppRewardsRouteImport } from './routes/app.rewards'
 import { Route as AppSavedRouteImport } from './routes/app.saved'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppTicketsRouteImport } from './routes/app.tickets'
@@ -167,6 +169,11 @@ const AdminReportsRoute = AdminReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRewardsRoute = AdminRewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRolesRoute = AdminRolesRouteImport.update({
   id: '/roles',
   path: '/roles',
@@ -200,6 +207,11 @@ const AppOrganizerRoute = AppOrganizerRouteImport.update({
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppRewardsRoute = AppRewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSavedRoute = AppSavedRouteImport.update({
@@ -409,12 +421,14 @@ export interface FileRoutesByFullPath {
   '/admin/organizers': typeof AdminOrganizersRouteWithChildren
   '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/reports': typeof AdminReportsRouteWithChildren
+  '/admin/rewards': typeof AdminRewardsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/organizer': typeof AppOrganizerRouteWithChildren
   '/app/profile': typeof AppProfileRoute
+  '/app/rewards': typeof AppRewardsRoute
   '/app/saved': typeof AppSavedRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/tickets': typeof AppTicketsRouteWithChildren
@@ -467,10 +481,12 @@ export interface FileRoutesByTo {
   '/admin/finance': typeof AdminFinanceRoute
   '/admin/intelligence': typeof AdminIntelligenceRoute
   '/admin/promotions': typeof AdminPromotionsRoute
+  '/admin/rewards': typeof AdminRewardsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/profile': typeof AppProfileRoute
+  '/app/rewards': typeof AppRewardsRoute
   '/app/saved': typeof AppSavedRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/tickets': typeof AppTicketsRouteWithChildren
@@ -530,12 +546,14 @@ export interface FileRoutesById {
   '/admin/organizers': typeof AdminOrganizersRouteWithChildren
   '/admin/promotions': typeof AdminPromotionsRoute
   '/admin/reports': typeof AdminReportsRouteWithChildren
+  '/admin/rewards': typeof AdminRewardsRoute
   '/admin/roles': typeof AdminRolesRoute
   '/admin/users': typeof AdminUsersRouteWithChildren
   '/app/create-event': typeof AppCreateEventRoute
   '/app/explore': typeof AppExploreRoute
   '/app/organizer': typeof AppOrganizerRouteWithChildren
   '/app/profile': typeof AppProfileRoute
+  '/app/rewards': typeof AppRewardsRoute
   '/app/saved': typeof AppSavedRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/tickets': typeof AppTicketsRouteWithChildren
@@ -596,12 +614,14 @@ export interface FileRouteTypes {
     | '/admin/organizers'
     | '/admin/promotions'
     | '/admin/reports'
+    | '/admin/rewards'
     | '/admin/roles'
     | '/admin/users'
     | '/app/create-event'
     | '/app/explore'
     | '/app/organizer'
     | '/app/profile'
+    | '/app/rewards'
     | '/app/saved'
     | '/app/settings'
     | '/app/tickets'
@@ -654,10 +674,12 @@ export interface FileRouteTypes {
     | '/admin/finance'
     | '/admin/intelligence'
     | '/admin/promotions'
+    | '/admin/rewards'
     | '/admin/roles'
     | '/app/create-event'
     | '/app/explore'
     | '/app/profile'
+    | '/app/rewards'
     | '/app/saved'
     | '/app/settings'
     | '/app/tickets'
@@ -716,12 +738,14 @@ export interface FileRouteTypes {
     | '/admin/organizers'
     | '/admin/promotions'
     | '/admin/reports'
+    | '/admin/rewards'
     | '/admin/roles'
     | '/admin/users'
     | '/app/create-event'
     | '/app/explore'
     | '/app/organizer'
     | '/app/profile'
+    | '/app/rewards'
     | '/app/saved'
     | '/app/settings'
     | '/app/tickets'
@@ -915,6 +939,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/rewards': {
+      id: '/admin/rewards'
+      path: '/rewards'
+      fullPath: '/admin/rewards'
+      preLoaderRoute: typeof AdminRewardsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/roles': {
       id: '/admin/roles'
       path: '/roles'
@@ -962,6 +993,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/app/profile'
       preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/rewards': {
+      id: '/app/rewards'
+      path: '/rewards'
+      fullPath: '/app/rewards'
+      preLoaderRoute: typeof AppRewardsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/saved': {
@@ -1284,6 +1322,7 @@ interface AdminRouteChildren {
   AdminOrganizersRoute: typeof AdminOrganizersRouteWithChildren
   AdminPromotionsRoute: typeof AdminPromotionsRoute
   AdminReportsRoute: typeof AdminReportsRouteWithChildren
+  AdminRewardsRoute: typeof AdminRewardsRoute
   AdminRolesRoute: typeof AdminRolesRoute
   AdminUsersRoute: typeof AdminUsersRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1302,6 +1341,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOrganizersRoute: AdminOrganizersRouteWithChildren,
   AdminPromotionsRoute: AdminPromotionsRoute,
   AdminReportsRoute: AdminReportsRouteWithChildren,
+  AdminRewardsRoute: AdminRewardsRoute,
   AdminRolesRoute: AdminRolesRoute,
   AdminUsersRoute: AdminUsersRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
@@ -1362,6 +1402,7 @@ interface AppRouteChildren {
   AppExploreRoute: typeof AppExploreRoute
   AppOrganizerRoute: typeof AppOrganizerRouteWithChildren
   AppProfileRoute: typeof AppProfileRoute
+  AppRewardsRoute: typeof AppRewardsRoute
   AppSavedRoute: typeof AppSavedRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTicketsRoute: typeof AppTicketsRouteWithChildren
@@ -1375,6 +1416,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppExploreRoute: AppExploreRoute,
   AppOrganizerRoute: AppOrganizerRouteWithChildren,
   AppProfileRoute: AppProfileRoute,
+  AppRewardsRoute: AppRewardsRoute,
   AppSavedRoute: AppSavedRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTicketsRoute: AppTicketsRouteWithChildren,

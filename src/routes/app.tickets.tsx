@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
+import ticketsHero from "@/assets/tickets-hero.jpg";
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
@@ -23,7 +24,7 @@ import { cancelReservation, fetchMyReservations, type MyReservation } from "@/sh
 import { refreshLiveCount } from "@/showcase/rsvp/live-count-store";
 import { classifyReservationError, formatReservationDate } from "@/showcase/rsvp/reservation-helpers";
 import { rememberReturnTo } from "@/showcase/saved/saved-events-store";
-import { TicketsHeroBackdrop } from "@/showcase/rsvp/TicketsHeroBackdrop";
+import { SectionHero } from "@/showcase/app-shell/SectionHero";
 import { formatKoboToNaira } from "@/showcase/promotions/promotion-windows";
 import { TicketPassDialog } from "@/showcase/tickets/TicketPass";
 import { TicketStatusBadge } from "@/showcase/tickets/TicketOrderStatusPanel";
@@ -108,54 +109,35 @@ function TicketsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-primary-text">
-      {/* =========================================================================
-          HERO SECTION: Blends smoothly into background in both themes
-          ========================================================================= */}
-      <section className="relative isolate overflow-hidden border-b border-line/60 px-3.5 pt-6 pb-8 sm:px-6 sm:pt-8 sm:pb-12 lg:px-8">
-        <TicketsHeroBackdrop />
-
-        <div className="mx-auto max-w-[1000px]">
-          {/* Top navigation row */}
-          <div className="mb-5 sm:mb-8 flex items-center justify-between gap-3">
-            <Link
-              to="/app/explore"
-              className="focus-ring group inline-flex items-center gap-1.5 rounded-full border border-line bg-card/70 backdrop-blur-md px-3 py-1.5 text-xs font-medium text-muted-text hover:text-primary-text hover:border-line-strong transition-colors"
-              aria-label="Back to Explore"
-            >
-              <ArrowLeft
-                aria-hidden="true"
-                className="size-3.5 transition-transform duration-200 group-hover:-translate-x-0.5"
-              />
-              <span>Explore events</span>
-            </Link>
-
-            {userId && !loading && tickets.length > 0 ? (
-              <Badge variant="accent" className="text-xs py-1 px-3">
-                <Ticket aria-hidden="true" className="size-3" />
-                <span>
-                  {tickets.length} Confirmed {tickets.length === 1 ? "Pass" : "Passes"}
-                </span>
-              </Badge>
-            ) : null}
-          </div>
-
-          {/* Hero Narrative */}
-          <div className="max-w-[620px]">
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-primary-text leading-tight mb-2">
-              My Tickets &amp; Passes
-            </h1>
-            <p className="type-body text-muted-text text-xs sm:text-sm">
-              Your confirmed reservations, digital event passes, and entry credentials.
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="section-page">
+      <SectionHero
+        image={ticketsHero}
+        icon={<Ticket aria-hidden className="size-5" />}
+        eyebrow="Your events"
+        title="My tickets & passes"
+        description="Your confirmed reservations and digital passes, ready whenever you are."
+        navigation={
+          <Link
+            to="/app/explore"
+            className="section-hero-back focus-ring group"
+            aria-label="Back to Explore"
+          >
+            <ArrowLeft aria-hidden className="size-4 transition-transform group-hover:-translate-x-0.5" />
+            <span>Explore events</span>
+          </Link>
+        }
+        meta={userId && !loading && tickets.length > 0 ? (
+          <Badge variant="accent" className="section-hero-count">
+            <Ticket aria-hidden className="size-3" />
+            {tickets.length} confirmed {tickets.length === 1 ? "pass" : "passes"}
+          </Badge>
+        ) : undefined}
+      />
 
       {/* =========================================================================
           MAIN TICKETS FEED & LIST
           ========================================================================= */}
-      <main className="mx-auto w-full max-w-[1000px] px-3.5 sm:px-6 py-6 sm:py-10 lg:px-8">
+      <main className="section-page-content section-tickets-content">
         {/* Notice alert */}
         {notice ? (
           <div

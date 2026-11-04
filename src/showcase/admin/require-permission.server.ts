@@ -129,6 +129,65 @@ type OrganizerPayoutRow = {
   paid_at: string | null;
 };
 
+type RewardSettingRow = {
+  key: string;
+  value: unknown;
+  updated_by: string | null;
+  updated_at: string;
+};
+
+type PointsWalletRow = {
+  user_id: string;
+  balance_points: number;
+  lifetime_earned_points: number;
+  updated_at: string;
+};
+
+type PointsLedgerRow = {
+  id: string;
+  user_id: string;
+  type: string;
+  points: number;
+  balance_after: number;
+  ref_type: string | null;
+  ref_id: string | null;
+  description: string;
+  naira_per_point: number | string | null;
+  naira_amount_kobo: number | null;
+  actor_id: string | null;
+  created_at: string;
+};
+
+type UserBankDetailsRow = {
+  user_id: string;
+  bank_name: string;
+  account_number: string;
+  account_name: string;
+  verified: boolean;
+  updated_at: string;
+};
+
+type WithdrawalRequestRow = {
+  id: string;
+  user_id: string;
+  idempotency_key: string;
+  points: number;
+  naira_per_point: number | string;
+  naira_amount_kobo: number;
+  bank_name: string;
+  account_name: string;
+  account_number: string;
+  account_last4: string;
+  status: string;
+  status_reason: string | null;
+  paid_amount_kobo: number | null;
+  paid_reference: string | null;
+  paid_by: string | null;
+  paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 // Generated types predate finance: events lacks commission_pct and
 // ticket_orders lacks the newer lifecycle columns, so both Rows are
 // extended here (reads only; writes keep the generated shapes).
@@ -222,6 +281,36 @@ export interface AdminPhase1Db {
       };
       organizer_payouts: {
         Row: OrganizerPayoutRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      reward_settings: {
+        Row: RewardSettingRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      points_wallets: {
+        Row: PointsWalletRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      points_ledger: {
+        Row: PointsLedgerRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      user_bank_details: {
+        Row: UserBankDetailsRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      withdrawal_requests: {
+        Row: WithdrawalRequestRow;
         Insert: never;
         Update: never;
         Relationships: [];
@@ -334,6 +423,30 @@ export interface AdminPhase1Db {
           p_to_status: string;
           p_reference?: string | null;
           p_admin_note?: string | null;
+        };
+        Returns: null;
+      };
+      set_reward_setting: {
+        Args: { p_key: string; p_value: unknown };
+        Returns: null;
+      };
+      credit_points: {
+        Args: {
+          p_user_id: string;
+          p_points: number;
+          p_type: string;
+          p_description?: string | null;
+          p_naira_per_point?: number | null;
+        };
+        Returns: string;
+      };
+      transition_withdrawal: {
+        Args: {
+          p_request_id: string;
+          p_to_status: string;
+          p_reason?: string | null;
+          p_reference?: string | null;
+          p_paid_amount_kobo?: number | null;
         };
         Returns: null;
       };
@@ -664,5 +777,121 @@ export async function callTransitionPayoutRpc(
     }
     console.error("[admin] transition payout RPC failed:", error.message);
     throw new AdminBackendError("Could not move the payout. Please try again.");
+  }
+}
+
+function mapRewardsGateError(message: string, fallback: string): Error {
+  if (
+    message.includes("may manage rewards settings") ||
+    message.includes("may credit points") ||
+    message.includes("may move withdrawals")
+  ) {
+    return new AdminForbiddenError(
+      "Only a super admin or finance admin may manage rewards.",
+    );
+  }
+  if (message.includes("Sign in is required")) {
+    return new AdminAuthError("Sign in is required to use the admin console.");
+  }
+  return new AdminBackendError(fallback);
+}
+
+export async function callSetRewardSettingRpc(
+  userClient: SupabaseClient,
+  key: string,
+  value: unknown,
+): Promise<void> {
+  const { error } = await asAdminDb(userClient).rpc("set_reward_setting", {
+    p_key: key,
+    p_value: value,
+  });
+  if (error) {
+    if (error.message.includes("Unknown rewards setting")) {
+      throw new AdminBackendError("Unknown rewards setting.");
+    }
+    if (/number above zero|true or false|number or empty/i.test(error.message)) {
+      throw new AdminBackendError(error.message.replace("ERROR: ", ""));
+    }
+    if (/manage rewards settings|Sign in is required/i.test(error.message)) {
+      throw mapRewardsGateError(error.message, "Could not save the setting. Please try again.");
+    }
+    console.error("[admin] set reward setting RPC failed:", error.message);
+    throw new AdminBackendError("Could not save the setting. Please try again.");
+  }
+}
+
+export async function callCreditPointsRpc(
+  userClient: SupabaseClient,
+  userId: string,
+  points: number,
+  type: string,
+  description: string | null,
+): Promise<string> {
+  const { data, error } = await asAdminDb(userClient).rpc("credit_points", {
+    p_user_id: userId,
+    p_points: points,
+    p_type: type,
+    p_description: description,
+  });
+  if (error || !data) {
+    if (error) {
+      if (error.message.includes("User not found")) {
+        throw new AdminBackendError("User not found.");
+      }
+      if (error.message.includes("exceeds the available balance")) {
+        throw new AdminBackendError("That adjustment exceeds the available balance.");
+      }
+      if (error.message.includes("must not be zero")) {
+        throw new AdminBackendError("Credit amount must not be zero.");
+      }
+      if (/credit points|Sign in is required/i.test(error.message)) {
+        throw mapRewardsGateError(error.message, "Could not credit points. Please try again.");
+      }
+      console.error("[admin] credit points RPC failed:", error.message);
+    }
+    throw new AdminBackendError("Could not credit points. Please try again.");
+  }
+  return data;
+}
+
+export async function callTransitionWithdrawalRpc(
+  userClient: SupabaseClient,
+  requestId: string,
+  toStatus: string,
+  reason: string | null,
+  reference: string | null,
+  paidAmountKobo: number | null,
+): Promise<void> {
+  const { error } = await asAdminDb(userClient).rpc("transition_withdrawal", {
+    p_request_id: requestId,
+    p_to_status: toStatus,
+    p_reason: reason,
+    p_reference: reference,
+    p_paid_amount_kobo: paidAmountKobo,
+  });
+  if (error) {
+    if (error.message.includes("Withdrawal request not found")) {
+      throw new AdminBackendError("Withdrawal request not found.");
+    }
+    if (error.message.includes("terminal and cannot move")) {
+      throw new AdminBackendError("Paid, rejected, and cancelled withdrawals cannot move.");
+    }
+    if (error.message.includes("transition is not allowed")) {
+      throw new AdminBackendError("That withdrawal transition is not allowed.");
+    }
+    if (error.message.includes("transfer reference")) {
+      throw new AdminBackendError("Record the bank transfer reference before marking paid.");
+    }
+    if (error.message.includes("must match the approved withdrawal amount")) {
+      throw new AdminBackendError("The recorded amount must match the approved withdrawal amount.");
+    }
+    if (error.message.includes("why the withdrawal was not paid")) {
+      throw new AdminBackendError("Record why the withdrawal was not paid.");
+    }
+    if (/move withdrawals|Sign in is required/i.test(error.message)) {
+      throw mapRewardsGateError(error.message, "Could not move the withdrawal. Please try again.");
+    }
+    console.error("[admin] transition withdrawal RPC failed:", error.message);
+    throw new AdminBackendError("Could not move the withdrawal. Please try again.");
   }
 }
