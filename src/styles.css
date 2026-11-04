@@ -1243,7 +1243,7 @@ html:not(.light) .nearby-map-card:hover {
   .nearby-map-card { transition: none; }
 }
 
-/* Floating mobile dock — icon-only, theme-aware (see MobileBottomNav.tsx). */
+/* Floating mobile dock — solid, high-contrast, brand-led (see MobileBottomNav.tsx). */
 .app-mobile-nav { display: none; }
 
 @media (max-width: 899px) {
@@ -1251,7 +1251,7 @@ html:not(.light) .nearby-map-card:hover {
     position: fixed;
     z-index: 40;
     right: 0;
-    bottom: max(10px, calc(env(safe-area-inset-bottom) + 4px));
+    bottom: max(12px, calc(env(safe-area-inset-bottom) + 6px));
     left: 0;
     display: flex;
     align-items: center;
@@ -1272,45 +1272,64 @@ html:not(.light) .nearby-map-card:hover {
     place-items: center;
     border-radius: var(--outrazo-radius-full);
     color: var(--outrazo-text-muted);
-    transition: color 180ms ease, transform 180ms ease;
+    transition: color 180ms ease, background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
   }
+  .app-mobile-nav-item:hover { color: var(--outrazo-text-primary); }
   .app-mobile-nav-item--side {
     width: 54px;
     height: 54px;
-    border: 1px solid color-mix(in srgb, var(--outrazo-border-strong) 72%, transparent);
-    background: color-mix(in srgb, var(--outrazo-bg-card) 86%, transparent);
-    box-shadow: var(--outrazo-shadow-floating);
-    -webkit-backdrop-filter: blur(18px) saturate(150%);
-    backdrop-filter: blur(18px) saturate(150%);
+    border: 1px solid var(--outrazo-border-strong);
+    background: var(--outrazo-bg-card);
+    box-shadow:
+      0 12px 28px color-mix(in srgb, var(--outrazo-bg-canvas) 45%, transparent),
+      0 2px 6px color-mix(in srgb, var(--outrazo-bg-canvas) 30%, transparent);
   }
   .app-mobile-nav-pill {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
     height: 54px;
     padding-inline: var(--spacing-sm);
-    border: 1px solid color-mix(in srgb, var(--outrazo-border-strong) 72%, transparent);
+    border: 1px solid var(--outrazo-border-strong);
     border-radius: var(--outrazo-radius-full);
-    background: color-mix(in srgb, var(--outrazo-bg-card) 86%, transparent);
-    box-shadow: var(--outrazo-shadow-floating);
-    -webkit-backdrop-filter: blur(18px) saturate(150%);
-    backdrop-filter: blur(18px) saturate(150%);
+    background: var(--outrazo-bg-card);
+    box-shadow:
+      0 12px 28px color-mix(in srgb, var(--outrazo-bg-canvas) 45%, transparent),
+      0 2px 6px color-mix(in srgb, var(--outrazo-bg-canvas) 30%, transparent);
   }
-  .app-mobile-nav-item--active { color: var(--outrazo-accent-primary); }
-  .app-mobile-nav-item--active::after {
+  /* A mint hairline crowns the center pill so the dock reads as branded hardware. */
+  .app-mobile-nav-pill::before {
     content: "";
     position: absolute;
-    bottom: 4px;
-    left: 50%;
-    width: 4px;
-    height: 4px;
-    margin-left: -2px;
-    border-radius: var(--outrazo-radius-full);
-    background: var(--outrazo-accent-primary);
+    top: -1px;
+    left: 16%;
+    right: 16%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--outrazo-accent-primary), transparent);
+    opacity: .75;
   }
-  .app-mobile-nav-item--side.app-mobile-nav-item--active::after { bottom: 6px; }
+  /* The active tab is a filled brand chip — unmistakable on either surface. */
+  .app-mobile-nav-item--active {
+    color: var(--outrazo-text-primary);
+    background: var(--outrazo-accent-primary);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--outrazo-accent-primary) 45%, transparent);
+  }
+  html:not(.light) .app-mobile-nav-item--active { color: var(--outrazo-on-accent-primary); }
   .app-mobile-nav-item:active { transform: scale(.92); }
   .app-mobile-nav-item:focus-visible { outline: 2px solid var(--outrazo-accent-primary); outline-offset: 2px; }
+
+  /* Dark mode: deeper surface, mint-edged border, and a stronger glow so it never blends in. */
+  html:not(.light) .app-mobile-nav-item--side,
+  html:not(.light) .app-mobile-nav-pill {
+    border-color: color-mix(in srgb, var(--outrazo-accent-primary) 34%, transparent);
+    background: #0b1c14;
+    box-shadow:
+      0 14px 32px rgba(0, 0, 0, .55),
+      0 0 26px color-mix(in srgb, var(--outrazo-accent-primary) 16%, transparent);
+  }
+  html:not(.light) .app-mobile-nav-item { color: color-mix(in srgb, var(--outrazo-text-primary) 74%, transparent); }
+  html:not(.light) .app-mobile-nav-item:hover { color: var(--outrazo-text-primary); }
 }
 
 @media (max-width: 379px) {
