@@ -13,6 +13,7 @@ export const SCOUT_EVENT_CATEGORIES = [
   "culture",
   "food",
   "sports",
+  "religion",
 ] as const;
 
 /** Exact approved wording. Organizer falls back, never blanks. */

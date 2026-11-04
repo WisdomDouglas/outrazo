@@ -23,6 +23,7 @@ const EVENT_CATEGORIES: Exclude<CategoryId, "all">[] = [
   "culture",
   "food",
   "sports",
+  "religion",
 ];
 
 const formatEventDate = (value: string, options: Intl.DateTimeFormatOptions) =>

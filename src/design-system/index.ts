@@ -17,6 +17,7 @@ export {
 } from "./components/AvatarStack";
 export { Skeleton, type SkeletonProps } from "./components/Skeleton";
 export { EventCard, type EventCardProps } from "./components/EventCard";
+export { LocationMapPreview, type LocationMapPreviewProps } from "./components/LocationMapPreview";
 export {
   EventCardSkeleton,
   EventCardSkeletonGrid,

@@ -87,7 +87,7 @@ describe("approvalOverridesSchema", () => {
     };
   }
   it("accepts a complete review and pins the category list", () => {
-    assert.deepEqual([...SCOUT_EVENT_CATEGORIES], ["parties", "music", "tech", "business", "culture", "food", "sports"]);
+    assert.deepEqual([...SCOUT_EVENT_CATEGORIES], ["parties", "music", "tech", "business", "culture", "food", "sports", "religion"]);
     assert.equal(approvalOverridesSchema.safeParse(valid()).success, true);
   });
   it("rejects short fields, bad urls, and non-https tickets", () => {

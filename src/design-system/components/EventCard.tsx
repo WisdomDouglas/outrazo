@@ -6,6 +6,7 @@ import { Avatar } from "./Avatar";
 import { AvatarStack, type AvatarStackPerson } from "./AvatarStack";
 import { Badge } from "./Badge";
 import { Button } from "./Button";
+import { LocationMapPreview } from "./LocationMapPreview";
 import { cn } from "../lib/utils";
 
 export interface EventCardProps extends HTMLAttributes<HTMLElement> {
@@ -149,10 +150,13 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
             <a href={href} className="focus-ring line-clamp-2 rounded-sm transition-colors hover:text-accent">{title}</a>
           )}
         </h3>
-        <p className="type-body flex items-center gap-sm text-muted-text">
-          <span className="grid size-7 shrink-0 place-items-center rounded-full bg-accent/10 text-accent"><MapPin aria-hidden className="size-3.5" /></span>
-          <span className="truncate">{location}</span>
-        </p>
+        <div className="event-card-location-row">
+          <p className="type-body flex min-w-0 items-center gap-sm text-muted-text">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-accent/10 text-accent"><MapPin aria-hidden className="size-3.5" /></span>
+            <span className="truncate">{location}</span>
+          </p>
+          <LocationMapPreview location={location} compact />
+        </div>
       </div>
 
       <div className="mx-md mt-md flex items-center justify-between gap-md border-t border-line py-md">

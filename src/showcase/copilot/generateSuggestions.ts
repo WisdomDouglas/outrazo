@@ -54,7 +54,7 @@ const DEVELOPER_INSTRUCTION = [
   "Title: catchy, 120 characters or fewer.",
   "Summary: one or two sentences, 220 characters or fewer.",
   "Description: two to four short paragraphs of plain text (no markdown headings), 4000 characters or fewer.",
-  `Category: exactly one of: ${SUPPORTED_CATEGORY_IDS.join(", ")}. Pick the closest match.`,
+  `Category: exactly one of: ${SUPPORTED_CATEGORY_IDS.join(", ")}. Pick the closest match; worship services and faith gatherings are religion.`,
   "Tags: two to five short lowercase tags.",
   "Reply with JSON only, matching the provided schema.",
 ].join(" ");

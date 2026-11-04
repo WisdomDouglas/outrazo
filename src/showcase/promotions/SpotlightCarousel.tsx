@@ -4,7 +4,7 @@
 // runs under prefers-reduced-motion. A single promotion renders as a plain
 // card with no carousel chrome.
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import type { OutrazoEvent } from "@/showcase/sample-data";
@@ -22,15 +22,26 @@ export interface SpotlightSlide {
 export function SpotlightCarousel({ items }: { items: SpotlightSlide[] }) {
   const { isSaved, toggle } = useSavedItems();
   const [index, setIndex] = useState(0);
+  const [exitIndex, setExitIndex] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
   const [hoverPaused, setHoverPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const touchX = useRef<number | null>(null);
+  const transitionTimer = useRef<number | null>(null);
   const count = items.length;
 
   useEffect(() => {
     setIndex((current) => (count === 0 ? 0 : current % count));
+    setExitIndex(null);
+    if (transitionTimer.current !== null) {
+      window.clearTimeout(transitionTimer.current);
+      transitionTimer.current = null;
+    }
   }, [count]);
+
+  useEffect(() => () => {
+    if (transitionTimer.current !== null) window.clearTimeout(transitionTimer.current);
+  }, []);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -45,20 +56,32 @@ export function SpotlightCarousel({ items }: { items: SpotlightSlide[] }) {
     paused: paused || hoverPaused,
   });
 
+  const showSlide = useCallback((nextIndex: number) => {
+    if (nextIndex === index) return;
+    if (transitionTimer.current !== null) window.clearTimeout(transitionTimer.current);
+    setExitIndex(index);
+    setIndex(nextIndex);
+    transitionTimer.current = window.setTimeout(() => {
+      setExitIndex(null);
+      transitionTimer.current = null;
+    }, 480);
+  }, [index]);
+
+  const go = useCallback((step: 1 | -1) => {
+    showSlide(nextSlideIndex(index, count, step));
+  }, [count, index, showSlide]);
+
   useEffect(() => {
     if (!playing) return;
     const timer = window.setTimeout(
-      () => setIndex((current) => nextSlideIndex(current, count, 1)),
+      () => go(1),
       AUTOPLAY_MS,
     );
     return () => window.clearTimeout(timer);
-  }, [playing, index, count]);
+  }, [playing, index, count, go]);
 
   const current = items[index] ?? items[0];
   if (!current) return null;
-
-  const go = (step: 1 | -1) =>
-    setIndex((currentIndex) => nextSlideIndex(currentIndex, count, step));
 
   return (
     <div
@@ -92,12 +115,28 @@ export function SpotlightCarousel({ items }: { items: SpotlightSlide[] }) {
           ? `Showing promotion ${index + 1} of ${count}: ${current.event.title}`
           : `Promoted event: ${current.event.title}`}
       </p>
-      <div key={current.promotionId} className="spotlight-slide">
+      <div className="spotlight-stage">
+        {exitIndex !== null && items[exitIndex] ? (
+          <div
+            key={`exit-${items[exitIndex].promotionId}`}
+            className="spotlight-slide spotlight-slide--exit"
+            aria-hidden="true"
+            inert
+          >
+            <SpotlightCard
+              event={items[exitIndex].event}
+              saved={isSaved(items[exitIndex].event.id)}
+              onToggleSave={() => toggle(items[exitIndex].event.id)}
+            />
+          </div>
+        ) : null}
+        <div key={current.promotionId} className="spotlight-slide spotlight-slide--enter">
         <SpotlightCard
           event={current.event}
           saved={isSaved(current.event.id)}
           onToggleSave={() => toggle(current.event.id)}
         />
+        </div>
       </div>
 
       {count > 1 ? (
@@ -116,7 +155,7 @@ export function SpotlightCarousel({ items }: { items: SpotlightSlide[] }) {
                 key={slide.promotionId}
                 type="button"
                 className="spotlight-dot focus-ring"
-                onClick={() => setIndex(dotIndex)}
+                onClick={() => showSlide(dotIndex)}
                 aria-label={`Show promotion ${dotIndex + 1}: ${slide.event.title}`}
                 aria-current={dotIndex === index}
               />

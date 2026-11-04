@@ -42,7 +42,8 @@ export type CategoryId =
   | "business"
   | "culture"
   | "food"
-  | "sports";
+  | "sports"
+  | "religion";
 
 export interface TicketTier {
   id: string;

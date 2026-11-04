@@ -14,6 +14,7 @@ import { Button } from "@/design-system/components/Button";
 import { CategoryChip } from "@/design-system/components/CategoryChip";
 import { ErrorState } from "@/design-system/components/ErrorState";
 import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
+import { CompactFooter } from "@/showcase/app-shell/CompactFooter";
 import { CATEGORIES } from "@/showcase/discovery/categories";
 import { ExploreHeroBackdrop } from "@/showcase/discovery/ExploreHeroBackdrop";
 import { useEventCatalog } from "@/showcase/use-event-catalog";
@@ -286,6 +287,7 @@ function AppExplore() {
           </div>
         )}
       </div>
+      <CompactFooter />
     </div>
   );
 }

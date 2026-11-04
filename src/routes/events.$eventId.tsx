@@ -12,6 +12,7 @@ import { Carousel } from "@/design-system/components/Carousel";
 import { ErrorState } from "@/design-system/components/ErrorState";
 import { EventBookingDrawer } from "@/design-system/components/EventBookingDrawer";
 import { EventCard } from "@/design-system/components/EventCard";
+import { LocationMapPreview } from "@/design-system/components/LocationMapPreview";
 import { EventShareMenu } from "@/design-system/components/EventShareMenu";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { fetchPublishedEventDetails } from "@/showcase/event-data";
@@ -19,6 +20,7 @@ import { isOfficialOrganizerName } from "@/showcase/organizers";
 import { EventReviews } from "@/showcase/reviews/EventReviews";
 import { getEventScoutBadge } from "@/showcase/scout/scout-functions";
 import { ReportEventDialog } from "@/showcase/moderation/ReportEventDialog";
+import { CompactFooter } from "@/showcase/app-shell/CompactFooter";
 import { useLiveCount } from "@/showcase/rsvp/live-count-store";
 import { isDatabaseEventId } from "@/showcase/saved/saved-events-store";
 import { getRelatedEvents, toEventCardProps, type EventDetails } from "@/showcase/sample-data";
@@ -48,24 +50,46 @@ export const Route = createFileRoute("/events/$eventId")({
     return event;
   },
   head: ({ loaderData }) => ({
-    meta: loaderData ? [
-      { title: `${loaderData.title} — Outrazo` },
-      { name: "description", content: loaderData.summary },
-      { property: "og:title", content: `${loaderData.title} — Outrazo` },
-      { property: "og:description", content: loaderData.summary },
-      { property: "og:type", content: "website" },
-      { property: "og:image", content: loaderData.imageSrc },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: loaderData.imageSrc },
-    ] : [
-      { title: "Event unavailable — Outrazo" },
-      { name: "description", content: "This Outrazo event is unavailable." },
-      { property: "og:title", content: "Event unavailable — Outrazo" },
-      { property: "og:description", content: "This Outrazo event is unavailable." },
-      { name: "robots", content: "noindex" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
+    meta: loaderData
+      ? (() => {
+          const origin =
+            typeof window === "undefined"
+              ? process.env["APP_URL"] ?? "https://outrazo.com"
+              : window.location.origin;
+          const eventUrl = new URL(
+            `/events/${encodeURIComponent(loaderData.id)}`,
+            origin,
+          ).href;
+          const imageUrl = new URL(
+            `/api/event-share-image/${encodeURIComponent(loaderData.id)}`,
+            origin,
+          ).href;
+          return [
+            { title: `${loaderData.title} — Outrazo` },
+            { name: "description", content: loaderData.summary },
+            { property: "og:title", content: `${loaderData.title} — Outrazo` },
+            { property: "og:description", content: loaderData.summary },
+            { property: "og:type", content: "website" },
+            { property: "og:url", content: eventUrl },
+            { property: "og:image", content: imageUrl },
+            { property: "og:image:type", content: "image/png" },
+            { property: "og:image:width", content: "1200" },
+            { property: "og:image:height", content: "630" },
+            { property: "og:image:alt", content: `${loaderData.title} — Outrazo` },
+            { name: "twitter:card", content: "summary_large_image" },
+            { name: "twitter:title", content: `${loaderData.title} — Outrazo` },
+            { name: "twitter:image", content: imageUrl },
+          ];
+        })()
+      : [
+          { title: "Event unavailable — Outrazo" },
+          { name: "description", content: "This Outrazo event is unavailable." },
+          { property: "og:title", content: "Event unavailable — Outrazo" },
+          { property: "og:description", content: "This Outrazo event is unavailable." },
+          { name: "robots", content: "noindex" },
+          { property: "og:type", content: "website" },
+          { name: "twitter:card", content: "summary" },
+        ],
   }),
   errorComponent: EventLoadError,
   notFoundComponent: EventNotFound,
@@ -102,8 +126,8 @@ function EventDetailsPage() {
   }, [eventIdForBadge]);
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-canvas pb-[calc(var(--spacing-section)+var(--spacing-xl))] text-primary-text lg:pb-0">
-      <header className="border-b border-line bg-canvas/90 backdrop-blur-md">
+    <div className="event-detail-page min-h-screen overflow-x-clip bg-canvas pb-[92px] text-primary-text lg:pb-0">
+      <header className="event-detail-header border-b border-line bg-canvas/90 backdrop-blur-md">
         <div className="mx-auto flex min-h-16 max-w-[1200px] items-center justify-between px-md lg:px-xl">
           <Link to="/events" search={{}} className="focus-ring grid size-11 place-items-center rounded-full text-muted-text hover:text-primary-text sm:hidden" aria-label="Back to Explore"><ArrowLeft aria-hidden className="size-5" /></Link>
           <Link to="/" className="focus-ring type-h3 hidden rounded-sm text-accent sm:inline-flex" aria-label="Outrazo home"><BrandLogo /></Link>
@@ -121,13 +145,13 @@ function EventDetailsPage() {
         {loadedEvent && loadedEvent.status === "cancelled" ? (
           <p className="mx-auto max-w-[1200px] px-md pt-md lg:px-xl" role="alert"><span className="type-caption inline-block rounded-full border border-transactional/40 bg-transactional/10 px-sm py-xs text-transactional">This event was cancelled. Ticket sales and RSVPs are closed.</span></p>
         ) : null}
-          <div className="mx-auto max-w-[1200px] px-md pt-lg lg:px-xl lg:pt-xl">
+          <div className="event-desktop-back-link mx-auto max-w-[1200px] px-md pt-lg lg:px-xl lg:pt-xl">
             <Link to="/events" search={{}} className="focus-ring type-body hidden min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text sm:inline-flex"><ArrowLeft aria-hidden className="size-4" />Back to Explore</Link>
           </div>
 
-          <section className="mx-auto grid max-w-[1200px] gap-xl px-md pb-section pt-md lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:px-xl">
-            <div className="overflow-hidden rounded-lg bg-card shadow-card"><img src={event.imageSrc} alt={`${event.title} event cover`} className="aspect-[4/3] w-full object-cover lg:aspect-[5/4]" /></div>
-            <div className="flex flex-col gap-lg lg:sticky lg:top-lg">
+          <section className="event-primary-layout mx-auto grid max-w-[1200px] gap-xl px-md pb-section pt-md lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:px-xl">
+            <div className="event-cover-frame overflow-hidden rounded-lg bg-card shadow-card"><img src={event.imageSrc} alt={`${event.title} event cover`} className="aspect-[4/3] w-full object-cover lg:aspect-[5/4]" /></div>
+            <div className="event-primary-info flex flex-col gap-lg lg:sticky lg:top-lg">
               <div><Badge variant="accent">{event.category}</Badge><h1 className="type-h1 mt-md">{event.title}</h1><p className="type-body-lg mt-md text-muted-text">{event.summary}</p></div>
               <div className="grid gap-md border-y border-line py-lg">
                 <DetailRow icon={<CalendarDays aria-hidden className="size-5" />} label="Date and time" value={`${event.date} · ${event.time}${event.endTime ? ` – ${event.endTime}` : ""}`} />
@@ -135,9 +159,11 @@ function EventDetailsPage() {
                 <DetailRow icon={<Users aria-hidden className="size-5" />} label="People going" value={`${liveCount.toLocaleString()} people going`} />
               </div>
               {externalTicketUrl ? (
-                <a href={externalTicketUrl} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="transactional" size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />}>{actionLabel}</Button></a>
+                <a href={externalTicketUrl} target="_blank" rel="noreferrer" className="event-detail-cta focus-ring rounded-full"><Button variant="transactional" size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />}>{actionLabel}</Button></a>
               ) : (
-                <Button variant={tierCount ? "transactional" : "primary"} size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />} onClick={() => setBookingOpen(true)}>{actionLabel}</Button>
+                <div className="event-detail-cta">
+                  <Button variant={tierCount ? "transactional" : "primary"} size="lg" className="w-full" leadingIcon={<Ticket aria-hidden className="size-5" />} onClick={() => setBookingOpen(true)}>{actionLabel}</Button>
+                </div>
               )}
               <div className="sm:hidden"><EventShareMenu title={event.title} /></div>
               {loadedEvent && isDatabaseEventId(loadedEvent.id) ? (
@@ -167,7 +193,7 @@ function EventDetailsPage() {
             </div>
           </section>
 
-          <div className="mx-auto grid max-w-[1200px] gap-section px-md pb-section lg:grid-cols-[minmax(0,1fr)_360px] lg:px-xl">
+          <div className="event-secondary-content mx-auto grid max-w-[1200px] gap-section px-md pb-section lg:grid-cols-[minmax(0,1fr)_360px] lg:px-xl">
             <div className="flex flex-col gap-section">
               <ContentSection title="About this event"><p className="type-body-lg text-muted-text">{event.description}</p></ContentSection>
               <ContentSection title="Hosted by">
@@ -187,7 +213,7 @@ function EventDetailsPage() {
               ) : null}
             </div>
             <ContentSection title="Location">
-              <div className="flex flex-col gap-md"><div><h3 className="type-h3">{event.venue.name}</h3><p className="type-body mt-xs text-muted-text">{event.venue.address}<br />{event.venue.city}</p></div><div className="grid aspect-[4/3] place-items-center rounded-md border border-line bg-card" aria-label="Map placeholder"><MapPin aria-hidden className="size-10 text-accent" /><span className="sr-only">Map preview will be available here</span></div><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.latitude != null && event.venue.longitude != null ? `${event.venue.latitude},${event.venue.longitude}` : `${event.venue.address}, ${event.venue.city}`)}`} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="outline" className="w-full" leadingIcon={<Navigation aria-hidden className="size-4" />}>Get Directions</Button></a></div>
+              <div className="flex flex-col gap-md"><div><h3 className="type-h3">{event.venue.name}</h3><p className="type-body mt-xs text-muted-text">{event.venue.address}<br />{event.venue.city}</p></div><LocationMapPreview location={`${event.venue.name}, ${event.venue.city}`} /><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.latitude != null && event.venue.longitude != null ? `${event.venue.latitude},${event.venue.longitude}` : `${event.venue.address}, ${event.venue.city}`)}`} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="outline" className="w-full" leadingIcon={<Navigation aria-hidden className="size-4" />}>Get Directions</Button></a></div>
             </ContentSection>
           </div>
 
@@ -196,6 +222,7 @@ function EventDetailsPage() {
           </section>
         </main>
 
+      <CompactFooter />
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-canvas/95 p-md backdrop-blur-md lg:hidden">{externalTicketUrl ? <a href={externalTicketUrl} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="transactional" size="lg" className="w-full">{actionLabel}</Button></a> : <Button variant={tierCount ? "transactional" : "primary"} size="lg" className="w-full" onClick={() => setBookingOpen(true)}>{actionLabel}</Button>}</div>
       {externalTicketUrl || !loadedEvent ? null : <EventBookingDrawer event={loadedEvent} open={bookingOpen} onClose={() => setBookingOpen(false)} />}
       {loadedEvent && isDatabaseEventId(loadedEvent.id) ? (

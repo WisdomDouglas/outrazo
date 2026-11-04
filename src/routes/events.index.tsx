@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Calendar,
+  Check,
   ChevronDown,
   Compass,
   MapPin,
@@ -46,6 +47,7 @@ import {
 import { useDiscovery } from "@/showcase/discovery/use-discovery";
 import { boostPromotedPlacement } from "@/showcase/promotions/active-promotions";
 import { useActivePromotions } from "@/showcase/promotions/use-active-promotions";
+import { CompactFooter } from "@/showcase/app-shell/CompactFooter";
 import {
   CITIES,
   getOrganizer,
@@ -132,11 +134,14 @@ function ExploreEvents() {
   const [nlError, setNlError] = useState<string | null>(null);
   const nlRequestId = useRef(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [locationMenuOpen, setLocationMenuOpen] = useState(false);
   const [showAllStates, setShowAllStates] = useState(false);
   const [stateSearch, setStateSearch] = useState("");
   const [appliedFilters, setAppliedFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const [draftFilters, setDraftFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
+  const locationMenuRef = useRef<HTMLDivElement>(null);
+  const locationTriggerRef = useRef<HTMLButtonElement>(null);
   const discovery = useDiscovery();
   const setCategory = discovery.setCategory;
   const { promotions } = useActivePromotions();
@@ -219,6 +224,29 @@ function ExploreEvents() {
     setDraftFilters(appliedFilters);
     setFiltersOpen(true);
   }, [appliedFilters]);
+
+  useEffect(() => {
+    if (!locationMenuOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && !locationMenuRef.current?.contains(event.target)) {
+        setLocationMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setLocationMenuOpen(false);
+        locationTriggerRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [locationMenuOpen]);
 
   const clearNL = useCallback(() => {
     nlRequestId.current += 1;
@@ -369,18 +397,54 @@ function ExploreEvents() {
             </Link>
 
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                leadingIcon={<MapPin aria-hidden="true" className="size-3.5 text-accent" />}
-                className="rounded-full border border-line bg-card/70 backdrop-blur-md px-2.5 sm:px-3 text-xs font-semibold h-8"
-                onClick={openFilters}
-                aria-label={`Change location: Currently set to ${displayedLocation}`}
-              >
-                <span className="max-w-[85px] sm:max-w-none truncate">{displayedLocation}</span>
-                <ChevronDown aria-hidden="true" className="size-3 text-muted-text" />
-              </Button>
+              <div ref={locationMenuRef} className="relative">
+                <Button
+                  ref={locationTriggerRef}
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  leadingIcon={<MapPin aria-hidden="true" className="size-3.5 text-accent" />}
+                  className="rounded-full border border-line bg-card/70 backdrop-blur-md px-2.5 sm:px-3 text-xs font-semibold h-8"
+                  onClick={() => setLocationMenuOpen((open) => !open)}
+                  aria-label={`Change location: Currently set to ${displayedLocation}`}
+                  aria-expanded={locationMenuOpen}
+                  aria-controls="explore-state-menu"
+                >
+                  <span className="max-w-[85px] sm:max-w-none truncate">{displayedLocation}</span>
+                  <ChevronDown aria-hidden="true" className="size-3 text-muted-text" />
+                </Button>
+                {locationMenuOpen ? (
+                  <div
+                    id="explore-state-menu"
+                    className="absolute right-0 top-[calc(100%+10px)] z-40 w-[min(90vw,360px)] rounded-2xl border border-line bg-card p-md shadow-card"
+                  >
+                    <p className="type-caption mb-sm px-xs font-semibold text-muted-text">Choose a state</p>
+                    <div className="grid max-h-[min(65vh,420px)] grid-cols-2 gap-xs overflow-y-auto" role="group" aria-label="Nigeria's 36 states">
+                      {NIGERIAN_STATES.filter((state) => state.kind === "state").map((state) => {
+                        const selected = discovery.city === state.name;
+                        return (
+                          <button
+                            key={state.name}
+                            type="button"
+                            aria-pressed={selected}
+                            onClick={() => {
+                              discovery.setCity(state.name);
+                              setAppliedFilters((filters) => ({ ...filters, location: "any" }));
+                              setLocationMenuOpen(false);
+                            }}
+                            className={`focus-ring type-body flex min-h-10 items-center justify-between gap-xs rounded-lg px-sm text-left text-xs transition-colors hover:bg-accent/10 ${
+                              selected ? "bg-accent/10 font-semibold text-accent" : "text-primary-text"
+                            }`}
+                          >
+                            <span className="truncate">{state.name}</span>
+                            {selected ? <Check aria-hidden="true" className="size-3.5 shrink-0" /> : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
 
               <Link
                 to="/app/create-event"
@@ -804,6 +868,7 @@ function ExploreEvents() {
           ) : null}
         </section>
       </main>
+      <CompactFooter />
 
       {/* =========================================================================
           ADVANCED FILTER MODAL PANEL

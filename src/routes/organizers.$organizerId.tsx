@@ -11,6 +11,7 @@ import { EventCard } from "@/design-system/components/EventCard";
 import { EventCardSkeleton } from "@/design-system/components/EventCardSkeleton";
 import { EventShareMenu } from "@/design-system/components/EventShareMenu";
 import { Skeleton } from "@/design-system/components/Skeleton";
+import { CompactFooter } from "@/showcase/app-shell/CompactFooter";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import {
   getOrganizer,
@@ -245,6 +246,7 @@ function OrganizerPage() {
           ) : null}
         </section>
       </main>
+      <CompactFooter />
     </div>
   );
 }

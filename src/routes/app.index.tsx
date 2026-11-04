@@ -23,6 +23,7 @@ import emptyArt from "@/assets/home-empty.webp";
 import homeHero from "@/assets/home-hero-festival.webp";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { AppEventGrid } from "@/showcase/app-shell/AppEventGrid";
+import { CompactFooter } from "@/showcase/app-shell/CompactFooter";
 import { EventRail } from "@/showcase/app-shell/EventRail";
 import { LocationPicker } from "@/showcase/app-shell/LocationPicker";
 import { useAuth } from "@/showcase/auth/auth-context";
@@ -47,6 +48,7 @@ const INTEREST_TO_CATEGORY: Record<string, Exclude<CategoryId, "all">> = {
   sports: "sports",
   arts: "culture",
   food: "food",
+  religion: "religion",
   gaming: "tech",
   networking: "business",
   workshops: "tech",
@@ -503,6 +505,7 @@ function AppHome() {
           <AppEventGrid events={popular} className="app-home-event-rail" label="Popular events" />
         </section>
       ) : null}
+      <CompactFooter />
     </div>
   );
 }

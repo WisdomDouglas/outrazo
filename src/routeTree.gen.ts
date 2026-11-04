@@ -55,6 +55,7 @@ import { Route as AdminScoutIndexRouteImport } from './routes/admin.scout.index'
 import { Route as AdminScoutRunIdRouteImport } from './routes/admin.scout.$runId'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
 import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
+import { Route as ApiEventShareImageEventIdRouteImport } from './routes/api.event-share-image.$eventId'
 import { Route as ApiWebhooksPromotionsRouteImport } from './routes/api.webhooks.promotions'
 import { Route as ApiWebhooksTicketsRouteImport } from './routes/api.webhooks.tickets'
 import { Route as AppOrganizerIndexRouteImport } from './routes/app.organizer.index'
@@ -307,6 +308,12 @@ const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
   path: '/$userId',
   getParentRoute: () => AdminUsersRoute,
 } as any)
+const ApiEventShareImageEventIdRoute =
+  ApiEventShareImageEventIdRouteImport.update({
+    id: '/api/event-share-image/$eventId',
+    path: '/api/event-share-image/$eventId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiWebhooksPromotionsRoute = ApiWebhooksPromotionsRouteImport.update({
   id: '/api/webhooks/promotions',
   path: '/api/webhooks/promotions',
@@ -444,6 +451,7 @@ export interface FileRoutesByFullPath {
   '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/scout/$runId': typeof AdminScoutRunIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/api/event-share-image/$eventId': typeof ApiEventShareImageEventIdRoute
   '/api/webhooks/promotions': typeof ApiWebhooksPromotionsRoute
   '/api/webhooks/tickets': typeof ApiWebhooksTicketsRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
@@ -502,6 +510,7 @@ export interface FileRoutesByTo {
   '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/scout/$runId': typeof AdminScoutRunIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/api/event-share-image/$eventId': typeof ApiEventShareImageEventIdRoute
   '/api/webhooks/promotions': typeof ApiWebhooksPromotionsRoute
   '/api/webhooks/tickets': typeof ApiWebhooksTicketsRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
@@ -569,6 +578,7 @@ export interface FileRoutesById {
   '/admin/reports/$reportId': typeof AdminReportsReportIdRoute
   '/admin/scout/$runId': typeof AdminScoutRunIdRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/api/event-share-image/$eventId': typeof ApiEventShareImageEventIdRoute
   '/api/webhooks/promotions': typeof ApiWebhooksPromotionsRoute
   '/api/webhooks/tickets': typeof ApiWebhooksTicketsRoute
   '/app/organizer/attendees': typeof AppOrganizerAttendeesRoute
@@ -637,6 +647,7 @@ export interface FileRouteTypes {
     | '/admin/reports/$reportId'
     | '/admin/scout/$runId'
     | '/admin/users/$userId'
+    | '/api/event-share-image/$eventId'
     | '/api/webhooks/promotions'
     | '/api/webhooks/tickets'
     | '/app/organizer/attendees'
@@ -695,6 +706,7 @@ export interface FileRouteTypes {
     | '/admin/reports/$reportId'
     | '/admin/scout/$runId'
     | '/admin/users/$userId'
+    | '/api/event-share-image/$eventId'
     | '/api/webhooks/promotions'
     | '/api/webhooks/tickets'
     | '/app/organizer/attendees'
@@ -761,6 +773,7 @@ export interface FileRouteTypes {
     | '/admin/reports/$reportId'
     | '/admin/scout/$runId'
     | '/admin/users/$userId'
+    | '/api/event-share-image/$eventId'
     | '/api/webhooks/promotions'
     | '/api/webhooks/tickets'
     | '/app/organizer/attendees'
@@ -800,6 +813,7 @@ export interface RootRouteChildren {
   OrganizersOrganizerIdRoute: typeof OrganizersOrganizerIdRoute
   Char91__componentChar93PreviewSplatRoute: typeof Char91__componentChar93PreviewSplatRoute
   Char91__mockupChar93PreviewSplatRoute: typeof Char91__mockupChar93PreviewSplatRoute
+  ApiEventShareImageEventIdRoute: typeof ApiEventShareImageEventIdRoute
   ApiWebhooksPromotionsRoute: typeof ApiWebhooksPromotionsRoute
   ApiWebhooksTicketsRoute: typeof ApiWebhooksTicketsRoute
 }
@@ -1128,6 +1142,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersUserIdRouteImport
       parentRoute: typeof AdminUsersRoute
     }
+    '/api/event-share-image/$eventId': {
+      id: '/api/event-share-image/$eventId'
+      path: '/api/event-share-image/$eventId'
+      fullPath: '/api/event-share-image/$eventId'
+      preLoaderRoute: typeof ApiEventShareImageEventIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/webhooks/promotions': {
       id: '/api/webhooks/promotions'
       path: '/api/webhooks/promotions'
@@ -1455,6 +1476,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91__componentChar93PreviewSplatRoute:
     Char91__componentChar93PreviewSplatRoute,
   Char91__mockupChar93PreviewSplatRoute: Char91__mockupChar93PreviewSplatRoute,
+  ApiEventShareImageEventIdRoute: ApiEventShareImageEventIdRoute,
   ApiWebhooksPromotionsRoute: ApiWebhooksPromotionsRoute,
   ApiWebhooksTicketsRoute: ApiWebhooksTicketsRoute,
 }

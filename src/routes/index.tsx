@@ -39,6 +39,8 @@ import { useDiscovery } from "@/showcase/discovery/use-discovery";
 import { CITIES, TONIGHT_EVENTS, toEventCardProps } from "@/showcase/sample-data";
 import { TonightCoverflow } from "@/showcase/landing/TonightCoverflow";
 
+const LANDING_CATEGORIES = CATEGORIES.filter(({ id }) => id !== "religion");
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -403,7 +405,7 @@ function Landing() {
             trackClassName="-mx-md px-md"
             slideClassName="w-[200px]"
           >
-            {CATEGORIES.map(({ id, label, icon: Icon, count }) => (
+            {LANDING_CATEGORIES.map(({ id, label, icon: Icon, count }) => (
               <CategoryCard
                 key={id}
                 label={label}
@@ -417,7 +419,7 @@ function Landing() {
           </div>
 
           <ul className="hidden gap-md lg:grid lg:grid-cols-4">
-            {CATEGORIES.map(({ id, label, icon: Icon, count }, index) => (
+            {LANDING_CATEGORIES.map(({ id, label, icon: Icon, count }, index) => (
               <li key={id} data-landing-reveal="ready" style={{ animationDelay: `${index * 45}ms` }}>
                   <CategoryCard
                     label={label}

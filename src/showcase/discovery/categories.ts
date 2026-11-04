@@ -1,5 +1,6 @@
 import {
   Briefcase,
+  Church,
   Laptop,
   LayoutGrid,
   Music,
@@ -33,6 +34,7 @@ const defs: Array<{ id: CategoryId; label: string; icon: LucideIcon }> = [
   { id: "culture", label: "Culture", icon: Palette },
   { id: "food", label: "Food", icon: UtensilsCrossed },
   { id: "sports", label: "Sports", icon: Trophy },
+  { id: "religion", label: "Religion", icon: Church },
 ];
 
 /** Counts derive from the demo dataset so labels never drift from the data. */

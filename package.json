@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@lovable.dev/cloud-auth-js": "^1.1.2",
+    "@resvg/resvg-wasm": "^2.6.2",
     "@supabase/supabase-js": "^2.116.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
