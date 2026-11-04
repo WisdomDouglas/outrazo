@@ -1350,3 +1350,107 @@ html:not(.light) .nearby-map-card:hover {
   .app-mobile-nav--hidden { transform: none; opacity: 1; pointer-events: auto; }
   .app-mobile-nav-item { transition: none; }
 }
+/* Payment success ribbon — slides down, rests exactly 5s, falls away (see SuccessRibbon.tsx). */
+.success-ribbon {
+  position: fixed;
+  z-index: 60;
+  top: calc(env(safe-area-inset-top, 0px) + var(--spacing-md));
+  left: 50%;
+  translate: -50% 0;
+  width: max-content;
+  max-width: min(calc(100vw - var(--spacing-xl)), 340px);
+  animation: success-ribbon-enter 620ms cubic-bezier(.22, 1.18, .36, 1) both;
+}
+@media (min-width: 640px) {
+  .success-ribbon { left: auto; right: var(--spacing-xl); translate: 0 0; }
+}
+.success-ribbon--exiting { animation: success-ribbon-exit 450ms cubic-bezier(.5, 0, .75, 0) both; }
+.success-ribbon__card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--outrazo-radius-full);
+  color: #ffffff;
+  background: linear-gradient(135deg, #0d8a5f 0%, #0a6b4a 55%, #084f38 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .28),
+    inset 0 -2px 6px rgba(0, 0, 0, .22),
+    0 14px 34px rgba(4, 60, 42, .45);
+}
+/* A single satin sheen sweep — runs once, never loops. */
+.success-ribbon__card::after {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 44%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .35), transparent);
+  transform: skewX(-18deg);
+  animation: success-ribbon-sheen 1.5s cubic-bezier(.4, 0, .2, 1) 250ms both;
+  pointer-events: none;
+}
+.success-ribbon__seal {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .16);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, .35), 0 1px 3px rgba(0, 0, 0, .3);
+}
+.success-ribbon__seal svg { width: 16px; height: 16px; }
+.success-ribbon__seal path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: success-ribbon-check 480ms cubic-bezier(.65, 0, .35, 1) 300ms forwards;
+}
+.success-ribbon__text { display: grid; gap: 1px; min-width: 0; }
+.success-ribbon__title { font-size: 14px; font-weight: 700; letter-spacing: .01em; text-shadow: 0 1px 2px rgba(0, 0, 0, .3); }
+.success-ribbon__detail {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, .82);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+/* A small hanging notch tail, like an award ribbon. */
+.success-ribbon__tail {
+  width: 18px;
+  height: 12px;
+  margin: -2px auto 0;
+  background: linear-gradient(180deg, #0a6b4a, #063a29);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 62%, 0 100%);
+  filter: drop-shadow(0 3px 4px rgba(4, 60, 42, .4));
+}
+@keyframes success-ribbon-enter {
+  from { opacity: 0; transform: translateY(-110%) rotate(-2.5deg) scale(.96); }
+  60% { opacity: 1; transform: translateY(7px) rotate(.5deg) scale(1.005); }
+  to { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+}
+@keyframes success-ribbon-exit {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(30px); }
+}
+@keyframes success-ribbon-sheen {
+  from { translate: -140% 0; }
+  to { translate: 320% 0; }
+}
+@keyframes success-ribbon-check {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .success-ribbon { animation: success-ribbon-fade-in 200ms ease-out both; }
+  .success-ribbon--exiting { animation: success-ribbon-fade-out 200ms ease-in both; }
+  .success-ribbon__card::after { animation: none; display: none; }
+  .success-ribbon__seal path { animation: none; stroke-dashoffset: 0; }
+}
+@keyframes success-ribbon-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes success-ribbon-fade-out { from { opacity: 1; } to { opacity: 0; } }

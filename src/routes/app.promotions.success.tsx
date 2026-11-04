@@ -4,6 +4,7 @@ import { Button } from "@/design-system/components/Button";
 import { EmptyState } from "@/design-system/components/EmptyState";
 import { ErrorState } from "@/design-system/components/ErrorState";
 import { Skeleton } from "@/design-system/components/Skeleton";
+import { SuccessRibbon } from "@/design-system/components/SuccessRibbon";
 import { PromotionOrderStatusPanel } from "@/showcase/promotions/PromotionOrderStatusPanel";
 import { usePromotionOrderStatus } from "@/showcase/promotions/use-promotion-orders";
 
@@ -27,6 +28,12 @@ function PromotionSuccessPage() {
 
   return (
     <div className="grid gap-lg">
+      {order?.status === "paid" ? (
+        <SuccessRibbon
+          key={order.id}
+          detail={`${order.days}-${order.days === 1 ? "day" : "days"} boost is live`}
+        />
+      ) : null}
       <div>
         <h2 className="type-h2">Payment status</h2>
         <p className="type-body mt-xs text-muted-text">

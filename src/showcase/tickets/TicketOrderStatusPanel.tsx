@@ -7,7 +7,7 @@ import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
 import { formatKoboToNaira } from "@/showcase/promotions/promotion-windows";
 import { TICKET_STATUS_LABELS } from "./ticket-orders";
-import { TicketCodesList } from "./TicketCodes";
+import { TicketPassList } from "./TicketPass";
 import type { TicketOrderSummary } from "./ticket-functions";
 
 export function TicketStatusBadge({ status }: { status: string }) {
@@ -33,12 +33,14 @@ function formatDateTime(iso: string | null): string {
 
 export function TicketOrderStatusPanel({
   order,
+  holderName,
   polling,
   onRefresh,
   onResume,
   resuming,
 }: {
   order: TicketOrderSummary;
+  holderName: string;
   polling: boolean;
   onRefresh: () => void;
   onResume?: () => void;
@@ -97,7 +99,7 @@ export function TicketOrderStatusPanel({
           <p className="type-body">
             Your tickets are confirmed. Show a code below at the door — each code admits one person, once.
           </p>
-          <TicketCodesList orderId={order.orderId} />
+          <TicketPassList order={order} holderName={holderName} />
         </div>
       ) : null}
 

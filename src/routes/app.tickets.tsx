@@ -25,7 +25,9 @@ import { classifyReservationError, formatReservationDate } from "@/showcase/rsvp
 import { rememberReturnTo } from "@/showcase/saved/saved-events-store";
 import { TicketsHeroBackdrop } from "@/showcase/rsvp/TicketsHeroBackdrop";
 import { formatKoboToNaira } from "@/showcase/promotions/promotion-windows";
+import { TicketPassDialog } from "@/showcase/tickets/TicketPass";
 import { TicketStatusBadge } from "@/showcase/tickets/TicketOrderStatusPanel";
+import type { TicketOrderSummary } from "@/showcase/tickets/ticket-functions";
 import { useMyTicketOrders as usePaidTicketOrders } from "@/showcase/tickets/use-ticket-orders";
 import { EVENTS, toEventCardProps } from "@/showcase/sample-data";
 
@@ -45,7 +47,7 @@ export const Route = createFileRoute("/app/tickets")({
 
 function TicketsPage() {
   const navigate = useNavigate();
-  const { session, loading: authLoading } = useAuth();
+  const { session, loading: authLoading, displayName } = useAuth();
   const userId = session?.user.id ?? null;
   const [tickets, setTickets] = useState<MyReservation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -172,7 +174,7 @@ function TicketsPage() {
           </div>
         ) : null}
 
-        {userId ? <PaidTicketOrders /> : null}
+        {userId ? <PaidTicketOrders holderName={displayName} /> : null}
 
         {/* Loading Skeletons */}
         {authLoading || loading ? (
@@ -390,8 +392,9 @@ function TicketsPage() {
   );
 }
 
-function PaidTicketOrders() {
+function PaidTicketOrders({ holderName }: { holderName: string }) {
   const paid = usePaidTicketOrders();
+  const [passOrder, setPassOrder] = useState<TicketOrderSummary | null>(null);
   if (paid.loading) {
     return (
       <section aria-label="Paid tickets" className="mb-6 grid gap-4 sm:mb-10">
@@ -412,7 +415,10 @@ function PaidTicketOrders() {
   return (
     <section aria-label="Paid tickets" className="mb-6 grid gap-4 sm:mb-10">
       <h2 className="type-h3">Paid tickets</h2>
-      {paid.notice ? (
+      {paid.syncing ? (
+        <p className="type-body rounded-lg border border-line bg-card px-md py-sm text-muted-text" role="status">Confirming pending payments…</p>
+) : null}
+{paid.notice ? (
         <p className="type-body rounded-lg border border-line bg-card px-md py-sm" role="status">{paid.notice}</p>
       ) : null}
       {paid.actionError ? (
@@ -439,15 +445,22 @@ function PaidTicketOrders() {
                 </div>
               </div>
               <div className="mt-md flex flex-wrap gap-sm">
-                <Link
-                  to="/app/tickets/success"
-                  search={{ order: order.orderId }}
-                  className="focus-ring rounded-full"
-                >
-                  <Button type="button" variant="outline" size="sm">View</Button>
-                </Link>
-                {order.status === "pending" ? (
+                {order.status === "paid" ? (
+                  <Button type="button" variant="outline" size="sm" onClick={() => setPassOrder(order)}>
+                    View tickets
+                  </Button>
+                ) : order.status === "pending" ? (
                   <>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      loading={paid.busyId === order.orderId}
+                      disabled={paid.busyId !== null}
+                      onClick={() => void paid.checkOrder(order.orderId)}
+                    >
+                      Check status
+                    </Button>
                     <Button
                       type="button"
                       variant="transactional"
@@ -469,12 +482,21 @@ function PaidTicketOrders() {
                       Cancel
                     </Button>
                   </>
-                ) : null}
+                ) : (
+                  <Link
+                    to="/app/tickets/success"
+                    search={{ order: order.orderId }}
+                    className="focus-ring rounded-full"
+                  >
+                    <Button type="button" variant="outline" size="sm">Details</Button>
+                  </Link>
+                )}
               </div>
             </li>
           );
         })}
       </ul>
+      <TicketPassDialog order={passOrder} holderName={holderName} open={passOrder !== null} onClose={() => setPassOrder(null)} />
     </section>
   );
 }

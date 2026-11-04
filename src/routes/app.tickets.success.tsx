@@ -4,6 +4,8 @@ import { z } from "zod";
 import { Button } from "@/design-system/components/Button";
 import { ErrorState } from "@/design-system/components/ErrorState";
 import { Skeleton } from "@/design-system/components/Skeleton";
+import { SuccessRibbon } from "@/design-system/components/SuccessRibbon";
+import { useAuth } from "@/showcase/auth/auth-context";
 import { TicketOrderStatusPanel } from "@/showcase/tickets/TicketOrderStatusPanel";
 import { useMyTicketOrders, useTicketOrderStatus } from "@/showcase/tickets/use-ticket-orders";
 
@@ -23,11 +25,24 @@ export const Route = createFileRoute("/app/tickets/success")({
 
 function TicketSuccessPage() {
   const { order: orderId } = Route.useSearch();
+  const { displayName } = useAuth();
   const { order, loading, polling, error, refresh } = useTicketOrderStatus(orderId);
   const { resumeOrder, busyId } = useMyTicketOrders();
 
+  const ticketCount = order?.lines.reduce((sum, line) => sum + line.quantity, 0) ?? 0;
+
   return (
     <div className="mx-auto grid w-full max-w-[720px] gap-lg px-md py-xl lg:px-xl">
+      {order?.status === "paid" ? (
+        <SuccessRibbon
+          key={order.orderId}
+          detail={
+            ticketCount > 0
+              ? `${ticketCount} ${ticketCount === 1 ? "ticket" : "tickets"} · ${order.eventTitle}`
+              : order.eventTitle
+          }
+        />
+      ) : null}
       <div>
         <h2 className="type-h2">Payment complete</h2>
         <p className="type-body mt-xs text-muted-text">
@@ -47,6 +62,7 @@ function TicketSuccessPage() {
       ) : order ? (
         <TicketOrderStatusPanel
           order={order}
+          holderName={displayName}
           polling={polling}
           onRefresh={refresh}
           onResume={() => void resumeOrder(order)}

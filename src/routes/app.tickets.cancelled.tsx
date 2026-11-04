@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Button } from "@/design-system/components/Button";
 import { ErrorState } from "@/design-system/components/ErrorState";
 import { Skeleton } from "@/design-system/components/Skeleton";
+import { useAuth } from "@/showcase/auth/auth-context";
 import { TicketOrderStatusPanel } from "@/showcase/tickets/TicketOrderStatusPanel";
 import { useMyTicketOrders, useTicketOrderStatus } from "@/showcase/tickets/use-ticket-orders";
 
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/app/tickets/cancelled")({
 
 function TicketCancelledPage() {
   const { order: orderId } = Route.useSearch();
+  const { displayName } = useAuth();
   const { order, loading, polling, error, refresh } = useTicketOrderStatus(orderId);
   const { resumeOrder, busyId } = useMyTicketOrders();
 
@@ -44,6 +46,7 @@ function TicketCancelledPage() {
       ) : order ? (
         <TicketOrderStatusPanel
           order={order}
+          holderName={displayName}
           polling={polling}
           onRefresh={refresh}
           onResume={() => void resumeOrder(order)}

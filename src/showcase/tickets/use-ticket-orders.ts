@@ -29,8 +29,10 @@ export interface MyTicketOrdersState {
   error: string | null;
   notice: string | null;
   busyId: string | null;
+  syncing: boolean;
   actionError: string | null;
   refresh: () => void;
+  checkOrder: (orderId: string) => Promise<void>;
   resumeOrder: (order: TicketOrderSummary) => Promise<void>;
   cancelOrder: (orderId: string) => Promise<void>;
   dismissNotice: () => void;
@@ -43,8 +45,10 @@ export function useMyTicketOrders(): MyTicketOrdersState {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [request, setRequest] = useState(0);
+  const verifiedRef = useRef<Set<string>>(new Set());
 
   const refresh = useCallback(() => setRequest((n) => n + 1), []);
   const dismissNotice = useCallback(() => {
@@ -70,6 +74,44 @@ export function useMyTicketOrders(): MyTicketOrdersState {
         if (!active) return;
         setOrders(result.orders);
         setLoading(false);
+        // Heal "paid but still shows pending": re-verify each pending order
+        // once against live provider truth (e.g. the buyer returned before
+        // the webhook landed). Failures keep the stored row; the buyer can
+        // retry with Check status.
+        const stale = result.orders.filter(
+          (order) => order.status === "pending" && !verifiedRef.current.has(order.orderId),
+        );
+        if (stale.length === 0) return;
+        setSyncing(true);
+        const headers = { Authorization: `Bearer ${token}` };
+        void (async () => {
+          const updates = new Map<string, TicketOrderSummary>();
+          for (const staleOrder of stale) {
+            verifiedRef.current.add(staleOrder.orderId);
+            try {
+              const refreshed = await refreshTicketOrder({
+                data: { orderId: staleOrder.orderId },
+                headers,
+              });
+              updates.set(staleOrder.orderId, refreshed.order);
+            } catch {
+              // Keep the stored row.
+            }
+          }
+          if (!active) return;
+          if (updates.size > 0) {
+            setOrders((current) =>
+              current.map((order) => updates.get(order.orderId) ?? order),
+            );
+            const settled = [...updates.values()].filter((order) => order.status === "paid").length;
+            if (settled > 0) {
+              setNotice(
+                `Payment confirmed — ${settled} ${settled === 1 ? "order" : "orders"} updated. Your tickets are ready below.`,
+              );
+            }
+          }
+          setSyncing(false);
+        })();
       },
       (caught: unknown) => {
         if (!active) return;
@@ -81,6 +123,35 @@ export function useMyTicketOrders(): MyTicketOrdersState {
       active = false;
     };
   }, [request, token]);
+
+  const checkOrder = useCallback(
+    async (orderId: string) => {
+      if (!token || busyId) return;
+      setBusyId(orderId);
+      setNotice(null);
+      setActionError(null);
+      try {
+        const refreshed = await refreshTicketOrder({
+          data: { orderId },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        verifiedRef.current.add(orderId);
+        setOrders((current) =>
+          current.map((order) => (order.orderId === orderId ? refreshed.order : order)),
+        );
+        if (refreshed.order.status === "paid") {
+          setNotice("Payment confirmed — your tickets are ready below.");
+        } else {
+          setNotice("Still awaiting payment confirmation. If you already paid, it usually lands within a minute — check again shortly.");
+        }
+      } catch (caught) {
+        setActionError(friendlyTicketError(caught));
+      } finally {
+        setBusyId(null);
+      }
+    },
+    [busyId, token],
+  );
 
   const resumeOrder = useCallback(
     async (order: TicketOrderSummary) => {
@@ -148,8 +219,10 @@ export function useMyTicketOrders(): MyTicketOrdersState {
     error,
     notice,
     busyId,
+    syncing,
     actionError,
     refresh,
+    checkOrder,
     resumeOrder,
     cancelOrder,
     dismissNotice,
