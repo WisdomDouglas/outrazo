@@ -286,6 +286,13 @@ html.light .brand-logo-light { display: block; }
 .spotlight-count { color: #687870; font: 600 12px/1 var(--outrazo-font-body); font-variant-numeric: tabular-nums; }
 /* Explore promoted cards: same grid card with an emerald ring + Promoted tag. */
 .event-card--promoted { outline: 1.5px solid rgba(0,184,120,.6); outline-offset: -1.5px; }
+
+/* Explore, Tickets & Create Event hero backdrop blending */
+.explore-hero-image-dark, .tickets-hero-image-dark, .create-hero-image-dark { display: block; opacity: 0.38; }
+.explore-hero-image-light, .tickets-hero-image-light, .create-hero-image-light { display: none; }
+html.light .explore-hero-image-dark, html.light .tickets-hero-image-dark, html.light .create-hero-image-dark { display: none; }
+html.light .explore-hero-image-light, html.light .tickets-hero-image-light, html.light .create-hero-image-light { display: block; opacity: 0.22; mix-blend-mode: multiply; }
+
 html:not(.light) .spotlight-card { border-color: rgba(190,219,202,.16); background: #0e2219; box-shadow: 0 10px 32px rgba(0,0,0,.35); }
 html:not(.light) .spotlight-media { background: #143024; }
 html:not(.light) .spotlight-kicker { color: #7fe3b6; }

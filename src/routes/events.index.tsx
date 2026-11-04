@@ -1,27 +1,49 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ChevronDown, MapPin, SearchX, SlidersHorizontal } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  Calendar,
+  ChevronDown,
+  Compass,
+  MapPin,
+  Plus,
+  RotateCcw,
+  SearchX,
+  SlidersHorizontal,
+  Sparkles,
+  Ticket,
+  X,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
 import { CategoryChip } from "@/design-system/components/CategoryChip";
-import { EmptyState } from "@/design-system/components/EmptyState";
 import { CityCard } from "@/design-system/components/CityCard";
-import { EventCard } from "@/design-system/components/EventCard";
+import { EmptyState } from "@/design-system/components/EmptyState";
 import { ErrorState } from "@/design-system/components/ErrorState";
+import { EventCard } from "@/design-system/components/EventCard";
 import { Reveal } from "@/design-system/components/Reveal";
-import { SearchField } from "@/design-system/components/SearchField";
 import { CATEGORIES } from "@/showcase/discovery/categories";
 import {
   DEFAULT_EVENT_FILTERS,
   EventFiltersPanel,
   type EventFilters,
 } from "@/showcase/discovery/EventFiltersPanel";
-import { useDiscovery } from "@/showcase/discovery/use-discovery";
-import { NLSearchBox } from "@/showcase/discovery/NLSearchBox";
+import { ExploreSearchBar } from "@/showcase/discovery/ExploreSearchBar";
+import { ExploreHeroBackdrop } from "@/showcase/discovery/ExploreHeroBackdrop";
 import { interpretDiscoveryQuery } from "@/showcase/discovery/interpretDiscoveryQuery";
-import { describeNLFilters, matchNLQuery, nlLocationLabel, type NLDiscoveryFilters } from "@/showcase/discovery/nl-matching";
-import { displayLocationLabel, matchLocationSelection, NIGERIAN_STATES } from "@/showcase/discovery/locations";
+import {
+  displayLocationLabel,
+  matchLocationSelection,
+  NIGERIAN_STATES,
+} from "@/showcase/discovery/locations";
+import {
+  describeNLFilters,
+  matchNLQuery,
+  nlLocationLabel,
+  type NLDiscoveryFilters,
+} from "@/showcase/discovery/nl-matching";
+import { useDiscovery } from "@/showcase/discovery/use-discovery";
 import { boostPromotedPlacement } from "@/showcase/promotions/active-promotions";
 import { useActivePromotions } from "@/showcase/promotions/use-active-promotions";
 import {
@@ -111,6 +133,7 @@ function ExploreEvents() {
   const nlRequestId = useRef(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [showAllStates, setShowAllStates] = useState(false);
+  const [stateSearch, setStateSearch] = useState("");
   const [appliedFilters, setAppliedFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const [draftFilters, setDraftFilters] = useState<EventFilters>(INITIAL_FILTERS);
   const filterTriggerRef = useRef<HTMLButtonElement>(null);
@@ -118,7 +141,6 @@ function ExploreEvents() {
   const setCategory = discovery.setCategory;
   const { promotions } = useActivePromotions();
 
-  // Deep links such as /events?category=music preselect the category rail.
   useEffect(() => {
     if (categoryParam && CATEGORIES.some((item) => item.id === categoryParam)) {
       setCategory(categoryParam as CategoryId);
@@ -130,9 +152,6 @@ function ExploreEvents() {
     [appliedFilters, discovery.city, discovery.events],
   );
 
-  // An explicit NL location replaces the selected-location constraints for
-  // that search; every other manual filter still applies. Clearing the NL
-  // search restores normal browsing automatically.
   const nlLocationOverride = Boolean(nlFilters?.location);
   const nlBaseEvents = useMemo(() => {
     if (!nlLocationOverride) return filteredEvents;
@@ -156,9 +175,6 @@ function ExploreEvents() {
     return keyworded.filter((event) => matchNLQuery(event, nlFilters));
   }, [nlBaseEvents, query, nlFilters]);
 
-  // Promoted cards ride on the filtered results: only promotions matching the
-  // current search, category, and filters appear, tagged in place with at most
-  // two boosted into early slots. Filtering, ordering, and counts are intact.
   const promotedIds = useMemo(
     () => new Set(promotions.map((promotion) => promotion.eventId)),
     [promotions],
@@ -173,9 +189,9 @@ function ExploreEvents() {
     [discovery.city, discovery.events, draftFilters],
   );
 
-  const activeFilterCount = [appliedFilters.date, appliedFilters.price].filter(
-    (value) => value !== "any",
-  ).length + (appliedFilters.location === "near" ? 0 : 1);
+  const activeFilterCount =
+    [appliedFilters.date, appliedFilters.price].filter((value) => value !== "any").length +
+    (appliedFilters.location === "near" ? 0 : 1);
 
   const displayedLocation = discovery.city
     ? displayLocationLabel(discovery.city)
@@ -184,6 +200,15 @@ function ExploreEvents() {
       : appliedFilters.location === "any"
         ? "All locations"
         : DEMO_LOCATION;
+
+  // Category counts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: discovery.allEvents.length };
+    for (const event of discovery.allEvents) {
+      counts[event.category] = (counts[event.category] ?? 0) + 1;
+    }
+    return counts;
+  }, [discovery.allEvents]);
 
   const closeFilters = useCallback(() => {
     setFiltersOpen(false);
@@ -238,183 +263,412 @@ function ExploreEvents() {
     navigate({ to: "/events", search: {} });
   }, [clearNL, discovery, navigate]);
 
+  const handleKeywordSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    navigate({ to: "/events", search: { q: query.trim() || undefined } });
+  };
+
+  const handleKeywordClear = () => {
+    setQuery("");
+    navigate({ to: "/events", search: {} });
+  };
+
+  const toggleWeekend = () => {
+    setAppliedFilters((prev) => ({
+      ...prev,
+      date: prev.date === "weekend" ? "any" : "weekend",
+    }));
+  };
+
+  const toggleFree = () => {
+    setAppliedFilters((prev) => ({
+      ...prev,
+      price: prev.price === "free" ? "any" : "free",
+    }));
+  };
+
   const nlPlaceLabel = nlFilters ? nlLocationLabel(nlFilters) : null;
   const emptyState = nlFilters
     ? {
-        title: nlPlaceLabel ? `No events found in ${nlPlaceLabel}.` : "No events match that description.",
+        title: nlPlaceLabel
+          ? `No events found in ${nlPlaceLabel}.`
+          : "No events match that description.",
         description: "Try fewer details, clear the AI search, or browse everything instead.",
         label: "Clear AI search",
         action: clearNL,
       }
     : query.trim()
       ? {
-        title: "Nothing matches your search.",
-        description: "Try a different keyword or explore another category.",
-        label: "Clear search",
-        action: () => {
-          setQuery("");
-          navigate({ to: "/events", search: {} });
-        },
-      }
-    : discovery.category !== "all"
-      ? {
-          title: "Nothing happening here yet.",
-          description: "Try another category or explore all events.",
-          label: "Explore all events",
-          action: resetAll,
+          title: "Nothing matches your search.",
+          description: "Try a different keyword or explore another category.",
+          label: "Clear search",
+          action: handleKeywordClear,
         }
-      : discovery.city || appliedFilters.location !== "any"
+      : discovery.category !== "all"
         ? {
-            title: "No events found in this location yet.",
-            description: "Try another location or explore events across Nigeria.",
-            label: "Explore other locations",
-            action: () => {
-              discovery.setCity(null);
-              setAppliedFilters({ ...appliedFilters, location: "any" });
-            },
-          }
-        : {
             title: "Nothing happening here yet.",
             description: "Try another category or explore all events.",
             label: "Explore all events",
             action: resetAll,
-          };
+          }
+        : discovery.city || appliedFilters.location !== "any"
+          ? {
+              title: "No events found in this location yet.",
+              description: "Try another location or explore events across Nigeria.",
+              label: "Explore other locations",
+              action: () => {
+                discovery.setCity(null);
+                setAppliedFilters({ ...appliedFilters, location: "any" });
+              },
+            }
+          : {
+              title: "Nothing happening here yet.",
+              description: "Try another category or explore all events.",
+              label: "Explore all events",
+              action: resetAll,
+            };
+
+  const hasActiveFilters =
+    Boolean(query.trim()) ||
+    Boolean(nlFilters) ||
+    discovery.category !== "all" ||
+    Boolean(discovery.city) ||
+    appliedFilters.location !== "near" ||
+    appliedFilters.date !== "any" ||
+    appliedFilters.price !== "any";
+
+  const filteredStates = useMemo(() => {
+    if (!stateSearch.trim()) return NIGERIAN_STATES;
+    const q = stateSearch.toLowerCase();
+    return NIGERIAN_STATES.filter(
+      (s) => s.name.toLowerCase().includes(q) || s.capital.toLowerCase().includes(q),
+    );
+  }, [stateSearch]);
 
   return (
     <div className="min-h-screen bg-canvas text-primary-text">
-      <header className="border-b border-line">
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-lg px-md py-xl lg:px-xl">
-          <div className="flex items-center justify-between gap-md">
+      {/* =========================================================================
+          HERO SECTION: Balanced for both Mobile & Desktop, blends in both themes
+          ========================================================================= */}
+      <section className="relative isolate overflow-hidden pt-4 pb-8 sm:pt-8 sm:pb-14 lg:pt-10 lg:pb-16">
+        <ExploreHeroBackdrop />
+
+        <div className="mx-auto flex max-w-[1240px] flex-col px-3.5 sm:px-6 lg:px-8">
+          {/* Top Navigation Row: compact & non-wrapping on mobile */}
+          <div className="flex items-center justify-between gap-2 mb-6 sm:mb-10">
             <Link
               to="/"
-              className="focus-ring type-body inline-flex items-center gap-xs rounded-full text-muted-text hover:text-primary-text"
+              className="focus-ring group inline-flex items-center gap-1.5 rounded-full border border-line bg-card/70 backdrop-blur-md px-3 py-1.5 text-xs font-medium text-muted-text hover:text-primary-text hover:border-line-strong transition-colors shrink-0"
+              aria-label="Back to home"
             >
-              <ArrowLeft aria-hidden className="size-4" />
-              Back home
+              <ArrowLeft
+                aria-hidden="true"
+                className="size-3.5 transition-transform duration-200 group-hover:-translate-x-0.5"
+              />
+              <span>Back home</span>
             </Link>
-            <Link
-              to="/app/create-event"
-              className="focus-ring rounded-full"
-              aria-label="Post your event"
-            >
-              <Button size="sm">Post Your Event</Button>
-            </Link>
-          </div>
 
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-md sm:flex sm:flex-wrap sm:justify-between">
-            <div className="min-w-0">
-              <h1 className="type-h1">Explore events</h1>
-              <p className="type-body mt-xs text-muted-text">Discover what's happening near you.</p>
-            </div>
-            <div className="flex shrink-0 items-center gap-sm">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                leadingIcon={<MapPin aria-hidden className="size-4 text-accent" />}
-                className="border border-line bg-card px-md"
+                leadingIcon={<MapPin aria-hidden="true" className="size-3.5 text-accent" />}
+                className="rounded-full border border-line bg-card/70 backdrop-blur-md px-2.5 sm:px-3 text-xs font-semibold h-8"
                 onClick={openFilters}
+                aria-label={`Change location: Currently set to ${displayedLocation}`}
               >
-                {displayedLocation}
+                <span className="max-w-[85px] sm:max-w-none truncate">{displayedLocation}</span>
+                <ChevronDown aria-hidden="true" className="size-3 text-muted-text" />
               </Button>
-              <button
-                type="button"
-                onClick={openFilters}
-                className="focus-ring type-caption hidden rounded-full text-accent hover:text-accent-hover sm:inline-flex"
+
+              <Link
+                to="/app/create-event"
+                className="focus-ring rounded-full shrink-0"
+                aria-label="Post your event"
               >
-                Change
-              </button>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  leadingIcon={<Plus aria-hidden="true" className="size-3.5" />}
+                  className="rounded-full h-8 px-3 text-xs font-semibold"
+                >
+                  <span className="hidden sm:inline">Post Your Event</span>
+                  <span className="sm:hidden">Post</span>
+                </Button>
+              </Link>
             </div>
           </div>
 
-          <NLSearchBox
-            value={nlInput}
-            onChange={setNlInput}
-            onSubmit={submitNL}
-            loading={nlLoading}
-            error={nlError}
-            activeSummary={nlFilters ? describeNLFilters(nlFilters) : null}
-            onClear={clearNL}
-          />
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              navigate({ to: "/events", search: { q: query || undefined } });
-            }}
-            className="max-w-[520px]"
-          >
-            <SearchField
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              onClear={() => setQuery("")}
-              placeholder="Search events, places, or communities..."
-            />
-          </form>
+          {/* Calm, Proportional Hero Narrative */}
+          <div className="text-center max-w-[620px] mx-auto mb-5 sm:mb-8 px-2">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-primary-text leading-tight">
+              Explore events
+            </h1>
+            <p className="type-body text-muted-text mt-1.5 sm:mt-2 text-xs sm:text-base">
+              Discover concerts, exhibitions, tech gatherings, and experiences happening near you.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-sm">
-            <div className="ds-rail -ml-md flex min-w-0 gap-sm overflow-x-auto px-md pb-xs lg:ml-0 lg:px-0">
-              {CATEGORIES.map(({ id, label, icon: Icon }) => (
+          {/* Balanced Search Bar with Repositioned AI Search Switcher */}
+          <ExploreSearchBar
+            keywordValue={query}
+            onKeywordChange={setQuery}
+            onKeywordSubmit={handleKeywordSubmit}
+            onKeywordClear={handleKeywordClear}
+            nlValue={nlInput}
+            onNlChange={setNlInput}
+            onNlSubmit={submitNL}
+            nlLoading={nlLoading}
+            nlError={nlError}
+            nlActiveSummary={nlFilters ? describeNLFilters(nlFilters) : null}
+            onNlClear={clearNL}
+          />
+        </div>
+      </section>
+
+      {/* =========================================================================
+          STICKY CATEGORY & FILTER RAIL
+          ========================================================================= */}
+      <nav
+        aria-label="Category and filter navigation"
+        className="sticky top-0 z-30 border-y border-line/60 bg-canvas/90 backdrop-blur-md py-2 transition-colors"
+      >
+        <div className="mx-auto flex max-w-[1240px] items-center justify-between gap-2 px-3.5 sm:px-6 lg:px-8">
+          {/* Scrollable Categories Rail with smooth padding on mobile */}
+          <div
+            role="tablist"
+            aria-label="Event categories"
+            className="ds-rail -ml-3.5 sm:ml-0 flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto px-3.5 sm:px-0 py-0.5"
+          >
+            {CATEGORIES.map(({ id, label, icon: Icon }) => {
+              const active = discovery.category === id;
+              const count = categoryCounts[id];
+              return (
                 <CategoryChip
                   key={id}
-                  icon={<Icon aria-hidden className="size-4" />}
-                  active={discovery.category === id}
+                  icon={<Icon aria-hidden="true" className="size-3.5" />}
+                  active={active}
                   onClick={() => discovery.setCategory(id)}
-                  className="shrink-0"
+                  className="shrink-0 text-xs font-semibold py-1 px-3"
                 >
-                  {label}
+                  <span>{label}</span>
+                  {typeof count === "number" && count > 0 ? (
+                    <span
+                      className={`ml-1 text-[10px] rounded-full px-1.5 py-0.2 ${
+                        active
+                          ? "bg-on-accent/20 text-on-accent"
+                          : "bg-elevated text-subtle-text"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  ) : null}
                 </CategoryChip>
-              ))}
-            </div>
+              );
+            })}
+          </div>
+
+          {/* Quick Filter Actions */}
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={toggleWeekend}
+              aria-pressed={appliedFilters.date === "weekend"}
+              className={`focus-ring hidden sm:inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold border transition-colors ${
+                appliedFilters.date === "weekend"
+                  ? "bg-accent/15 border-accent text-accent"
+                  : "bg-card/60 border-line text-muted-text hover:text-primary-text"
+              }`}
+            >
+              <Calendar aria-hidden="true" className="size-3" />
+              <span>Weekend</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleFree}
+              aria-pressed={appliedFilters.price === "free"}
+              className={`focus-ring hidden md:inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold border transition-colors ${
+                appliedFilters.price === "free"
+                  ? "bg-accent/15 border-accent text-accent"
+                  : "bg-card/60 border-line text-muted-text hover:text-primary-text"
+              }`}
+            >
+              <Ticket aria-hidden="true" className="size-3" />
+              <span>Free</span>
+            </button>
+
             <Button
               ref={filterTriggerRef}
               type="button"
               variant="outline"
               size="sm"
-              leadingIcon={<SlidersHorizontal aria-hidden className="size-4" />}
-              className="shrink-0 px-md"
+              leadingIcon={<SlidersHorizontal aria-hidden="true" className="size-3.5" />}
+              className="shrink-0 rounded-full px-2.5 sm:px-3 text-xs font-semibold h-8"
               aria-expanded={filtersOpen}
               onClick={openFilters}
             >
-              Filters{activeFilterCount ? ` (${activeFilterCount})` : ""}
+              <span>Filters</span>
+              {activeFilterCount > 0 ? (
+                <span className="ml-1 grid size-4 place-items-center rounded-full bg-accent text-[10px] font-bold text-on-accent">
+                  {activeFilterCount}
+                </span>
+              ) : null}
             </Button>
           </div>
         </div>
-      </header>
+      </nav>
 
-      <main className="mx-auto max-w-[1200px] px-md py-xl lg:px-xl">
+      {/* =========================================================================
+          MAIN CONTENT FEED
+          ========================================================================= */}
+      <main className="mx-auto max-w-[1240px] px-3.5 sm:px-6 py-6 sm:py-8 lg:px-8 lg:py-10">
         {discovery.error ? (
           <ErrorState
-            className="mb-xl"
+            className="mb-6 sm:mb-8"
             title="Some events may be missing."
             description={discovery.error}
             onRetry={discovery.refreshEvents}
           />
         ) : null}
-        {discovery.city ? (
-          <div className="mb-lg flex items-center gap-sm">
-            <Badge variant="accent">
-              <MapPin aria-hidden className="size-3.5" />
-              {displayLocationLabel(discovery.city)}
-            </Badge>
+
+        {/* Active Filter Pills Bar */}
+        {hasActiveFilters ? (
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-card/40 p-2.5 sm:p-3">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-text mr-1">
+                Active filters:
+              </span>
+
+              {discovery.city ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-0.5 text-xs font-medium text-primary-text">
+                  <MapPin aria-hidden="true" className="size-3 text-accent" />
+                  <span>{displayLocationLabel(discovery.city)}</span>
+                  <button
+                    type="button"
+                    onClick={() => discovery.setCity(null)}
+                    className="focus-ring ml-0.5 rounded-full hover:text-transactional"
+                    aria-label={`Remove location filter for ${displayLocationLabel(discovery.city)}`}
+                  >
+                    <X aria-hidden="true" className="size-3" />
+                  </button>
+                </span>
+              ) : null}
+
+              {query.trim() ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-0.5 text-xs font-medium text-primary-text">
+                  <span>Search: &ldquo;{query.trim()}&rdquo;</span>
+                  <button
+                    type="button"
+                    onClick={handleKeywordClear}
+                    className="focus-ring ml-0.5 rounded-full hover:text-transactional"
+                    aria-label="Remove search query filter"
+                  >
+                    <X aria-hidden="true" className="size-3" />
+                  </button>
+                </span>
+              ) : null}
+
+              {nlFilters ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-0.5 text-xs font-medium text-primary-text">
+                  <Sparkles aria-hidden="true" className="size-3 text-accent" />
+                  <span>AI: {describeNLFilters(nlFilters)}</span>
+                  <button
+                    type="button"
+                    onClick={clearNL}
+                    className="focus-ring ml-0.5 rounded-full hover:text-transactional"
+                    aria-label="Remove AI filter"
+                  >
+                    <X aria-hidden="true" className="size-3" />
+                  </button>
+                </span>
+              ) : null}
+
+              {discovery.category !== "all" ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-0.5 text-xs font-medium text-primary-text">
+                  <span className="capitalize">{discovery.category}</span>
+                  <button
+                    type="button"
+                    onClick={() => discovery.setCategory("all")}
+                    className="focus-ring ml-0.5 rounded-full hover:text-transactional"
+                    aria-label="Remove category filter"
+                  >
+                    <X aria-hidden="true" className="size-3" />
+                  </button>
+                </span>
+              ) : null}
+
+              {appliedFilters.date !== "any" ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-0.5 text-xs font-medium text-primary-text">
+                  <Calendar aria-hidden="true" className="size-3" />
+                  <span className="capitalize">{appliedFilters.date}</span>
+                  <button
+                    type="button"
+                    onClick={() => setAppliedFilters((p) => ({ ...p, date: "any" }))}
+                    className="focus-ring ml-0.5 rounded-full hover:text-transactional"
+                    aria-label="Remove date filter"
+                  >
+                    <X aria-hidden="true" className="size-3" />
+                  </button>
+                </span>
+              ) : null}
+
+              {appliedFilters.price !== "any" ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-2.5 py-0.5 text-xs font-medium text-primary-text">
+                  <Ticket aria-hidden="true" className="size-3" />
+                  <span className="capitalize">{appliedFilters.price}</span>
+                  <button
+                    type="button"
+                    onClick={() => setAppliedFilters((p) => ({ ...p, price: "any" }))}
+                    className="focus-ring ml-0.5 rounded-full hover:text-transactional"
+                    aria-label="Remove price filter"
+                  >
+                    <X aria-hidden="true" className="size-3" />
+                  </button>
+                </span>
+              ) : null}
+            </div>
+
             <button
               type="button"
-              onClick={() => discovery.setCity(null)}
-              className="focus-ring type-caption rounded-full text-muted-text hover:text-primary-text"
+              onClick={resetAll}
+              className="focus-ring inline-flex items-center gap-1 text-xs font-semibold text-accent hover:text-accent-hover transition-colors"
             >
-              Clear location
+              <RotateCcw aria-hidden="true" className="size-3" />
+              <span>Reset all</span>
             </button>
           </div>
         ) : null}
 
-        {feed.length ? (
-          <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
+        {/* Feed Header */}
+        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-primary-text">
+              {discovery.category === "all"
+                ? "All Experiences"
+                : `${CATEGORIES.find((c) => c.id === discovery.category)?.label ?? discovery.category}`}
+            </h2>
+            <p className="type-caption text-muted-text mt-0.5 text-xs">
+              Showing {feed.length} {feed.length === 1 ? "event" : "events"} in {displayedLocation}
+            </p>
+          </div>
+        </div>
+
+        {/* Event Cards Grid: 1 column on mobile, 2 on tablet, 3 on desktop */}
+        {feed.length > 0 ? (
+          <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {feed.map(({ item: event, promoted }, index) => (
-              <Reveal key={event.id} delay={index * 40}>
+              <Reveal key={event.id} delay={index * 30}>
                 <EventCard
                   {...toEventCardProps(event)}
                   tag={promoted ? "Promoted" : event.tag}
                   tagVariant={promoted ? "accent" : event.tagVariant}
-                  className={promoted ? "event-card--promoted" : undefined}
+                  className={
+                    promoted
+                      ? "event-card--promoted transition-transform hover:scale-[1.01]"
+                      : "transition-transform hover:scale-[1.01]"
+                  }
                   saved={discovery.isSaved(event.id)}
                   onToggleSave={() => discovery.toggleSave(event.id)}
                 />
@@ -422,21 +676,77 @@ function ExploreEvents() {
             ))}
           </div>
         ) : (
-          <EmptyState
-            icon={<SearchX aria-hidden className="size-5" strokeWidth={2} />}
-            title={emptyState.title}
-            description={emptyState.description}
-            action={
-              <Button variant="outline" onClick={emptyState.action}>
-                {emptyState.label}
-              </Button>
-            }
-          />
+          <div className="space-y-8 sm:space-y-12">
+            <EmptyState
+              icon={<SearchX aria-hidden="true" className="size-5" strokeWidth={2} />}
+              title={emptyState.title}
+              description={emptyState.description}
+              action={
+                <Button variant="outline" onClick={emptyState.action}>
+                  {emptyState.label}
+                </Button>
+              }
+            />
+
+            {discovery.allEvents.length > 0 ? (
+              <section className="pt-6 border-t border-line/50">
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="type-h3 text-base sm:text-lg">Popular events you might like</h3>
+                  <p className="type-caption text-muted-text mt-0.5 text-xs">
+                    Check out top picks happening across Nigeria
+                  </p>
+                </div>
+                <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {discovery.allEvents.slice(0, 3).map((event) => (
+                    <EventCard
+                      key={event.id}
+                      {...toEventCardProps(event)}
+                      saved={discovery.isSaved(event.id)}
+                      onToggleSave={() => discovery.toggleSave(event.id)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </div>
         )}
 
-        <section className="pt-section">
-          <h2 className="type-h2 mb-lg">Browse by location</h2>
-          <div className="grid gap-md sm:grid-cols-2 lg:grid-cols-4">
+        {/* =========================================================================
+            BROWSE BY LOCATION SECTION: 2 columns on mobile for balanced grid
+            ========================================================================= */}
+        <section className="pt-12 sm:pt-16 mt-8 sm:mt-12 border-t border-line/60">
+          <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+            <div>
+              <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-primary-text">
+                Browse by location
+              </h2>
+              <p className="type-body text-muted-text mt-0.5 text-xs sm:text-sm">
+                Discover what&apos;s happening in your city or plan your next trip.
+              </p>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAllStates((value) => !value)}
+              aria-expanded={showAllStates}
+              leadingIcon={
+                <ChevronDown
+                  aria-hidden="true"
+                  className={`size-3.5 transition-transform duration-200 ${
+                    showAllStates ? "rotate-180" : ""
+                  }`}
+                />
+              }
+              className="self-start sm:self-auto h-8 text-xs font-semibold"
+            >
+              {showAllStates ? "Hide all states" : "Browse all 36 states"}
+            </Button>
+          </div>
+
+          {/* Primary City Cards Grid: 2 columns on mobile */}
+          <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
             {CITIES.map((city) => (
               <CityCard
                 key={city.name}
@@ -452,25 +762,28 @@ function ExploreEvents() {
               />
             ))}
           </div>
-          <div className="mt-lg">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAllStates((value) => !value)}
-              aria-expanded={showAllStates}
-              leadingIcon={
-                <ChevronDown
-                  aria-hidden
-                  className={`size-4 transition-transform ${showAllStates ? "rotate-180" : ""}`}
+
+          {/* Collapsible Nigerian States Grid */}
+          {showAllStates ? (
+            <div className="mt-6 rounded-2xl border border-line bg-card/60 backdrop-blur-md p-4 sm:p-6">
+              <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+                <h3 className="type-h3 text-sm sm:text-base">All 36 Nigerian States + FCT</h3>
+                <input
+                  type="text"
+                  value={stateSearch}
+                  onChange={(e) => setStateSearch(e.target.value)}
+                  placeholder="Filter state by name or capital..."
+                  aria-label="Filter states"
+                  className="rounded-xl border border-line bg-canvas px-3 py-1.5 text-xs text-primary-text placeholder:text-subtle-text focus:outline-none focus:border-accent w-full sm:w-auto"
                 />
-              }
-            >
-              {showAllStates ? "Hide all states" : "Browse all states"}
-            </Button>
-            {showAllStates ? (
-              <div className="mt-md flex flex-wrap gap-sm" role="group" aria-label="All Nigerian states">
-                {NIGERIAN_STATES.map((state) => {
+              </div>
+
+              <div
+                className="flex flex-wrap gap-1.5 sm:gap-2 max-h-[320px] overflow-y-auto pr-1"
+                role="group"
+                aria-label="All Nigerian states"
+              >
+                {filteredStates.map((state) => {
                   const active = discovery.city === state.name;
                   return (
                     <CategoryChip
@@ -480,17 +793,21 @@ function ExploreEvents() {
                         discovery.setCity(active ? null : state.name);
                         setAppliedFilters({ ...appliedFilters, location: "any" });
                       }}
+                      className="text-xs py-0.5 px-2.5"
                     >
                       {displayLocationLabel(state.name)}
                     </CategoryChip>
                   );
                 })}
               </div>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </section>
       </main>
 
+      {/* =========================================================================
+          ADVANCED FILTER MODAL PANEL
+          ========================================================================= */}
       <EventFiltersPanel
         open={filtersOpen}
         value={draftFilters}
