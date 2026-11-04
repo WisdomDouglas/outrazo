@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useAccessToken } from "@/showcase/admin/admin-client";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { fetchOrganizerEvents, setEventPublished, type OrganizerEvent } from "./organizer-events";
+import {
+  cancelEventAsOrganizer,
+  reopenEventAsOrganizer,
+} from "./organizer-reports";
 import { summarizeOrganizerEvents, type OrganizerEventCounts } from "./organizer-summary";
 
 export interface OrganizerEventsState {
@@ -14,6 +19,8 @@ export interface OrganizerEventsState {
   busyId: string | null;
   refresh: () => void;
   togglePublished: (event: OrganizerEvent) => Promise<void>;
+  cancelEvent: (event: OrganizerEvent) => Promise<void>;
+  reopenEvent: (event: OrganizerEvent) => Promise<void>;
   dismissNotice: () => void;
 }
 
@@ -21,6 +28,7 @@ const EMPTY_COUNTS: OrganizerEventCounts = { total: 0, published: 0, drafts: 0, 
 
 export function useOrganizerEvents(): OrganizerEventsState {
   const { session } = useAuth();
+  const token = useAccessToken();
   const userId = session?.user.id ?? null;
   const [events, setEvents] = useState<OrganizerEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,6 +106,59 @@ export function useOrganizerEvents(): OrganizerEventsState {
     [busyId, userId],
   );
 
+  const transitionEvent = useCallback(
+    async (event: OrganizerEvent, kind: "cancel" | "reopen") => {
+      if (!userId || !token || busyId) return;
+      setBusyId(event.id);
+      setNotice(null);
+      setActionError(null);
+      try {
+        const headers = { Authorization: `Bearer ${token}` };
+        const result =
+          kind === "cancel"
+            ? await cancelEventAsOrganizer({ data: { eventId: event.id }, headers })
+            : await reopenEventAsOrganizer({ data: { eventId: event.id }, headers });
+        setEvents((current) =>
+          current.map((row) =>
+            row.id === result.eventId
+              ? {
+                  ...row,
+                  status: result.status,
+                  details: {
+                    ...row.details,
+                    status: result.status === "cancelled" ? "cancelled" : "upcoming",
+                  },
+                }
+              : row,
+          ),
+        );
+        const paidNote =
+          result.paidOrders > 0
+            ? ` ${result.paidOrders} paid ${result.paidOrders === 1 ? "order" : "orders"} on record — refunds stay manual, contact each buyer.`
+            : "";
+        setNotice(
+          kind === "cancel"
+            ? `“${event.details.title}” was cancelled and hidden from discovery. Nothing was deleted.${paidNote}`
+            : `“${event.details.title}” is live again.${paidNote}`,
+        );
+      } catch (caught: unknown) {
+        setActionError(caught instanceof Error ? caught.message : "Could not update this event.");
+      } finally {
+        setBusyId(null);
+      }
+    },
+    [busyId, token, userId],
+  );
+
+  const cancelEvent = useCallback(
+    (event: OrganizerEvent) => transitionEvent(event, "cancel"),
+    [transitionEvent],
+  );
+  const reopenEvent = useCallback(
+    (event: OrganizerEvent) => transitionEvent(event, "reopen"),
+    [transitionEvent],
+  );
+
   return {
     events,
     counts: userId ? counts : EMPTY_COUNTS,
@@ -108,6 +169,8 @@ export function useOrganizerEvents(): OrganizerEventsState {
     busyId,
     refresh,
     togglePublished,
+    cancelEvent,
+    reopenEvent,
     dismissNotice,
   };
 }

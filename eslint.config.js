@@ -36,6 +36,8 @@ export default tseslint.config(
       "src/showcase/admin/admin-functions.ts",
       "src/showcase/admin/intelligence-functions.ts",
       "src/showcase/promotions/promotion-functions.ts",
+      "src/showcase/tickets/ticket-functions.ts",
+      "src/showcase/organizer/organizer-reports.ts",
       "src/showcase/copilot/generateSuggestions.ts",
       "src/showcase/discovery/interpretDiscoveryQuery.ts",
       "src/showcase/scout/scout-functions.ts",
@@ -50,6 +52,8 @@ export default tseslint.config(
               "**/bachs-webhook.server",
               "**/promotion-checkout.server",
               "**/promotion-orders.server",
+              "**/ticket-checkout.server",
+              "**/ticket-webhook.server",
             ],
             message:
               "Privileged server clients (Supabase service-role, Bachs) are server-only. Import them only from *.server.ts modules; UI code must call a server function instead.",

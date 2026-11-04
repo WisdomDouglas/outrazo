@@ -6,6 +6,8 @@ import { EmptyState } from "@/design-system/components/EmptyState";
 import { ErrorState } from "@/design-system/components/ErrorState";
 import { Skeleton } from "@/design-system/components/Skeleton";
 import { useOrganizerEvents } from "@/showcase/organizer/use-organizer-events";
+import { useOrganizerSalesSnapshot } from "@/showcase/organizer/use-organizer-sales";
+import { formatKoboToNaira } from "@/showcase/promotions/promotion-windows";
 
 export const Route = createFileRoute("/app/organizer/")({
   head: () => ({ meta: [
@@ -17,6 +19,7 @@ export const Route = createFileRoute("/app/organizer/")({
 
 function OrganizerOverviewPage() {
   const { counts, loading, error, refresh } = useOrganizerEvents();
+  const sales = useOrganizerSalesSnapshot();
 
   if (loading) {
     return (
@@ -52,6 +55,24 @@ function OrganizerOverviewPage() {
       <p className="type-caption text-muted-text">
         Counts come from your own events in the database. Demo content is never included.
       </p>
+      {sales.loading ? (
+        <Skeleton className="h-28 rounded-lg" />
+      ) : sales.error || !sales.snapshot ? (
+        <ErrorState title="We couldn't load ticket sales." description={sales.error ?? "Please try again."} onRetry={sales.refresh} />
+      ) : (
+        <div className="grid gap-md sm:grid-cols-3">
+          {[
+            { label: "Revenue collected", value: formatKoboToNaira(sales.snapshot.grossKobo) },
+            { label: "Tickets sold", value: String(sales.snapshot.ticketsSold) },
+            { label: "Paid orders", value: String(sales.snapshot.paidOrders) },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-lg border border-line bg-card p-lg shadow-card">
+              <p className="type-h1">{stat.value}</p>
+              <p className="type-body mt-xs text-muted-text">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      )}
       {counts.total === 0 ? (
         <EmptyState
           icon={<FolderKanban aria-hidden className="size-5" />}

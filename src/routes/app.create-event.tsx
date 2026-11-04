@@ -10,6 +10,7 @@ import { CATEGORIES } from "@/showcase/discovery/categories";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { buildEventUpdateRow } from "@/showcase/event-update";
 import { rememberReturnTo } from "@/showcase/saved/saved-events-store";
+import { CreateEventHeroBackdrop } from "@/showcase/create/CreateEventHeroBackdrop";
 
 type EventType = "free" | "paid";
 type TierDraft = { key: string; name: string; price: string; quantity: string };
@@ -421,7 +422,8 @@ function CreateEventPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[920px] px-md py-xl lg:px-xl lg:py-2xl">
+    <div className="relative mx-auto w-full max-w-[920px] px-md py-xl lg:px-xl lg:py-2xl">
+      <CreateEventHeroBackdrop />
       <Link to={isEditing ? "/app/organizer/events" : "/app"} className="focus-ring type-body mb-lg inline-flex min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text">
         <ArrowLeft aria-hidden className="size-4" />{isEditing ? "Back to My events" : "Back to Outrazo"}
       </Link>
@@ -525,6 +527,7 @@ function CreateEventPage() {
               ))}
             </div>
             {errors.tiers ? <p className="type-caption text-transactional" role="alert">{errors.tiers}</p> : null}
+            <CommissionHint />
             <Button type="button" variant="outline" className="w-fit" leadingIcon={<Plus aria-hidden className="size-4" />} onClick={() => setTiers((current) => [...current, initialTier()])}>Add ticket tier</Button>
           </FormSection>
         ) : null}
@@ -539,6 +542,37 @@ function CreateEventPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+function CommissionHint() {
+  const [rate, setRate] = useState<number | null>(null);
+  useEffect(() => {
+    let active = true;
+    (supabase as unknown as import("@supabase/supabase-js").SupabaseClient)
+      .from("commission_rates")
+      .select("rate_pct")
+      .order("effective_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(
+        (result: { data: { rate_pct: number | string } | null }) => {
+          if (!active) return;
+          const parsed = Number(result.data?.rate_pct);
+          setRate(Number.isFinite(parsed) ? parsed : null);
+        },
+        () => {},
+      );
+    return () => {
+      active = false;
+    };
+  }, []);
+  if (rate === null) return null;
+  return (
+    <p className="type-body text-muted-text" role="note">
+      Publishing locks a {rate}% platform fee for this event — you keep {100 - rate}% of every
+      ticket. Later changes to the platform default never alter this event&apos;s locked rate.
+    </p>
   );
 }
 

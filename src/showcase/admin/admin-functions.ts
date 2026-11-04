@@ -29,10 +29,14 @@ import {
   AdminForbiddenError,
   asAdminDb,
   callCancelPromotionRpc,
+  callCreatePayoutRpc,
   callCreatePromotionRpc,
   callGrantRoleRpc,
   callRevokeRoleRpc,
   callResolveReportRpc,
+  callSetCommissionDefaultRpc,
+  callSetPromotionPriceRpc,
+  callTransitionPayoutRpc,
   getCallerRole,
   requirePermission,
   type AdminPhase1Db,
@@ -47,8 +51,13 @@ import {
 import {
   checkPromotionWindow,
   computePromotionStatus,
+  PROMOTION_MAX_DAILY_KOBO,
+  PROMOTION_MIN_DAILY_KOBO,
   type PromotionDisplayStatus,
 } from "@/showcase/promotions/promotion-windows";
+import { notifyEventCancelled } from "@/showcase/notifications/notify-fanout.server";
+import { feeKobo, isPayoutStatus } from "@/showcase/finance/commission";
+import { nairaNumericToKobo } from "@/showcase/tickets/ticket-orders";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const pageSchema = z.object({
@@ -936,6 +945,18 @@ export const setAdminEventCancelled = createServerFn({ method: "POST" })
         ? { from: "active", to: CANCELLED_STATUS }
         : { from: CANCELLED_STATUS, to: ACTIVE_STATUS },
     });
+    if (data.cancelled) {
+      // Genuine flip only (the guarded update above no-ops otherwise).
+      const { data: cancelledEvent } = await db
+        .from("events")
+        .select("id,title")
+        .eq("id", data.id)
+        .maybeSingle();
+      await notifyEventCancelled(db as unknown as SupabaseClient, {
+        eventId: data.id,
+        eventTitle: cancelledEvent?.title ?? "An event you were attending",
+      });
+    }
     return { ok: true, status: data.cancelled ? CANCELLED_STATUS : ACTIVE_STATUS };
   });
 
@@ -1530,6 +1551,606 @@ export const cancelAdminPromotion = createServerFn({ method: "POST" })
       throw new AdminBackendError("That promotion already ended.");
     }
     await callCancelPromotionRpc(grant.userClient, data.id);
+    return { ok: true };
+  });
+
+// ── Promotion pricing + paid orders ──────────────────────────────────────────
+// Reads go through the service-role client after the promotions.read check;
+// the price write goes through set_promotion_price() on the caller's own
+// client so the RPC's internal super/finance gate sees the true actor and the
+// pricing row + audit entry stay in one database transaction.
+
+export interface AdminPricingRow {
+  id: string;
+  dailyKobo: number;
+  currency: string;
+  effectiveAt: string;
+  createdAt: string;
+  createdByName: string | null;
+}
+
+function toPricingRow(
+  row: {
+    id: string;
+    daily_amount_kobo: number;
+    currency: string;
+    effective_at: string;
+    created_by: string | null;
+    created_at: string;
+  },
+  names: Map<string, string | null>,
+): AdminPricingRow {
+  return {
+    id: row.id,
+    dailyKobo: row.daily_amount_kobo,
+    currency: row.currency,
+    effectiveAt: row.effective_at,
+    createdAt: row.created_at,
+    createdByName: row.created_by ? (names.get(row.created_by) ?? null) : null,
+  };
+}
+
+export const getPromotionPricing = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ current: AdminPricingRow | null; history: AdminPricingRow[] }> => {
+    const grant = await requirePermission(context, "promotions.read");
+    const db = asAdminDb(grant.supabase);
+    const { data: rows, error } = await db
+      .from("promotion_pricing")
+      .select("id, daily_amount_kobo, currency, effective_at, created_by, created_at")
+      .order("effective_at", { ascending: false })
+      .limit(6);
+    if (error) {
+      console.error("[admin] getPromotionPricing failed:", error.message);
+      throw new AdminBackendError("Could not load promotion pricing. Please try again.");
+    }
+    const list = rows ?? [];
+    const creatorIds = [...new Set(list.map((row) => row.created_by).filter(Boolean))] as string[];
+    const { data: profiles } =
+      creatorIds.length > 0
+        ? await db.from("profiles").select("id, name").in("id", creatorIds)
+        : { data: [] as { id: string; name: string | null }[] };
+    const names = new Map((profiles ?? []).map((profile) => [profile.id, profile.name]));
+    const mapped = list.map((row) => toPricingRow(row, names));
+    return { current: mapped[0] ?? null, history: mapped.slice(1) };
+  });
+
+const setPriceSchema = z.object({
+  dailyKobo: z.number().int().min(PROMOTION_MIN_DAILY_KOBO).max(PROMOTION_MAX_DAILY_KOBO),
+});
+
+export const setPromotionPrice = createServerFn({ method: "POST" })
+  .validator(setPriceSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; priceId: string }> => {
+    const grant = await requirePermission(context, "promotions.pricing");
+    const priceId = await callSetPromotionPriceRpc(grant.userClient, data.dailyKobo);
+    return { ok: true, priceId };
+  });
+
+export interface AdminPromotionOrderRow {
+  id: string;
+  eventId: string;
+  eventTitle: string;
+  days: number;
+  dailyKobo: number;
+  totalKobo: number;
+  currency: string;
+  status: string;
+  providerReference: string;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+const promotionOrderListSchema = pageSchema.extend({
+  offset: z.number().int().min(0).default(0),
+});
+
+export const listPromotionOrders = createServerFn({ method: "GET" })
+  .validator(promotionOrderListSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{
+    orders: AdminPromotionOrderRow[];
+    total: number;
+    paidTotalKobo: number;
+    paidCount: number;
+  }> => {
+    const grant = await requirePermission(context, "promotions.read");
+    const db = asAdminDb(grant.supabase);
+    const { data: rows, error, count } = await db
+      .from("promotion_orders")
+      .select(
+        "id, event_id, days, daily_amount_kobo, total_amount_kobo, currency, status, provider_reference, paid_at, created_at",
+        { count: "exact" },
+      )
+      .order("created_at", { ascending: false })
+      .range(data.offset, data.offset + data.limit - 1);
+    if (error) {
+      console.error("[admin] listPromotionOrders failed:", error.message);
+      throw new AdminBackendError("Could not load promotion orders. Please try again.");
+    }
+    const list = rows ?? [];
+    const eventIds = [...new Set(list.map((row) => row.event_id))];
+    const { data: events } =
+      eventIds.length > 0
+        ? await db.from("events").select("id, title").in("id", eventIds)
+        : { data: [] as { id: string; title: string }[] };
+    const titles = new Map((events ?? []).map((event) => [event.id, event.title]));
+    // Revenue is a simple sum over paid orders. Honest at this scale; if paid
+    // volume ever outgrows one page, this needs a database-side aggregate.
+    const { data: paidRows, error: paidError, count: paidCount } = await db
+      .from("promotion_orders")
+      .select("total_amount_kobo", { count: "exact" })
+      .eq("status", "paid")
+      .limit(10000);
+    if (paidError) {
+      console.error("[admin] listPromotionOrders revenue failed:", paidError.message);
+      throw new AdminBackendError("Could not load promotion revenue. Please try again.");
+    }
+    const paidTotalKobo = (paidRows ?? []).reduce((sum, row) => sum + row.total_amount_kobo, 0);
+    return {
+      orders: list.map((row) => ({
+        id: row.id,
+        eventId: row.event_id,
+        eventTitle: titles.get(row.event_id) ?? "Unknown event",
+        days: row.days,
+        dailyKobo: row.daily_amount_kobo,
+        totalKobo: row.total_amount_kobo,
+        currency: row.currency,
+        status: row.status,
+        providerReference: row.provider_reference,
+        paidAt: row.paid_at,
+        createdAt: row.created_at,
+      })),
+      total: count ?? 0,
+      paidTotalKobo,
+      paidCount: paidCount ?? 0,
+    };
+  });
+
+// ── Ticket finance (P5) ───────────────────────────────────────────────────
+// Read-only money visibility plus audited manual-payout records. Fees always
+// derive from each event's LOCKED commission_pct — never from the live
+// default — so the numbers below cannot drift when the default changes.
+
+export interface AdminCommissionRow {
+  id: string;
+  ratePct: number;
+  effectiveAt: string;
+  createdBy: string | null;
+  createdByName: string | null;
+  createdAt: string;
+}
+
+function toNumber(value: number | string | null, fallback: number): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+export const getCommissionDefault = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ current: AdminCommissionRow | null; history: AdminCommissionRow[] }> => {
+    const grant = await requirePermission(context, "finance.read");
+    const db = asAdminDb(grant.supabase);
+    const { data: rows, error } = await db
+      .from("commission_rates")
+      .select("id, rate_pct, effective_at, created_by, created_at")
+      .order("effective_at", { ascending: false })
+      .limit(6);
+    if (error) {
+      console.error("[admin] getCommissionDefault failed:", error.message);
+      throw new AdminBackendError("Could not load the commission default. Please try again.");
+    }
+    const list = rows ?? [];
+    const creatorIds = [...new Set(list.map((row) => row.created_by).filter(Boolean))] as string[];
+    const { data: profiles } =
+      creatorIds.length > 0
+        ? await db.from("profiles").select("id, name").in("id", creatorIds)
+        : { data: [] as { id: string; name: string | null }[] };
+    const names = new Map((profiles ?? []).map((profile) => [profile.id, profile.name]));
+    const mapped = list.map((row) => ({
+      id: row.id,
+      ratePct: toNumber(row.rate_pct, 0),
+      effectiveAt: row.effective_at,
+      createdBy: row.created_by,
+      createdByName: row.created_by ? (names.get(row.created_by) ?? null) : null,
+      createdAt: row.created_at,
+    }));
+    return { current: mapped[0] ?? null, history: mapped.slice(1) };
+  });
+
+const setCommissionSchema = z.object({
+  ratePct: z.number().min(0).max(100),
+});
+
+export const setCommissionDefault = createServerFn({ method: "POST" })
+  .validator(setCommissionSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; rateId: string }> => {
+    const grant = await requirePermission(context, "finance.commission");
+    const rateId = await callSetCommissionDefaultRpc(grant.userClient, data.ratePct);
+    return { ok: true, rateId };
+  });
+
+export interface AdminTicketTransactionRow {
+  id: string;
+  reference: string;
+  eventId: string;
+  eventTitle: string;
+  buyerId: string;
+  buyerName: string | null;
+  buyerEmail: string | null;
+  totalKobo: number;
+  feeKobo: number;
+  netKobo: number;
+  ratePct: number;
+  status: string;
+  paidAt: string | null;
+  createdAt: string;
+}
+
+const transactionListSchema = pageSchema.extend({
+  offset: z.number().int().min(0).default(0),
+  status: z.enum(["all", "paid", "pending", "failed", "expired"]).default("all"),
+});
+
+export const listTicketTransactions = createServerFn({ method: "GET" })
+  .validator(transactionListSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{
+    orders: AdminTicketTransactionRow[];
+    total: number;
+    paidCount: number;
+    paidGrossKobo: number;
+    paidFeeKobo: number;
+    paidNetKobo: number;
+  }> => {
+    const grant = await requirePermission(context, "finance.read");
+    const db = asAdminDb(grant.supabase);
+    let query = db
+      .from("ticket_orders")
+      .select(
+        "id, reference, event_id, user_id, status, total_amount, paid_at, created_at",
+        { count: "exact" },
+      )
+      .order("created_at", { ascending: false });
+    if (data.status !== "all") {
+      query = query.eq("status", data.status);
+    }
+    const { data: rows, error, count } = await query.range(
+      data.offset,
+      data.offset + data.limit - 1,
+    );
+    if (error) {
+      console.error("[admin] listTicketTransactions failed:", error.message);
+      throw new AdminBackendError("Could not load transactions. Please try again.");
+    }
+    const list = rows ?? [];
+    const eventIds = [...new Set(list.map((row) => row.event_id))];
+    const buyerIds = [...new Set(list.map((row) => row.user_id))];
+    const [{ data: events }, { data: buyers }] = await Promise.all([
+      eventIds.length > 0
+        ? await db.from("events").select("id, title, commission_pct").in("id", eventIds)
+        : { data: [] as { id: string; title: string; commission_pct: number | string | null }[] },
+      buyerIds.length > 0
+        ? await db.from("profiles").select("id, name, email").in("id", buyerIds)
+        : { data: [] as { id: string; name: string | null; email: string | null }[] },
+    ]);
+    const eventById = new Map((events ?? []).map((event) => [event.id, event]));
+    const buyerById = new Map((buyers ?? []).map((buyer) => [buyer.id, buyer]));
+    // Platform-wide paid totals. Honest at this scale (one bounded scan);
+    // needs database-side aggregates if paid volume ever outgrows it.
+    const { data: paidRows, error: paidError, count: paidCount } = await db
+      .from("ticket_orders")
+      .select("event_id, total_amount", { count: "exact" })
+      .eq("status", "paid")
+      .limit(10000);
+    if (paidError) {
+      console.error("[admin] listTicketTransactions totals failed:", paidError.message);
+      throw new AdminBackendError("Could not load finance totals. Please try again.");
+    }
+    const paidEventIds = [...new Set((paidRows ?? []).map((row) => row.event_id))];
+    const { data: paidEvents } =
+      paidEventIds.length > 0
+        ? await db.from("events").select("id, commission_pct").in("id", paidEventIds)
+        : { data: [] as { id: string; commission_pct: number | string | null }[] };
+    const rateByEvent = new Map(
+      (paidEvents ?? []).map((event) => [event.id, toNumber(event.commission_pct, 10)]),
+    );
+    let paidGrossKobo = 0;
+    let paidFeeKobo = 0;
+    for (const row of paidRows ?? []) {
+      const gross = nairaNumericToKobo(row.total_amount);
+      paidGrossKobo += gross;
+      paidFeeKobo += feeKobo(gross, rateByEvent.get(row.event_id) ?? 10);
+    }
+    return {
+      orders: list.map((row) => {
+        const event = eventById.get(row.event_id);
+        const buyer = buyerById.get(row.user_id);
+        const total = nairaNumericToKobo(row.total_amount);
+        const rate = toNumber(event?.commission_pct ?? null, 10);
+        const fee = row.status === "paid" ? feeKobo(total, rate) : 0;
+        return {
+          id: row.id,
+          reference: row.reference,
+          eventId: row.event_id,
+          eventTitle: event?.title ?? "Unknown event",
+          buyerId: row.user_id,
+          buyerName: buyer?.name ?? null,
+          buyerEmail: buyer?.email ?? null,
+          totalKobo: total,
+          feeKobo: fee,
+          netKobo: row.status === "paid" ? total - fee : 0,
+          ratePct: rate,
+          status: row.status,
+          paidAt: row.paid_at,
+          createdAt: row.created_at,
+        };
+      }),
+      total: count ?? 0,
+      paidCount: paidCount ?? 0,
+      paidGrossKobo,
+      paidFeeKobo,
+      paidNetKobo: paidGrossKobo - paidFeeKobo,
+    };
+  });
+
+export interface AdminPayoutRow {
+  id: string;
+  organizerId: string;
+  organizerName: string | null;
+  amountKobo: number;
+  currency: string;
+  status: string;
+  statusReason: string | null;
+  reference: string | null;
+  adminNote: string | null;
+  createdAt: string;
+  updatedAt: string;
+  paidAt: string | null;
+}
+
+const payoutListSchema = pageSchema.extend({
+  offset: z.number().int().min(0).default(0),
+  status: z.string().optional(),
+});
+
+export const listPayouts = createServerFn({ method: "GET" })
+  .validator(payoutListSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ payouts: AdminPayoutRow[]; total: number }> => {
+    const grant = await requirePermission(context, "finance.read");
+    const db = asAdminDb(grant.supabase);
+    let query = db
+      .from("organizer_payouts")
+      .select(
+        "id, organizer_id, amount_kobo, currency, status, status_reason, reference, admin_note, created_at, updated_at, paid_at",
+        { count: "exact" },
+      )
+      .order("created_at", { ascending: false });
+    if (data.status && isPayoutStatus(data.status)) {
+      query = query.eq("status", data.status);
+    }
+    const { data: rows, error, count } = await query.range(
+      data.offset,
+      data.offset + data.limit - 1,
+    );
+    if (error) {
+      console.error("[admin] listPayouts failed:", error.message);
+      throw new AdminBackendError("Could not load payouts. Please try again.");
+    }
+    const list = rows ?? [];
+    const organizerIds = [...new Set(list.map((row) => row.organizer_id))];
+    const { data: profiles } =
+      organizerIds.length > 0
+        ? await db.from("profiles").select("id, name").in("id", organizerIds)
+        : { data: [] as { id: string; name: string | null }[] };
+    const names = new Map((profiles ?? []).map((profile) => [profile.id, profile.name]));
+    return {
+      payouts: list.map((row) => ({
+        id: row.id,
+        organizerId: row.organizer_id,
+        organizerName: names.get(row.organizer_id) ?? null,
+        amountKobo: row.amount_kobo,
+        currency: row.currency,
+        status: row.status,
+        statusReason: row.status_reason,
+        reference: row.reference,
+        adminNote: row.admin_note,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        paidAt: row.paid_at,
+      })),
+      total: count ?? 0,
+    };
+  });
+
+export const getOrganizerBalance = createServerFn({ method: "GET" })
+  .validator(z.object({ organizerId: z.string().uuid() }))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{
+    organizerName: string | null;
+    netKobo: number;
+    reservedKobo: number;
+    availableKobo: number;
+  }> => {
+    const grant = await requirePermission(context, "finance.read");
+    const db = asAdminDb(grant.supabase);
+    const { data: profile } = await db
+      .from("profiles")
+      .select("id, name")
+      .eq("id", data.organizerId)
+      .maybeSingle();
+    const { data: ownEvents } = await db
+      .from("events")
+      .select("id, commission_pct")
+      .eq("created_by", data.organizerId)
+      .limit(5000);
+    const rateByEvent = new Map(
+      (ownEvents ?? []).map((event) => [event.id, toNumber(event.commission_pct, 10)]),
+    );
+    const eventIds = [...rateByEvent.keys()];
+    const { data: paidOrders, error: ordersError } =
+      eventIds.length > 0
+        ? await db
+            .from("ticket_orders")
+            .select("event_id, total_amount")
+            .in("event_id", eventIds)
+            .eq("status", "paid")
+            .limit(10000)
+        : { data: [] as { event_id: string; total_amount: number }[], error: null };
+    if (ordersError) {
+      console.error("[admin] getOrganizerBalance orders failed:", ordersError.message);
+      throw new AdminBackendError("Could not load the balance. Please try again.");
+    }
+    let netKobo = 0;
+    for (const row of paidOrders ?? []) {
+      const gross = nairaNumericToKobo(row.total_amount);
+      netKobo += gross - feeKobo(gross, rateByEvent.get(row.event_id) ?? 10);
+    }
+    const { data: payouts, error: payoutsError } = await db
+      .from("organizer_payouts")
+      .select("amount_kobo, status")
+      .eq("organizer_id", data.organizerId)
+      .neq("status", "failed")
+      .limit(5000);
+    if (payoutsError) {
+      console.error("[admin] getOrganizerBalance payouts failed:", payoutsError.message);
+      throw new AdminBackendError("Could not load the balance. Please try again.");
+    }
+    const reservedKobo = (payouts ?? []).reduce((sum, row) => sum + row.amount_kobo, 0);
+    return {
+      organizerName: profile?.name ?? null,
+      netKobo,
+      reservedKobo,
+      availableKobo: Math.max(0, netKobo - reservedKobo),
+    };
+  });
+
+export const listOrganizerBalances = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{
+    organizers: {
+      organizerId: string;
+      organizerName: string | null;
+      netKobo: number;
+      reservedKobo: number;
+      availableKobo: number;
+    }[];
+  }> => {
+    const grant = await requirePermission(context, "finance.read");
+    const db = asAdminDb(grant.supabase);
+    // One bounded scan over paid orders; needs database-side aggregates if
+    // paid volume ever outgrows it.
+    const { data: paidOrders, error: ordersError } = await db
+      .from("ticket_orders")
+      .select("event_id, total_amount")
+      .eq("status", "paid")
+      .limit(10000);
+    if (ordersError) {
+      console.error("[admin] listOrganizerBalances orders failed:", ordersError.message);
+      throw new AdminBackendError("Could not load organizer balances. Please try again.");
+    }
+    const eventIds = [...new Set((paidOrders ?? []).map((row) => row.event_id))];
+    const { data: events } =
+      eventIds.length > 0
+        ? await db.from("events").select("id, created_by, commission_pct").in("id", eventIds)
+        : {
+            data: [] as {
+              id: string;
+              created_by: string;
+              commission_pct: number | string | null;
+            }[],
+          };
+    const eventById = new Map((events ?? []).map((event) => [event.id, event]));
+    const netByOrganizer = new Map<string, number>();
+    for (const row of paidOrders ?? []) {
+      const event = eventById.get(row.event_id);
+      if (!event?.created_by) continue;
+      const gross = nairaNumericToKobo(row.total_amount);
+      const net = gross - feeKobo(gross, toNumber(event.commission_pct, 10));
+      netByOrganizer.set(event.created_by, (netByOrganizer.get(event.created_by) ?? 0) + net);
+    }
+    const organizerIds = [...netByOrganizer.keys()];
+    const [{ data: profiles }, { data: payouts }] = await Promise.all([
+      organizerIds.length > 0
+        ? await db.from("profiles").select("id, name").in("id", organizerIds)
+        : { data: [] as { id: string; name: string | null }[] },
+      organizerIds.length > 0
+        ? await db
+            .from("organizer_payouts")
+            .select("organizer_id, amount_kobo")
+            .in("organizer_id", organizerIds)
+            .neq("status", "failed")
+            .limit(5000)
+        : { data: [] as { organizer_id: string; amount_kobo: number }[] },
+    ]);
+    const names = new Map((profiles ?? []).map((profile) => [profile.id, profile.name]));
+    const reservedByOrganizer = new Map<string, number>();
+    for (const row of payouts ?? []) {
+      reservedByOrganizer.set(
+        row.organizer_id,
+        (reservedByOrganizer.get(row.organizer_id) ?? 0) + row.amount_kobo,
+      );
+    }
+    const organizers = organizerIds.map((organizerId) => {
+      const netKobo = netByOrganizer.get(organizerId) ?? 0;
+      const reservedKobo = reservedByOrganizer.get(organizerId) ?? 0;
+      return {
+        organizerId,
+        organizerName: names.get(organizerId) ?? null,
+        netKobo,
+        reservedKobo,
+        availableKobo: Math.max(0, netKobo - reservedKobo),
+      };
+    });
+    organizers.sort((a, b) => b.availableKobo - a.availableKobo);
+    return { organizers };
+  });
+
+const createPayoutSchema = z.object({
+  organizerId: z.string().uuid(),
+  amountKobo: z.number().int().min(1),
+  adminNote: z.string().trim().max(500).optional(),
+});
+
+export const createPayout = createServerFn({ method: "POST" })
+  .validator(createPayoutSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true; payoutId: string }> => {
+    const grant = await requirePermission(context, "finance.payouts");
+    const payoutId = await callCreatePayoutRpc(
+      grant.userClient,
+      data.organizerId,
+      data.amountKobo,
+      data.adminNote?.trim() ? data.adminNote.trim() : null,
+    );
+    return { ok: true, payoutId };
+  });
+
+const transitionPayoutSchema = z.object({
+  payoutId: z.string().uuid(),
+  toStatus: z.string(),
+  reference: z.string().trim().max(120).optional(),
+  adminNote: z.string().trim().max(500).optional(),
+});
+
+export const transitionPayout = createServerFn({ method: "POST" })
+  .validator(transitionPayoutSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const grant = await requirePermission(context, "finance.payouts");
+    if (!isPayoutStatus(data.toStatus)) {
+      throw new AdminBackendError("That payout status is not valid.");
+    }
+    await callTransitionPayoutRpc(
+      grant.userClient,
+      data.payoutId,
+      data.toStatus,
+      data.reference?.trim() ? data.reference.trim() : null,
+      data.adminNote?.trim() ? data.adminNote.trim() : null,
+    );
     return { ok: true };
   });
 

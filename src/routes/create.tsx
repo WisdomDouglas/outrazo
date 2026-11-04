@@ -29,8 +29,8 @@ export const Route = createFileRoute("/create")({
 
 const PERKS = [
   { icon: Users, title: "Reach locals", copy: "Surfaced to people browsing your city." },
-  { icon: Ticket, title: "Secure ticketing", copy: "Paid or free entry, your call." },
-  { icon: CalendarDays, title: "Easy check-in", copy: "Scan guests in at the door." },
+  { icon: Ticket, title: "Flexible entry", copy: "List free events or set paid tiers." },
+  { icon: CalendarDays, title: "Live guest lists", copy: "See every RSVP in real time." },
 ];
 
 function CreateEvent() {
@@ -97,7 +97,7 @@ function CreateEvent() {
           <div className="flex items-center gap-sm rounded-lg border border-line bg-elevated p-lg">
             <MapPin aria-hidden className="size-5 text-accent" />
             <p className="type-body text-muted-text">
-              Now live in Lagos, Abuja, Port Harcourt and Ibadan.
+              Now live across all 36 states and the FCT.
             </p>
           </div>
         </Reveal>

@@ -1,0 +1,10 @@
+# Outrazo crawler rules.
+# No Sitemap line yet: the XML sitemap needs the confirmed production domain
+# first. Public discovery (/events/*) stays crawlable; signed-in, staff, and
+# machine routes are excluded.
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /onboarding

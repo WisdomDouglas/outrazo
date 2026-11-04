@@ -110,6 +110,7 @@ describe("requirePermission", () => {
       "reports.manage",
       "promotions.read",
       "promotions.manage",
+      "promotions.pricing",
       "roles.read",
       "roles.manage",
       "audit.read",
@@ -144,15 +145,31 @@ describe("requirePermission", () => {
     }
   });
 
-  it("rejects support and finance staff from promotions", async () => {
-    for (const role of ["support_readonly", "finance_admin"]) {
-      for (const permission of ["promotions.read", "promotions.manage"]) {
-        await assert.rejects(
-          requirePermission(contextWith(okRpc(role)), permission),
-          AdminForbiddenError,
-        );
-      }
+  it("rejects support staff from promotions and pricing", async () => {
+    for (const permission of ["promotions.read", "promotions.manage", "promotions.pricing"]) {
+      await assert.rejects(
+        requirePermission(contextWith(okRpc("support_readonly")), permission),
+        AdminForbiddenError,
+      );
     }
+  });
+
+  it("lets finance_admin read promotions and manage pricing, but not schedule them", async () => {
+    for (const permission of ["promotions.read", "promotions.pricing"]) {
+      const grant = await requirePermission(contextWith(okRpc("finance_admin")), permission);
+      assert.equal(grant.role, "finance_admin");
+    }
+    await assert.rejects(
+      requirePermission(contextWith(okRpc("finance_admin")), "promotions.manage"),
+      AdminForbiddenError,
+    );
+  });
+
+  it("rejects moderation_admin from promotion pricing", async () => {
+    await assert.rejects(
+      requirePermission(contextWith(okRpc("moderation_admin")), "promotions.pricing"),
+      AdminForbiddenError,
+    );
   });
 
   it("surfaces backend failures distinctly from denials", async () => {

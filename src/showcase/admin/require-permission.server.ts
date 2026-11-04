@@ -15,6 +15,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import {
+  friendlyPricingError,
   friendlyPromotionError,
   PROMOTION_UNKNOWN_ERROR,
 } from "@/showcase/promotions/promotion-windows";
@@ -95,6 +96,67 @@ type EventReportRow = {
   resolution_note: string | null;
 };
 
+type PromotionPricingRow = {
+  id: string;
+  daily_amount_kobo: number;
+  currency: string;
+  effective_at: string;
+  created_by: string | null;
+  created_at: string;
+};
+
+type CommissionRateRow = {
+  id: string;
+  rate_pct: number | string;
+  effective_at: string;
+  created_by: string | null;
+  created_at: string;
+};
+
+type OrganizerPayoutRow = {
+  id: string;
+  organizer_id: string;
+  amount_kobo: number;
+  currency: string;
+  status: string;
+  status_reason: string | null;
+  reference: string | null;
+  admin_note: string | null;
+  created_by: string | null;
+  decided_by: string | null;
+  created_at: string;
+  updated_at: string;
+  paid_at: string | null;
+};
+
+// Generated types predate finance: events lacks commission_pct and
+// ticket_orders lacks the newer lifecycle columns, so both Rows are
+// extended here (reads only; writes keep the generated shapes).
+type EventsTableWithFinance = Omit<EventsTable, "Row"> & {
+  Row: EventsTable["Row"] & { commission_pct: number | string | null };
+};
+
+type TicketOrdersTableWithFinance = Omit<TicketOrdersTable, "Row"> & {
+  Row: TicketOrdersTable["Row"] & { paid_at: string | null; status_reason: string | null };
+};
+
+type PromotionOrderRow = {
+  id: string;
+  event_id: string;
+  organizer_id: string;
+  days: number;
+  daily_amount_kobo: number;
+  total_amount_kobo: number;
+  currency: string;
+  status: string;
+  status_reason: string | null;
+  provider: string;
+  provider_reference: string;
+  promotion_id: string | null;
+  paid_at: string | null;
+  created_at: string;
+};
+
 // Local shape for the admin tables plus the tables we read. The generated
 // Database types do not include admin_roles/audit_log/event_reports yet, so we
 // extend the generated shape here instead of editing generated files. Every
@@ -145,13 +207,25 @@ export interface AdminPhase1Db {
         Relationships: [];
       };
       profiles: ProfilesTable;
-      events: EventsTable;
+      events: EventsTableWithFinance;
       event_attendees: AttendeesTable;
       organizers: OrganizersTable;
       event_ticket_tiers: EventTiersTable;
       saved_events: SavedEventsTable;
-      ticket_orders: TicketOrdersTable;
+      ticket_orders: TicketOrdersTableWithFinance;
       ticket_items: TicketItemsTable;
+      commission_rates: {
+        Row: CommissionRateRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      organizer_payouts: {
+        Row: OrganizerPayoutRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
       event_promotions: {
         Row: EventPromotionRow;
         Insert: {
@@ -202,6 +276,18 @@ export interface AdminPhase1Db {
         };
         Relationships: [];
       };
+      promotion_pricing: {
+        Row: PromotionPricingRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
+      promotion_orders: {
+        Row: PromotionOrderRow;
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
     };
     Views: Database["public"]["Views"];
     Enums: Database["public"]["Enums"];
@@ -228,6 +314,27 @@ export interface AdminPhase1Db {
       };
       cancel_event_promotion: {
         Args: { p_promotion_id: string };
+        Returns: null;
+      };
+      set_promotion_price: {
+        Args: { p_daily_amount_kobo: number };
+        Returns: string;
+      };
+      set_default_commission_pct: {
+        Args: { p_rate_pct: number };
+        Returns: string;
+      };
+      create_organizer_payout: {
+        Args: { p_organizer_id: string; p_amount_kobo: number; p_admin_note?: string | null };
+        Returns: string;
+      };
+      transition_organizer_payout: {
+        Args: {
+          p_payout_id: string;
+          p_to_status: string;
+          p_reference?: string | null;
+          p_admin_note?: string | null;
+        };
         Returns: null;
       };
     };
@@ -420,4 +527,142 @@ export async function callCancelPromotionRpc(
     p_promotion_id: promotionId,
   });
   if (error) throw mapPromotionRpcError(error.message);
+}
+
+// Runs on the CALLER's own user client so auth.uid() attributes the pricing
+// row and the audit entry to the true staff actor, and the internal RPC gate
+// (super_admin/finance_admin) sees the real caller. The server function
+// re-checks the promotions.pricing permission first; this RPC is the second,
+// database-side lock on the same door.
+export async function callSetPromotionPriceRpc(
+  userClient: SupabaseClient,
+  dailyKobo: number,
+): Promise<string> {
+  const { data, error } = await asAdminDb(userClient).rpc("set_promotion_price", {
+    p_daily_amount_kobo: dailyKobo,
+  });
+  if (error || !data) {
+    if (error) {
+      if (error.message.includes("may manage promotion pricing")) {
+        throw new AdminForbiddenError(
+          "Only a super admin or finance admin may change promotion pricing.",
+        );
+      }
+      const friendly = friendlyPricingError(error.message);
+      if (friendly === "Could not save the new price. Please try again.") {
+        console.error("[admin] set promotion price RPC failed:", error.message);
+      }
+      throw new AdminBackendError(friendly);
+    }
+    throw new AdminBackendError("Could not save the new price. Please try again.");
+  }
+  return data;
+}
+
+function mapFinanceGateError(message: string, fallback: string): Error {
+  if (message.includes("may manage the commission default")) {
+    return new AdminForbiddenError(
+      "Only a super admin or finance admin may change the commission default.",
+    );
+  }
+  if (message.includes("may record payouts") || message.includes("may move payouts")) {
+    return new AdminForbiddenError(
+      "Only a super admin or finance admin may record or move payouts.",
+    );
+  }
+  if (message.includes("Sign in is required")) {
+    return new AdminAuthError("Sign in is required to use the admin console.");
+  }
+  return new AdminBackendError(fallback);
+}
+
+export async function callSetCommissionDefaultRpc(
+  userClient: SupabaseClient,
+  ratePct: number,
+): Promise<string> {
+  const { data, error } = await asAdminDb(userClient).rpc("set_default_commission_pct", {
+    p_rate_pct: ratePct,
+  });
+  if (error || !data) {
+    if (error) {
+      if (/commission default|super_admin or finance_admin|Sign in is required/i.test(error.message)) {
+        if (error.message.includes("between 0 and 100")) {
+          throw new AdminBackendError("Commission default must be between 0 and 100 percent.");
+        }
+        throw mapFinanceGateError(error.message, "Could not save the new default. Please try again.");
+      }
+      console.error("[admin] set commission default RPC failed:", error.message);
+    }
+    throw new AdminBackendError("Could not save the new default. Please try again.");
+  }
+  return data;
+}
+
+export async function callCreatePayoutRpc(
+  userClient: SupabaseClient,
+  organizerId: string,
+  amountKobo: number,
+  adminNote: string | null,
+): Promise<string> {
+  const { data, error } = await asAdminDb(userClient).rpc("create_organizer_payout", {
+    p_organizer_id: organizerId,
+    p_amount_kobo: amountKobo,
+    p_admin_note: adminNote,
+  });
+  if (error || !data) {
+    if (error) {
+      if (error.message.includes("exceeds the available balance")) {
+        throw new AdminBackendError("That payout exceeds the organizer's available balance.");
+      }
+      if (error.message.includes("Organizer not found")) {
+        throw new AdminBackendError("Organizer not found.");
+      }
+      if (error.message.includes("above zero")) {
+        throw new AdminBackendError("Payout amount must be above zero.");
+      }
+      if (/record payouts|Sign in is required/i.test(error.message)) {
+        throw mapFinanceGateError(error.message, "Could not record the payout. Please try again.");
+      }
+      console.error("[admin] create payout RPC failed:", error.message);
+    }
+    throw new AdminBackendError("Could not record the payout. Please try again.");
+  }
+  return data;
+}
+
+export async function callTransitionPayoutRpc(
+  userClient: SupabaseClient,
+  payoutId: string,
+  toStatus: string,
+  reference: string | null,
+  adminNote: string | null,
+): Promise<void> {
+  const { error } = await asAdminDb(userClient).rpc("transition_organizer_payout", {
+    p_payout_id: payoutId,
+    p_to_status: toStatus,
+    p_reference: reference,
+    p_admin_note: adminNote,
+  });
+  if (error) {
+    if (error.message.includes("Payout not found")) {
+      throw new AdminBackendError("Payout not found.");
+    }
+    if (error.message.includes("terminal and cannot move")) {
+      throw new AdminBackendError("Paid and failed payouts cannot move.");
+    }
+    if (error.message.includes("transition is not allowed")) {
+      throw new AdminBackendError("That payout transition is not allowed.");
+    }
+    if (error.message.includes("transfer reference")) {
+      throw new AdminBackendError("Record the bank transfer reference before marking paid.");
+    }
+    if (error.message.includes("why the payout failed")) {
+      throw new AdminBackendError("Record why the payout failed.");
+    }
+    if (/move payouts|Sign in is required/i.test(error.message)) {
+      throw mapFinanceGateError(error.message, "Could not move the payout. Please try again.");
+    }
+    console.error("[admin] transition payout RPC failed:", error.message);
+    throw new AdminBackendError("Could not move the payout. Please try again.");
+  }
 }

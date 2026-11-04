@@ -16,6 +16,7 @@ import { EventShareMenu } from "@/design-system/components/EventShareMenu";
 import { useSavedItems } from "@/design-system/lib/use-saved-items";
 import { fetchPublishedEventDetails } from "@/showcase/event-data";
 import { isOfficialOrganizerName } from "@/showcase/organizers";
+import { EventReviews } from "@/showcase/reviews/EventReviews";
 import { getEventScoutBadge } from "@/showcase/scout/scout-functions";
 import { ReportEventDialog } from "@/showcase/moderation/ReportEventDialog";
 import { useLiveCount } from "@/showcase/rsvp/live-count-store";
@@ -35,13 +36,13 @@ function EventNotFound() {
   );
 }
 
-function EventLoadError({ reset }: { error: Error; reset: () => void }) {
+function EventLoadError({ reset }: { error: unknown; reset: () => void }) {
   const router = useRouter();
   return <main className="grid min-h-screen place-items-center bg-canvas px-md"><ErrorState title="Something went wrong." description="Unable to load this event." onRetry={() => { router.invalidate(); reset(); }} /></main>;
 }
 
 export const Route = createFileRoute("/events/$eventId")({
-  loader: async ({ params }) => {
+  loader: async ({ params }): Promise<EventDetails> => {
     const event = await fetchPublishedEventDetails(params.eventId);
     if (!event) throw notFound();
     return event;
@@ -114,6 +115,12 @@ function EventDetailsPage() {
       </header>
 
       <main>
+        {loadedEvent && !isDatabaseEventId(loadedEvent.id) ? (
+          <p className="mx-auto max-w-[1200px] px-md pt-md lg:px-xl" role="note"><span className="type-caption inline-block rounded-full border border-line bg-card px-sm py-xs text-muted-text">Demo event — details are illustrative. RSVP and tickets are disabled.</span></p>
+        ) : null}
+        {loadedEvent && loadedEvent.status === "cancelled" ? (
+          <p className="mx-auto max-w-[1200px] px-md pt-md lg:px-xl" role="alert"><span className="type-caption inline-block rounded-full border border-transactional/40 bg-transactional/10 px-sm py-xs text-transactional">This event was cancelled. Ticket sales and RSVPs are closed.</span></p>
+        ) : null}
           <div className="mx-auto max-w-[1200px] px-md pt-lg lg:px-xl lg:pt-xl">
             <Link to="/events" search={{}} className="focus-ring type-body hidden min-h-11 items-center gap-xs rounded-full text-muted-text hover:text-primary-text sm:inline-flex"><ArrowLeft aria-hidden className="size-4" />Back to Explore</Link>
           </div>
@@ -169,6 +176,15 @@ function EventDetailsPage() {
               <ContentSection title="People going">
                 <div className="flex flex-wrap items-center gap-md"><AvatarStack people={event.attendees} totalCount={liveCount} max={5} size="md" /><strong className="type-body">{liveCount.toLocaleString()} people going</strong></div>
               </ContentSection>
+              {loadedEvent && isDatabaseEventId(loadedEvent.id) ? (
+                <ContentSection title="Reviews">
+                  <EventReviews
+                    eventId={loadedEvent.id}
+                    startsAt={loadedEvent.startsAt}
+                    cancelled={loadedEvent.status === "cancelled"}
+                  />
+                </ContentSection>
+              ) : null}
             </div>
             <ContentSection title="Location">
               <div className="flex flex-col gap-md"><div><h3 className="type-h3">{event.venue.name}</h3><p className="type-body mt-xs text-muted-text">{event.venue.address}<br />{event.venue.city}</p></div><div className="grid aspect-[4/3] place-items-center rounded-md border border-line bg-card" aria-label="Map placeholder"><MapPin aria-hidden className="size-10 text-accent" /><span className="sr-only">Map preview will be available here</span></div><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venue.latitude != null && event.venue.longitude != null ? `${event.venue.latitude},${event.venue.longitude}` : `${event.venue.address}, ${event.venue.city}`)}`} target="_blank" rel="noreferrer" className="focus-ring rounded-full"><Button variant="outline" className="w-full" leadingIcon={<Navigation aria-hidden className="size-4" />}>Get Directions</Button></a></div>

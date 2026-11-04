@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 import { supabase } from "@/integrations/supabase/external-client";
+import { isDatabaseEventId } from "../event-ids";
 
 /**
  * Shared, account-backed saved-events store. Every Save button reads the same
@@ -19,7 +20,8 @@ interface State {
 }
 
 const DEMO_SAVED_EVENTS_KEY = "outrazo-saved-events";
-const DATABASE_EVENT_ID = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i;
+// Event-id shape lives in ../event-ids so pure modules can use it without
+// importing this Supabase-backed store.
 
 let state: State = {
   userId: null,
@@ -40,7 +42,7 @@ const subscribe = (listener: () => void) => {
 };
 const SERVER_STATE = state;
 
-export const isDatabaseEventId = (id: string) => DATABASE_EVENT_ID.test(id);
+export { isDatabaseEventId };
 
 export function loadLocalSavedEvents() {
   try {

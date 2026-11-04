@@ -8,11 +8,13 @@ import { Button } from "@/design-system/components/Button";
 import { SearchField } from "@/design-system/components/SearchField";
 import { useTheme } from "@/design-system/lib/use-theme";
 import { useAuth } from "@/showcase/auth/auth-context";
+import { useNotifications } from "@/showcase/notifications/use-notifications";
 import { NotificationPanel } from "./NotificationPanel";
 
 export function AppHeader() {
   const navigate = useNavigate();
-  const { displayName, profile } = useAuth();
+  const { displayName, profile, session } = useAuth();
+  const inbox = useNotifications();
   const { theme, toggleTheme } = useTheme();
   const [query, setQuery] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -67,14 +69,28 @@ export function AppHeader() {
             variant="ghost"
             size="icon"
             className="relative text-primary-text"
-            aria-label="Open notifications"
+            aria-label={inbox.unread > 0 ? `Open notifications, ${inbox.unread} unread` : "Open notifications"}
             aria-expanded={notificationsOpen}
             onClick={() => setNotificationsOpen((open) => !open)}
           >
             <Bell aria-hidden className="size-5" />
-            <span className="absolute right-sm top-sm size-2 rounded-full bg-transactional" aria-label="3 unread notifications" />
+            {inbox.unread > 0 ? (
+              <span aria-hidden className="absolute right-2 top-2 grid size-4 place-items-center rounded-full bg-transactional text-[10px] font-bold text-on-transactional">
+                {inbox.unread > 9 ? "9+" : inbox.unread}
+              </span>
+            ) : null}
           </Button>
-          {notificationsOpen ? <NotificationPanel /> : null}
+          {notificationsOpen ? (
+            <NotificationPanel
+              notifications={inbox.notifications}
+              loading={inbox.loading}
+              error={inbox.error}
+              signedIn={Boolean(session)}
+              onMarkRead={(id) => void inbox.markRead(id)}
+              onMarkAllRead={() => void inbox.markAllRead()}
+              onRetry={inbox.refresh}
+            />
+          ) : null}
         </div>
         <Link to="/app/profile" className="focus-ring rounded-full" aria-label="Open profile">
           <Avatar name={displayName} src={profile?.avatar_url ?? undefined} size="md" className="app-header-avatar" />

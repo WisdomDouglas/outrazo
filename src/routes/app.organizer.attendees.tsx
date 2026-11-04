@@ -9,6 +9,8 @@ import { ErrorState } from "@/design-system/components/ErrorState";
 import { Skeleton } from "@/design-system/components/Skeleton";
 import { useAuth } from "@/showcase/auth/auth-context";
 import { useOrganizerEvents } from "@/showcase/organizer/use-organizer-events";
+import { useEventBuyers } from "@/showcase/organizer/use-organizer-sales";
+import { formatKoboToNaira } from "@/showcase/promotions/promotion-windows";
 import { fetchEventAttendees, type EventAttendee } from "@/showcase/rsvp/rsvp";
 import { useLiveAttendeesSignal } from "@/showcase/rsvp/live-count-store";
 import { attendeeDisplayName, classifyReservationError, formatReservationDate } from "@/showcase/rsvp/reservation-helpers";
@@ -33,6 +35,7 @@ function OrganizerAttendeesPage() {
 
   const activeId = selectedId ?? events[0]?.id ?? null;
   const attendeeSignal = useLiveAttendeesSignal(userId ? activeId : null);
+  const buyers = useEventBuyers(activeId);
 
   useEffect(() => {
     if (!activeId || !userId) {
@@ -141,6 +144,54 @@ function OrganizerAttendeesPage() {
           ))}
         </ul>
       )}
+
+      <div className="grid gap-md border-t border-line pt-lg">
+        <div>
+          <h3 className="type-h3">Ticket buyers</h3>
+          <p className="type-body mt-xs text-muted-text">
+            Confirmed paid orders for this event — names, tickets, and contact emails for entry and refund questions.
+          </p>
+        </div>
+        {buyers.loading ? (
+          <div className="grid gap-md" aria-label="Loading ticket buyers">
+            {[0, 1].map((key) => (
+              <Skeleton key={key} className="h-16 rounded-lg" />
+            ))}
+          </div>
+        ) : buyers.error ? (
+          <ErrorState
+            title="We couldn't load ticket buyers."
+            description={buyers.error}
+            onRetry={buyers.refresh}
+          />
+        ) : buyers.buyers.length === 0 ? (
+          <EmptyState
+            icon={<Users aria-hidden className="size-5" />}
+            title="No ticket buyers yet."
+            description="When someone pays for this event, they'll show up here alongside RSVPs."
+          />
+        ) : (
+          <ul className="grid gap-md">
+            {buyers.buyers.map((buyer, index) => (
+              <li key={`${buyer.email ?? buyer.name}-${index}`} className="flex items-center gap-md rounded-lg border border-line bg-card p-md shadow-card">
+                <Avatar name={buyer.name} size="lg" />
+                <div className="grid min-w-0 flex-1 gap-xs">
+                  <p className="type-body truncate font-semibold text-primary-text">{buyer.name}</p>
+                  <p className="type-caption truncate text-muted-text">
+                    {buyer.tickets} {buyer.tickets === 1 ? "ticket" : "tickets"} · {buyer.tiers} · {formatKoboToNaira(buyer.totalKobo)}
+                  </p>
+                  <p className="type-caption truncate text-muted-text">
+                    {buyer.checkedIn} of {buyer.tickets} checked in
+                  </p>
+                  {buyer.email ? (
+                    <p className="type-caption truncate text-muted-text">{buyer.email}</p>
+                  ) : null}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

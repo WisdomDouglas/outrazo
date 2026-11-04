@@ -109,6 +109,7 @@ export async function fetchPublishedEvents(): Promise<OutrazoEvent[]> {
     .from("events")
     .select("*")
     .eq("published", true)
+    .neq("status", "cancelled")
     .order("starts_at", { ascending: true })
     .limit(250);
   if (error) throw new Error(`Could not load published events: ${error.message}`);

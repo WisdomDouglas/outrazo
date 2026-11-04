@@ -24,11 +24,15 @@ export const ADMIN_PERMISSIONS = [
   "reports.manage",
   "promotions.read",
   "promotions.manage",
+  "promotions.pricing",
   "roles.read",
   "roles.manage",
   "audit.read",
   "scout.read",
   "scout.manage",
+  "finance.read",
+  "finance.commission",
+  "finance.payouts",
 ] as const;
 
 export type AdminPermission = (typeof ADMIN_PERMISSIONS)[number];
@@ -49,6 +53,15 @@ export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
 // stay visible to moderation staff alone, so support and finance are excluded.
 // promotions.read and promotions.manage (Phase 2C-2) cover homepage feature
 // scheduling the same way: curation is a moderation power.
+// promotions.pricing covers the paid-promotion daily rate: super_admin and
+// finance_admin only, matching the set_promotion_price() RPC's internal gate.
+// finance_admin also holds promotions.read so it can open the Promotions page
+// and see the pricing section, but it cannot schedule or cancel promotions.
+// finance.read (P5) covers full ticket transaction records; finance.commission
+// covers the default commission rate, matching the set_default_commission_pct()
+// RPC's internal gate; finance.payouts covers recording and moving manual
+// payouts, matching the payout RPCs' internal gates. All three belong to
+// super_admin and finance_admin only.
 export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
   super_admin: [
     "users.read",
@@ -60,13 +73,17 @@ export const ROLE_PERMISSIONS: Record<AdminRole, readonly AdminPermission[]> = {
     "reports.manage",
     "promotions.read",
     "promotions.manage",
+    "promotions.pricing",
     "roles.read",
     "roles.manage",
     "audit.read",
     "scout.read",
     "scout.manage",
+    "finance.read",
+    "finance.commission",
+    "finance.payouts",
   ],
-  finance_admin: ["events.read", "attendees.read", "audit.read"],
+  finance_admin: ["events.read", "attendees.read", "audit.read", "promotions.read", "promotions.pricing", "finance.read", "finance.commission", "finance.payouts"],
   moderation_admin: [
     "users.read",
     "users.manage",

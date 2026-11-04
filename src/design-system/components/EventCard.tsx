@@ -29,6 +29,8 @@ export interface EventCardProps extends HTMLAttributes<HTMLElement> {
   tag?: string;
   /** Visual tone of the highlight label. */
   tagVariant?: "accent" | "transactional" | "neutral" | "outline";
+  /** Sample content, not a real listing. Shows a "Demo" badge when true. */
+  demo?: boolean;
   /** Image proportion: 16:9 for grids and rails, 1:1 for poster layouts. */
   aspect?: "16/9" | "1/1";
   /** Whether the event is saved by the current user. */
@@ -59,6 +61,7 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
       attendeeCount,
       tag,
       tagVariant = "accent",
+      demo = false,
       aspect = "16/9",
       saved = false,
       onToggleSave,
@@ -115,10 +118,19 @@ export const EventCard = forwardRef<HTMLElement, EventCardProps>(
         >
           <Bookmark aria-hidden className={cn("size-4", saved && "fill-accent text-accent")} />
         </Button>
-        {tag ? (
-          <Badge variant={tagVariant} className="absolute bottom-md left-md backdrop-blur-md">
-            {tag}
-          </Badge>
+        {tag || demo ? (
+          <span className="absolute bottom-md left-md flex gap-xs">
+            {tag ? (
+              <Badge variant={tagVariant} className="backdrop-blur-md">
+                {tag}
+              </Badge>
+            ) : null}
+            {demo ? (
+              <Badge variant="neutral" className="backdrop-blur-md">
+                Demo
+              </Badge>
+            ) : null}
+          </span>
         ) : null}
       </div>
 

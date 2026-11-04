@@ -112,3 +112,65 @@ export function friendlyPromotionError(message: string): string {
   }
   return PROMOTION_UNKNOWN_ERROR;
 }
+
+// ── Promotion pricing (pure; shared by the admin UI, server, and tests) ──────
+// Money travels as integer kobo everywhere. The 10000 floor mirrors the
+// set_promotion_price() RPC (NGN 100 minimum transaction, 1-day minimum);
+// the ceiling is a typo guard only — the RPC enforces the floor again.
+/** Minimum daily rate in kobo (NGN 100). Mirrors the database RPC. */
+export const PROMOTION_MIN_DAILY_KOBO = 10_000;
+/** Maximum daily rate in kobo (NGN 1,000,000). Typo guard, not a promise. */
+export const PROMOTION_MAX_DAILY_KOBO = 100_000_000;
+
+export type ParsedPriceKobo =
+  | { ok: true; kobo: number }
+  | { ok: false; error: string };
+
+// Parses staff naira input ("2000", "2,000", "₦2,000.50") into integer kobo.
+// Returns a friendly error instead of throwing so the form can show it inline.
+export function parsePriceNairaToKobo(input: string): ParsedPriceKobo {
+  const cleaned = input.replace(/[₦,\s]/g, "").trim();
+  if (!cleaned) {
+    return { ok: false, error: "Enter a daily price in naira." };
+  }
+  if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) {
+    return { ok: false, error: "Enter a plain amount like 2000 or 2500.50." };
+  }
+  const kobo = Math.round(Number(cleaned) * 100);
+  if (!Number.isSafeInteger(kobo)) {
+    return { ok: false, error: "That amount is too large to save safely." };
+  }
+  if (kobo < PROMOTION_MIN_DAILY_KOBO) {
+    return { ok: false, error: "The daily price must be at least ₦100." };
+  }
+  if (kobo > PROMOTION_MAX_DAILY_KOBO) {
+    return { ok: false, error: "The daily price cannot exceed ₦1,000,000." };
+  }
+  return { ok: true, kobo };
+}
+
+// Formats integer kobo for staff display: "₦2,000" for whole naira,
+// "₦2,500.50" when kobo remain (always two digits, never "₦2,500.5").
+export function formatKoboToNaira(kobo: number): string {
+  const decimals = kobo % 100 === 0 ? 0 : 2;
+  return `₦${(kobo / 100).toLocaleString("en-NG", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}`;
+}
+
+// Maps set_promotion_price() RPC failures to safe, staff-friendly messages.
+// Sign-in is checked first: the RPC's own sign-in message also mentions
+// "manage promotion pricing", so the role pattern would swallow it otherwise.
+export function friendlyPricingError(message: string): string {
+  if (/sign in is required/i.test(message)) {
+    return "Sign in to use the admin console.";
+  }
+  if (/super_admin.*finance_admin|manage promotion pricing/i.test(message)) {
+    return "Only a super admin or finance admin may change promotion pricing.";
+  }
+  if (/at least 10000 kobo|at least ₦100/i.test(message)) {
+    return "The daily price must be at least ₦100.";
+  }
+  return "Could not save the new price. Please try again.";
+}

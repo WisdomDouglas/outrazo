@@ -1,4 +1,5 @@
 import type { AvatarStackPerson } from "@/design-system/components/AvatarStack";
+import { isDatabaseEventId } from "./event-ids";
 
 /**
  * Centralized development/demo dataset for Outrazo.
@@ -591,5 +592,6 @@ export function toEventCardProps(event: OutrazoEvent) {
     attendeeCount: event.attendeeCount,
     tag: event.tag,
     tagVariant: event.tagVariant,
+    demo: !isDatabaseEventId(event.id),
   };
 }

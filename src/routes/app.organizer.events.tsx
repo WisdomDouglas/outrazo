@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarPlus, FolderKanban, ImageOff } from "lucide-react";
+import { useState } from "react";
 
 import { Badge } from "@/design-system/components/Badge";
 import { Button } from "@/design-system/components/Button";
@@ -34,14 +35,20 @@ function EventRow({
   event,
   busyId,
   onTogglePublished,
+  onCancelEvent,
+  onReopenEvent,
 }: {
   event: OrganizerEvent;
   busyId: string | null;
   onTogglePublished: OrganizerEventsState["togglePublished"];
+  onCancelEvent: OrganizerEventsState["cancelEvent"];
+  onReopenEvent: OrganizerEventsState["reopenEvent"];
 }) {
   const { details } = event;
   const busy = busyId === event.id;
   const actionsDisabled = busyId !== null;
+  const cancelled = event.status === "cancelled";
+  const [confirmingCancel, setConfirmingCancel] = useState(false);
 
   return (
     <li className="flex flex-col gap-md rounded-lg border border-line bg-card p-md shadow-card sm:flex-row sm:items-center">
@@ -109,6 +116,48 @@ function EventRow({
         >
           {event.published ? "Unpublish" : "Publish"}
         </Button>
+        {cancelled ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            loading={busy}
+            disabled={actionsDisabled}
+            onClick={() => void onReopenEvent(event)}
+          >
+            Reopen
+          </Button>
+        ) : confirmingCancel ? (
+          <span className="inline-flex flex-wrap items-center gap-xs">
+            <span className="type-body font-medium">Cancel this event?</span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              loading={busy}
+              onClick={() => {
+                setConfirmingCancel(false);
+                void onCancelEvent(event);
+              }}
+            >
+              Confirm
+            </Button>
+            <Button type="button" variant="ghost" size="sm" disabled={busy} onClick={() => setConfirmingCancel(false)}>
+              Keep
+            </Button>
+          </span>
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={actionsDisabled}
+            onClick={() => setConfirmingCancel(true)}
+            title="Cancelling hides the event and closes ticket sales. Paid buyers must be refunded manually."
+          >
+            Cancel
+          </Button>
+        )}
         {event.published && event.status !== "cancelled" ? (
           <Link
             to="/app/organizer/promote/$eventId"
@@ -126,7 +175,7 @@ function EventRow({
 }
 
 function OrganizerEventsPage() {
-  const { events, loading, error, notice, actionError, busyId, refresh, togglePublished, dismissNotice } =
+  const { events, loading, error, notice, actionError, busyId, refresh, togglePublished, cancelEvent, reopenEvent, dismissNotice } =
     useOrganizerEvents();
 
   return (
@@ -204,6 +253,8 @@ function OrganizerEventsPage() {
               event={event}
               busyId={busyId}
               onTogglePublished={togglePublished}
+              onCancelEvent={cancelEvent}
+              onReopenEvent={reopenEvent}
             />
           ))}
         </ul>

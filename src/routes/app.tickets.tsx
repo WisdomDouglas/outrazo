@@ -24,6 +24,9 @@ import { refreshLiveCount } from "@/showcase/rsvp/live-count-store";
 import { classifyReservationError, formatReservationDate } from "@/showcase/rsvp/reservation-helpers";
 import { rememberReturnTo } from "@/showcase/saved/saved-events-store";
 import { TicketsHeroBackdrop } from "@/showcase/rsvp/TicketsHeroBackdrop";
+import { formatKoboToNaira } from "@/showcase/promotions/promotion-windows";
+import { TicketStatusBadge } from "@/showcase/tickets/TicketOrderStatusPanel";
+import { useMyTicketOrders as usePaidTicketOrders } from "@/showcase/tickets/use-ticket-orders";
 import { EVENTS, toEventCardProps } from "@/showcase/sample-data";
 
 export const Route = createFileRoute("/app/tickets")({
@@ -168,6 +171,8 @@ function TicketsPage() {
             </button>
           </div>
         ) : null}
+
+        {userId ? <PaidTicketOrders /> : null}
 
         {/* Loading Skeletons */}
         {authLoading || loading ? (
@@ -382,5 +387,94 @@ function TicketsPage() {
         )}
       </main>
     </div>
+  );
+}
+
+function PaidTicketOrders() {
+  const paid = usePaidTicketOrders();
+  if (paid.loading) {
+    return (
+      <section aria-label="Paid tickets" className="mb-6 grid gap-4 sm:mb-10">
+        <h2 className="type-h3">Paid tickets</h2>
+        <Skeleton className="h-32 rounded-2xl" />
+      </section>
+    );
+  }
+  if (paid.error) {
+    return (
+      <section aria-label="Paid tickets" className="mb-6 grid gap-4 sm:mb-10">
+        <h2 className="type-h3">Paid tickets</h2>
+        <ErrorState title="We couldn't load your paid tickets." description={paid.error} onRetry={paid.refresh} />
+      </section>
+    );
+  }
+  if (paid.orders.length === 0) return null;
+  return (
+    <section aria-label="Paid tickets" className="mb-6 grid gap-4 sm:mb-10">
+      <h2 className="type-h3">Paid tickets</h2>
+      {paid.notice ? (
+        <p className="type-body rounded-lg border border-line bg-card px-md py-sm" role="status">{paid.notice}</p>
+      ) : null}
+      {paid.actionError ? (
+        <p className="type-body rounded-lg border border-line bg-card px-md py-sm text-transactional" role="alert">{paid.actionError}</p>
+      ) : null}
+      <ul className="grid gap-4 sm:gap-6">
+        {paid.orders.map((order) => {
+          const ticketCount = order.lines.reduce((sum, line) => sum + line.quantity, 0);
+          return (
+            <li key={order.orderId} className="rounded-2xl border border-line bg-card p-4 sm:p-5 shadow-card">
+              <div className="flex flex-wrap items-start justify-between gap-sm">
+                <div className="min-w-0">
+                  <Link to="/events/$eventId" params={{ eventId: order.eventId }} className="focus-ring rounded-sm inline-block">
+                    <h3 className="text-base sm:text-lg font-bold leading-snug hover:text-accent transition-colors">{order.eventTitle}</h3>
+                  </Link>
+                  <p className="type-body mt-xs text-muted-text">
+                    {order.lines.map((line) => `${line.quantity} × ${line.tierName}`).join(" · ")}
+                  </p>
+                  <p className="type-caption mt-xs font-mono text-muted-text">Order {order.reference}</p>
+                </div>
+                <div className="grid justify-items-end gap-xs">
+                  <TicketStatusBadge status={order.status} />
+                  <p className="type-h3">{formatKoboToNaira(order.totalKobo)}</p>
+                </div>
+              </div>
+              <div className="mt-md flex flex-wrap gap-sm">
+                <Link
+                  to="/app/tickets/success"
+                  search={{ order: order.orderId }}
+                  className="focus-ring rounded-full"
+                >
+                  <Button type="button" variant="outline" size="sm">View</Button>
+                </Link>
+                {order.status === "pending" ? (
+                  <>
+                    <Button
+                      type="button"
+                      variant="transactional"
+                      size="sm"
+                      loading={paid.busyId === order.orderId}
+                      disabled={paid.busyId !== null}
+                      onClick={() => void paid.resumeOrder(order)}
+                    >
+                      Complete payment
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      loading={paid.busyId === order.orderId}
+                      disabled={paid.busyId !== null}
+                      onClick={() => void paid.cancelOrder(order.orderId)}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                ) : null}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

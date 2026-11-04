@@ -17,14 +17,21 @@ import {
 import {
   cancelAdminPromotion,
   createAdminPromotion,
+  getPromotionPricing,
   listAdminEvents,
   listAdminPromotions,
+  listPromotionOrders,
+  setPromotionPrice,
   type AdminEventRow,
+  type AdminPricingRow,
+  type AdminPromotionOrderRow,
   type AdminPromotionRow,
 } from "@/showcase/admin/admin-functions";
 import { roleHasPermission } from "@/showcase/admin/permissions";
 import {
   checkPromotionWindow,
+  formatKoboToNaira,
+  parsePriceNairaToKobo,
   PROMOTION_DISPLAY_STATUSES,
   PROMOTION_STATUS_LABELS,
   type PromotionDisplayStatus,
@@ -80,6 +87,7 @@ function AdminPromotionsPage() {
   const [endsLocal, setEndsLocal] = useState("");
 
   const canManage = role !== null && roleHasPermission(role, "promotions.manage");
+  const canSetPrice = role !== null && roleHasPermission(role, "promotions.pricing");
 
   const refresh = useCallback(async () => {
     if (!token) {
@@ -198,6 +206,8 @@ function AdminPromotionsPage() {
           only for the same event, and scheduled rows appear only inside their window.
         </p>
       </div>
+
+      <PricingSection token={token} canSetPrice={canSetPrice} />
 
       {actionMessage ? (
         <p className="type-body rounded-lg border border-line bg-card px-md py-sm" role="status">
@@ -425,6 +435,295 @@ function AdminPromotionsPage() {
           </>
         )}
       </div>
+
+      <PromotionOrdersSection token={token} />
     </div>
+  );
+}
+
+function orderStatusBadge(status: string) {
+  if (status === "paid") return <Badge variant="accent">Paid</Badge>;
+  if (status === "pending") return <Badge variant="transactional">Pending</Badge>;
+  return <Badge variant="neutral">{status.replace("_", " ")}</Badge>;
+}
+
+function PricingSection({ token, canSetPrice }: { token: string | null; canSetPrice: boolean }) {
+  const [current, setCurrent] = useState<AdminPricingRow | null>(null);
+  const [history, setHistory] = useState<AdminPricingRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [priceInput, setPriceInput] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const refreshPricing = useCallback(async () => {
+    if (!token) {
+      setError("Sign in to use the admin console.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getPromotionPricing({
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCurrent(result.current);
+      setHistory(result.history);
+    } catch (caught) {
+      setError(friendlyAdminError(caught));
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    void refreshPricing();
+  }, [refreshPricing]);
+
+  const savePrice = async () => {
+    if (!token) return;
+    setFormError(null);
+    setMessage(null);
+    const parsed = parsePriceNairaToKobo(priceInput);
+    if (!parsed.ok) {
+      setFormError(parsed.error);
+      return;
+    }
+    try {
+      await setPromotionPrice({
+        data: { dailyKobo: parsed.kobo },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPriceInput("");
+      setMessage(`Daily price set to ${formatKoboToNaira(parsed.kobo)}. New checkouts only — existing orders keep their snapshot.`);
+      await refreshPricing();
+    } catch (caught) {
+      setFormError(friendlyAdminError(caught));
+    }
+  };
+
+  const parsedPreview = parsePriceNairaToKobo(priceInput);
+
+  return (
+    <section aria-label="Promotion pricing" className="grid gap-md rounded-lg border border-line bg-card p-lg shadow-card">
+      <div>
+        <h3 className="type-h3">Promotion pricing</h3>
+        <p className="type-body mt-xs text-muted-text">
+          The daily rate organizers pay to boost an event. A change affects new
+          checkouts only — every order keeps the price it was quoted.
+        </p>
+      </div>
+      {loading ? (
+        <Skeleton className="h-20 rounded-md" />
+      ) : error ? (
+        <ErrorState title="We couldn't load pricing." description={error} onRetry={() => void refreshPricing()} />
+      ) : (
+        <div className="grid gap-md">
+          {current ? (
+            <div className="flex flex-wrap items-end justify-between gap-md">
+              <div>
+                <p className="type-h1">{formatKoboToNaira(current.dailyKobo)}</p>
+                <p className="type-body mt-xs text-muted-text">
+                  per day · effective {new Date(current.effectiveAt).toLocaleString()}
+                  {current.createdByName ? ` · set by ${current.createdByName}` : ""}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="type-body text-muted-text" role="status">
+              No price configured yet. Set the first daily rate below so organizers can check out.
+            </p>
+          )}
+          {canSetPrice ? (
+            <div className="grid gap-sm">
+              <label className="type-body grid max-w-xs gap-xs font-semibold" htmlFor="promotion-price">
+                New daily price (₦)
+                <input
+                  id="promotion-price"
+                  type="text"
+                  inputMode="decimal"
+                  value={priceInput}
+                  onChange={(event) => setPriceInput(event.target.value)}
+                  placeholder="2000"
+                  className="type-body focus-ring rounded-md border border-line bg-canvas px-md py-sm font-normal"
+                />
+              </label>
+              {formError ? (
+                <p className="type-body text-transactional" role="alert">{formError}</p>
+              ) : null}
+              {message ? (
+                <p className="type-body" role="status">{message}</p>
+              ) : null}
+              <div>
+                <ConfirmAction
+                  label="Save new price"
+                  question={
+                    parsedPreview.ok
+                      ? `Set the daily price to ${formatKoboToNaira(parsedPreview.kobo)}?`
+                      : "Set the daily price?"
+                  }
+                  disabled={!parsedPreview.ok}
+                  onConfirm={savePrice}
+                />
+              </div>
+            </div>
+          ) : (
+            <p className="type-body text-muted-text">
+              Changing the price requires the promotions.pricing permission (super admin or finance admin).
+            </p>
+          )}
+          {history.length > 0 ? (
+            <div className="grid gap-xs">
+              <h4 className="type-caption font-semibold text-muted-text">Recent changes</h4>
+              <ul className="grid gap-xs">
+                {history.map((row) => (
+                  <li key={row.id} className="type-body text-muted-text">
+                    {formatKoboToNaira(row.dailyKobo)} · {new Date(row.effectiveAt).toLocaleDateString()}
+                    {row.createdByName ? ` · ${row.createdByName}` : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function PromotionOrdersSection({ token }: { token: string | null }) {
+  const [orders, setOrders] = useState<AdminPromotionOrderRow[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [paidTotalKobo, setPaidTotalKobo] = useState(0);
+  const [paidCount, setPaidCount] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refreshOrders = useCallback(async () => {
+    if (!token) {
+      setError("Sign in to use the admin console.");
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await listPromotionOrders({
+        data: { limit: PAGE_SIZE, offset },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setOrders(result.orders);
+      setTotal(result.total);
+      setPaidTotalKobo(result.paidTotalKobo);
+      setPaidCount(result.paidCount);
+    } catch (caught) {
+      setError(friendlyAdminError(caught));
+    } finally {
+      setLoading(false);
+    }
+  }, [token, offset]);
+
+  useEffect(() => {
+    void refreshOrders();
+  }, [refreshOrders]);
+
+  const page = Math.floor(offset / PAGE_SIZE) + 1;
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  return (
+    <section aria-label="Promotion orders and revenue" className="grid gap-md">
+      <div className="flex flex-wrap items-end justify-between gap-md">
+        <div>
+          <h3 className="type-h3">Paid promotion orders</h3>
+          <p className="type-body mt-xs text-muted-text">
+            Every organizer checkout, newest first.
+          </p>
+        </div>
+        <div className="rounded-lg border border-line bg-card px-md py-sm shadow-card">
+          <p className="type-h3">{formatKoboToNaira(paidTotalKobo)}</p>
+          <p className="type-caption text-muted-text">
+            collected across {paidCount} paid {paidCount === 1 ? "order" : "orders"}
+          </p>
+        </div>
+      </div>
+      {loading && orders === null ? (
+        <Skeleton className="h-48 rounded-lg" />
+      ) : error ? (
+        <ErrorState title="We couldn't load orders." description={error} onRetry={() => void refreshOrders()} />
+      ) : !orders || orders.length === 0 ? (
+        <EmptyState
+          icon={<CalendarClock aria-hidden className="size-5" />}
+          title="No promotion orders yet."
+          description="When organizers pay to boost events, their orders appear here."
+        />
+      ) : (
+        <>
+          <div className="overflow-x-auto rounded-lg border border-line bg-card shadow-card">
+            <table className="w-full min-w-[760px] border-collapse text-left">
+              <thead>
+                <tr className="border-b border-line">
+                  {["Event", "Days", "Total", "Status", "Reference", "Ordered"].map((column) => (
+                    <th
+                      key={column}
+                      scope="col"
+                      className="type-caption px-md py-sm font-semibold tracking-wide text-muted-text uppercase"
+                    >
+                      {column}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((order) => (
+                  <tr key={order.id} className="border-b border-line last:border-0">
+                    <td className="type-body px-md py-sm font-medium">
+                      <Link
+                        to="/admin/events/$eventId"
+                        params={{ eventId: order.eventId }}
+                        className="focus-ring rounded-sm underline decoration-accent/50 underline-offset-2 hover:text-accent"
+                      >
+                        {order.eventTitle}
+                      </Link>
+                    </td>
+                    <td className="type-body px-md py-sm text-muted-text">{order.days}</td>
+                    <td className="type-body px-md py-sm font-medium">{formatKoboToNaira(order.totalKobo)}</td>
+                    <td className="px-md py-sm">{orderStatusBadge(order.status)}</td>
+                    <td className="type-caption px-md py-sm font-mono text-muted-text">{order.providerReference}</td>
+                    <td className="type-body px-md py-sm whitespace-nowrap text-muted-text">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-sm">
+            <p className="type-body text-muted-text" role="status">
+              Showing {orders.length} of {total} · Page {page} of {pageCount}
+            </p>
+            <div className="flex gap-xs">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={offset === 0 || loading}
+                onClick={() => setOffset((current) => current - PAGE_SIZE)}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={offset + PAGE_SIZE >= total || loading}
+                onClick={() => setOffset((current) => current + PAGE_SIZE)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
+    </section>
   );
 }

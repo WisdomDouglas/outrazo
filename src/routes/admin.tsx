@@ -12,6 +12,7 @@ import {
   Sparkles,
   Ticket,
   Users,
+  Wallet,
 } from "lucide-react";
 
 import { BrandSplash } from "@/showcase/BrandSplash";
@@ -46,6 +47,7 @@ interface AdminTab {
     | "/admin/attendees"
     | "/admin/reports"
     | "/admin/promotions"
+    | "/admin/finance"
     | "/admin/intelligence"
     | "/admin/scout"
     | "/admin/roles"
@@ -63,6 +65,7 @@ const TABS: AdminTab[] = [
   { label: "RSVPs", to: "/admin/attendees", icon: Ticket, permission: "attendees.read" },
   { label: "Reports", to: "/admin/reports", icon: Flag, permission: "reports.read" },
   { label: "Promotions", to: "/admin/promotions", icon: Megaphone, permission: "promotions.read" },
+  { label: "Finance", to: "/admin/finance", icon: Wallet, permission: "finance.read" },
   { label: "Intelligence", to: "/admin/intelligence", icon: Sparkles, permission: "events.read" },
   { label: "Scout", to: "/admin/scout", icon: Radar, permission: "scout.read" },
   { label: "Roles", to: "/admin/roles", icon: ShieldCheck, permission: "roles.read" },

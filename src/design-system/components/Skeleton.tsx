@@ -2,7 +2,7 @@ import { forwardRef, type HTMLAttributes } from "react";
 
 import { cn } from "../lib/utils";
 
-export interface SkeletonProps extends HTMLAttributes<HTMLDivElement> {}
+export type SkeletonProps = HTMLAttributes<HTMLDivElement>;
 
 /** Loading placeholder. Match the shape of the content it stands in for. */
 export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(

@@ -5,6 +5,7 @@ import {
   CreditCard,
   LayoutDashboard,
   Megaphone,
+  ScanLine,
   Settings,
   Ticket,
   Users,
@@ -30,6 +31,7 @@ interface DashboardTab {
     | "/app/organizer/events"
     | "/app/organizer/sales"
     | "/app/organizer/attendees"
+    | "/app/organizer/checkin"
     | "/app/organizer/payouts"
     | "/app/organizer/payment-details"
     | "/app/organizer/promotions"
@@ -43,6 +45,7 @@ const TABS: DashboardTab[] = [
   { label: "My Events", to: "/app/organizer/events", icon: CalendarDays },
   { label: "Ticket Sales", to: "/app/organizer/sales", icon: Ticket },
   { label: "Attendees", to: "/app/organizer/attendees", icon: Users },
+  { label: "Check-in", to: "/app/organizer/checkin", icon: ScanLine },
   { label: "Payouts", to: "/app/organizer/payouts", icon: Wallet },
   { label: "Payment Details", to: "/app/organizer/payment-details", icon: CreditCard },
   { label: "Promotions", to: "/app/organizer/promotions", icon: Megaphone },

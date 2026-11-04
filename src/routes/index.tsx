@@ -64,8 +64,8 @@ export const Route = createFileRoute("/")({
 const TRUST = [
   { icon: Users, title: "Real events", copy: "Real people" },
   { icon: ShieldCheck, title: "Trusted", copy: "Organizers" },
-  { icon: Ticket, title: "Secure", copy: "Ticketing" },
-  { icon: CalendarCheck, title: "Easy", copy: "Check-in" },
+  { icon: Ticket, title: "Free & paid", copy: "Listings" },
+  { icon: CalendarCheck, title: "Live", copy: "Guest lists" },
 ];
 
 const NAV = [
@@ -89,7 +89,7 @@ const FOOTER_CONTENT = {
   ],
   newsletter: {
     title: "Keep your plans interesting.",
-    description: "Occasional event picks, new drops, and reasons to leave the house.",
+    description: "Our newsletter is coming soon — check back for event picks and new drops.",
     placeholder: "Your email address",
   },
 } as const;
@@ -659,9 +659,9 @@ function Landing() {
             <div className="outrazo-footer-newsletter">
               <h2 className="outrazo-footer-heading">{FOOTER_CONTENT.newsletter.title}</h2>
               <p className="type-caption text-muted-text">{FOOTER_CONTENT.newsletter.description}</p>
-              <div className="outrazo-footer-input" role="group" aria-label="Newsletter signup mockup">
-                <input type="email" placeholder={FOOTER_CONTENT.newsletter.placeholder} aria-label={FOOTER_CONTENT.newsletter.placeholder} />
-                <button type="button" aria-label="Join newsletter">
+              <div className="outrazo-footer-input" role="group" aria-label="Newsletter signup, coming soon">
+                <input type="email" placeholder={FOOTER_CONTENT.newsletter.placeholder} aria-label={FOOTER_CONTENT.newsletter.placeholder} disabled aria-disabled="true" />
+                <button type="button" aria-label="Join newsletter, coming soon" disabled aria-disabled="true">
                   <ArrowRight aria-hidden className="size-4" />
                 </button>
               </div>

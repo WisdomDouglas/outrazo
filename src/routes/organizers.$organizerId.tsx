@@ -17,6 +17,9 @@ import {
   getOrganizerEvents,
   ORGANIZERS,
   toEventCardProps,
+  type Organizer,
+  type OrganizerSocialLink,
+  type OutrazoEvent,
 } from "@/showcase/sample-data";
 import { fetchPublishedOrganizerProfile } from "@/showcase/event-data";
 
@@ -36,7 +39,7 @@ function OrganizerNotFound() {
   );
 }
 
-function OrganizerError({ reset }: { error: Error; reset: () => void }) {
+function OrganizerError({ reset }: { error: unknown; reset: () => void }) {
   const router = useRouter();
   return (
     <main className="grid min-h-screen place-items-center bg-canvas px-md">
@@ -74,7 +77,7 @@ function OrganizerPending() {
 }
 
 export const Route = createFileRoute("/organizers/$organizerId")({
-  loader: async ({ params }) => {
+  loader: async ({ params }): Promise<{ organizer: Organizer; events: OutrazoEvent[] }> => {
     if (ORGANIZERS.some((item) => item.id === params.organizerId)) {
       return {
         organizer: getOrganizer(params.organizerId),
@@ -176,7 +179,7 @@ function OrganizerPage() {
                     Website
                   </a>
                 ) : null}
-                {organizer.socialLinks?.map((link) => (
+                {organizer.socialLinks?.map((link: OrganizerSocialLink) => (
                   <a
                     key={link.url}
                     href={link.url}
@@ -217,7 +220,7 @@ function OrganizerPage() {
           <h2 className="type-h2 mb-lg">Events by {organizer.name}</h2>
           {events.length ? (
             <div className="grid gap-lg sm:grid-cols-2 lg:grid-cols-3">
-              {events.map((event) => (
+              {events.map((event: OutrazoEvent) => (
                 <EventCard
                   key={event.id}
                   {...toEventCardProps(event)}
