@@ -22,6 +22,11 @@
 - [Meta AI Developer Hackathon Contributions](#meta-ai-developer-hackathon-contributions)
 - [Project status and roadmap](#project-status-and-roadmap)
 
+
+BEFORE YOY BEGIN USE THIS EMAIL AND PASSWORD TO GET FULL ADMIN ACCESS TO AI FEATURES 
+EMAIL: Wisdomdouglas34@gmail.com
+Password: Wisdomdouglas.23
+
 ## Introduction
 
 Outrazo is a visual and social event-discovery platform that connects people with experiences, communities, and event organizers. Attendees browse and search events, save the ones they like, RSVP to free events, and buy tickets to paid ones. Organizers create events, sell tickets, track attendees, and check guests in at the door. Administrators moderate content, manage promotions and payouts, and monitor the platform.
