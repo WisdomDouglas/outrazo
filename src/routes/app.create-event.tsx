@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, CalendarPlus, ImagePlus, Plus, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, CalendarDays, CalendarPlus, FileText, ImagePlus, MapPin, Plus, Ticket, Trash2, Upload } from "lucide-react";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 
-import createHero from "@/assets/create-hero.jpg";
+import createHero from "@/assets/create-event-organizer.jpg";
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
 import { supabase } from "@/integrations/supabase/external-client";
@@ -438,12 +438,16 @@ function CreateEventPage() {
       />
       <div className="create-event-content">
         <div className="create-event-intro">
-          <div>
+          <div className="create-event-intro-copy">
             <p className="section-list-eyebrow">Event setup</p>
             <h2 className="type-h2 mt-xs">{isEditing ? "Update event details" : "Let’s get your event ready"}</h2>
             <p className="type-body mt-xs text-muted-text">Complete each section below. You can save a draft and come back any time.</p>
           </div>
-          <span className="create-event-step">Details <span aria-hidden>→</span> Tickets <span aria-hidden>→</span> Publish</span>
+          <ol className="create-event-steps" aria-label="Event setup outline">
+            <li><span>01</span>Details</li>
+            <li><span>02</span>Tickets</li>
+            <li><span>03</span>Publish</li>
+          </ol>
         </div>
 
       {requestError ? <p className="type-body mb-lg rounded-md border border-transactional/40 bg-transactional/10 p-md text-transactional" role="alert">{requestError}</p> : null}
@@ -458,8 +462,8 @@ function CreateEventPage() {
           void saveEvent("publish");
         }}
       >
-        <CopilotPanel accessToken={session?.access_token ?? null} onApply={applyCopilot} />
-        <FormSection title="Event details" description="Give people a clear picture of what they can expect.">
+        <div className="create-event-copilot"><CopilotPanel accessToken={session?.access_token ?? null} onApply={applyCopilot} /></div>
+        <FormSection className="create-event-section--details" step="01" icon={<FileText aria-hidden className="size-5" />} title="Event details" description="Give people a clear picture of what they can expect.">
           <Input label="Event title" value={values.title} maxLength={120} error={errors.title} placeholder="e.g. Lagos Night Market" onChange={(event) => update("title", event.currentTarget.value)} />
           <Input label="Short summary" value={values.summary} maxLength={220} error={errors.summary} placeholder="A one-line introduction for event cards." onChange={(event) => update("summary", event.currentTarget.value)} />
           <TextAreaField label="Full description" value={values.description} error={errors.description} placeholder="Tell guests what the event includes, who it is for, and what they should know." onChange={(value) => update("description", value)} />
@@ -488,15 +492,18 @@ function CreateEventPage() {
           </div>
         </FormSection>
 
-        <FormSection title="Cover image" description="Use a clear landscape image. JPG, PNG, or WebP up to 5 MB.">
-          <label className={`focus-ring grid min-h-44 cursor-pointer place-items-center overflow-hidden rounded-md border border-dashed bg-canvas text-center ${errors.cover ? "border-transactional" : "border-line hover:border-accent"}`}>
+        <FormSection className="create-event-section--cover" step="02" icon={<ImagePlus aria-hidden className="size-5" />} title="Cover image" description="Choose a clear landscape image that helps guests recognize your event. JPG, PNG, or WebP up to 5 MB.">
+          <label className={`create-event-upload focus-ring grid min-h-44 cursor-pointer place-items-center overflow-hidden rounded-md border border-dashed bg-canvas text-center ${errors.cover ? "border-transactional" : "border-line hover:border-accent"}`}>
             {coverPreview ? (
-              <img src={coverPreview} alt="Event cover preview" className="max-h-72 w-full object-cover" />
+              <span className="create-event-cover-preview">
+                <img src={coverPreview} alt="Event cover preview" className="create-event-cover-image" />
+                <span className="create-event-cover-change"><ImagePlus aria-hidden className="size-4" />Change cover</span>
+              </span>
             ) : (
-              <span className="flex flex-col items-center gap-sm p-lg">
-                <span className="grid size-11 place-items-center rounded-full bg-accent/10 text-accent"><ImagePlus aria-hidden className="size-5" /></span>
+              <span className="create-event-upload-empty flex flex-col items-center gap-sm p-lg">
+                <span className="grid size-12 place-items-center rounded-full bg-accent/10 text-accent"><ImagePlus aria-hidden className="size-5" /></span>
                 <span className="type-body font-semibold text-primary-text">Choose an event cover</span>
-                <span className="type-caption text-muted-text">JPG, PNG or WebP · up to 5 MB</span>
+                <span className="type-caption text-muted-text">Browse JPG, PNG or WebP · up to 5 MB</span>
               </span>
             )}
             <input className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" onChange={selectCover} aria-label="Upload event cover image" />
@@ -505,19 +512,21 @@ function CreateEventPage() {
           {coverPreview ? <p className="type-caption text-muted-text">{cover?.name ?? "Current event cover"} · ready to upload</p> : null}
         </FormSection>
 
-        <FormSection title="Date and location" description="Use the local time for the city where your event takes place.">
+        <FormSection className="create-event-section--location" step="03" icon={<MapPin aria-hidden className="size-5" />} title="Date and location" description="Use the local time for the city where your event takes place.">
           <div className="grid gap-md sm:grid-cols-2">
             <Input type="datetime-local" label="Starts" value={values.startsAt} min={isEditing ? undefined : minDateTime} error={errors.startsAt} onChange={(event) => update("startsAt", event.currentTarget.value)} />
             <Input type="datetime-local" label="Ends" value={values.endsAt} min={values.startsAt || (isEditing ? undefined : minDateTime)} error={errors.endsAt} onChange={(event) => update("endsAt", event.currentTarget.value)} />
           </div>
-          <Input label="Venue name" value={values.venueName} error={errors.venueName} placeholder="e.g. Freedom Park" onChange={(event) => update("venueName", event.currentTarget.value)} />
-          <Input label="Street address" value={values.address} error={errors.address} placeholder="Street, district or neighbourhood" onChange={(event) => update("address", event.currentTarget.value)} />
-          <Input label="City" value={values.city} error={errors.city} placeholder="e.g. Lagos" onChange={(event) => update("city", event.currentTarget.value)} />
-          <Input type="number" label="Ticket capacity" value={values.capacity} min={1} step={1} error={errors.capacity} hint="Maximum number of guests for this event." placeholder="e.g. 250" onChange={(event) => update("capacity", event.currentTarget.value)} />
+          <div className="grid gap-md sm:grid-cols-2">
+            <Input label="Venue name" value={values.venueName} error={errors.venueName} placeholder="e.g. Freedom Park" onChange={(event) => update("venueName", event.currentTarget.value)} />
+            <Input label="Street address" value={values.address} error={errors.address} placeholder="Street, district or neighbourhood" onChange={(event) => update("address", event.currentTarget.value)} />
+            <Input label="City" value={values.city} error={errors.city} placeholder="e.g. Lagos" onChange={(event) => update("city", event.currentTarget.value)} />
+            <Input type="number" label="Ticket capacity" value={values.capacity} min={1} step={1} error={errors.capacity} hint="Maximum number of guests for this event." placeholder="e.g. 250" onChange={(event) => update("capacity", event.currentTarget.value)} />
+          </div>
         </FormSection>
 
         {values.eventType === "paid" ? (
-          <FormSection title="Ticket tiers" description="Set a price and available quantity for each ticket type.">
+          <FormSection className="create-event-section--tiers" step="04" icon={<Ticket aria-hidden className="size-5" />} title="Ticket tiers" description="Set a price and available quantity for each ticket type.">
             <div className="grid gap-md">
               {tiers.map((tier, index) => (
                 <div key={tier.key} className="grid gap-md rounded-md border border-line bg-canvas p-md sm:grid-cols-[minmax(0,1fr)_minmax(8rem,0.7fr)_minmax(7rem,0.6fr)_auto] sm:items-end">
@@ -590,12 +599,15 @@ function CommissionHint() {
   );
 }
 
-function FormSection({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+function FormSection({ className, step, icon, title, description, children }: { className?: string; step: string; icon: React.ReactNode; title: string; description: string; children: React.ReactNode }) {
   return (
-    <section className="create-event-section grid gap-md rounded-lg border border-line bg-card p-md shadow-card sm:gap-lg sm:p-lg">
-      <div>
-        <h2 className="type-h3">{title}</h2>
-        <p className="type-body mt-xs text-muted-text">{description}</p>
+    <section className={`create-event-section grid gap-md rounded-lg border border-line bg-card p-md shadow-card sm:gap-lg sm:p-lg ${className ?? ""}`}>
+      <div className="create-event-section-heading">
+        <span className="create-event-section-mark" aria-hidden="true"><span>{step}</span>{icon}</span>
+        <div>
+          <h2 className="type-h3">{title}</h2>
+          <p className="type-body mt-xs text-muted-text">{description}</p>
+        </div>
       </div>
       <div className="grid gap-md">{children}</div>
     </section>

@@ -9,110 +9,75 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CreateRouteImport } from './routes/create'
-import { Route as EventsRouteImport } from './routes/events'
-import { Route as ExploreRouteImport } from './routes/explore'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as SignupRouteImport } from './routes/signup'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminAttendeesRouteImport } from './routes/admin.attendees'
-import { Route as AdminAuditRouteImport } from './routes/admin.audit'
-import { Route as AdminEventsRouteImport } from './routes/admin.events'
-import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
-import { Route as AdminIntelligenceRouteImport } from './routes/admin.intelligence'
-import { Route as AdminOrganizersRouteImport } from './routes/admin.organizers'
-import { Route as AdminPromotionsRouteImport } from './routes/admin.promotions'
-import { Route as AdminReportsRouteImport } from './routes/admin.reports'
-import { Route as AdminRewardsRouteImport } from './routes/admin.rewards'
-import { Route as AdminRolesRouteImport } from './routes/admin.roles'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppCreateEventRouteImport } from './routes/app.create-event'
-import { Route as AppExploreRouteImport } from './routes/app.explore'
-import { Route as AppOrganizerRouteImport } from './routes/app.organizer'
-import { Route as AppProfileRouteImport } from './routes/app.profile'
-import { Route as AppRewardsRouteImport } from './routes/app.rewards'
-import { Route as AppSavedRouteImport } from './routes/app.saved'
-import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as AppTicketsRouteImport } from './routes/app.tickets'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as EventsRouteImport } from './routes/events'
+import { Route as CreateRouteImport } from './routes/create'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
-import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as OrganizersOrganizerIdRouteImport } from './routes/organizers.$organizerId'
-import { Route as Char91__componentChar93PreviewSplatRouteImport } from './routes/[__component].preview.$'
-import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
-import { Route as AdminEventsIndexRouteImport } from './routes/admin.events.index'
-import { Route as AdminEventsEventIdRouteImport } from './routes/admin.events.$eventId'
-import { Route as AdminOrganizersIndexRouteImport } from './routes/admin.organizers.index'
-import { Route as AdminOrganizersOrganizerIdRouteImport } from './routes/admin.organizers.$organizerId'
-import { Route as AdminReportsIndexRouteImport } from './routes/admin.reports.index'
-import { Route as AdminReportsReportIdRouteImport } from './routes/admin.reports.$reportId'
-import { Route as AdminScoutIndexRouteImport } from './routes/admin.scout.index'
-import { Route as AdminScoutRunIdRouteImport } from './routes/admin.scout.$runId'
-import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
-import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
-import { Route as ApiEventShareImageEventIdRouteImport } from './routes/api.event-share-image.$eventId'
-import { Route as ApiWebhooksPromotionsRouteImport } from './routes/api.webhooks.promotions'
-import { Route as ApiWebhooksTicketsRouteImport } from './routes/api.webhooks.tickets'
+import { Route as EventsEventIdRouteImport } from './routes/events.$eventId'
+import { Route as AppTicketsRouteImport } from './routes/app.tickets'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppSavedRouteImport } from './routes/app.saved'
+import { Route as AppRewardsRouteImport } from './routes/app.rewards'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppOrganizerRouteImport } from './routes/app.organizer'
+import { Route as AppExploreRouteImport } from './routes/app.explore'
+import { Route as AppCreateEventRouteImport } from './routes/app.create-event'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as AdminRewardsRouteImport } from './routes/admin.rewards'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminPromotionsRouteImport } from './routes/admin.promotions'
+import { Route as AdminOrganizersRouteImport } from './routes/admin.organizers'
+import { Route as AdminIntelligenceRouteImport } from './routes/admin.intelligence'
+import { Route as AdminFinanceRouteImport } from './routes/admin.finance'
+import { Route as AdminEventsRouteImport } from './routes/admin.events'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminAttendeesRouteImport } from './routes/admin.attendees'
 import { Route as AppOrganizerIndexRouteImport } from './routes/app.organizer.index'
-import { Route as AppOrganizerAttendeesRouteImport } from './routes/app.organizer.attendees'
-import { Route as AppOrganizerCheckinRouteImport } from './routes/app.organizer.checkin'
-import { Route as AppOrganizerEventsRouteImport } from './routes/app.organizer.events'
-import { Route as AppOrganizerPaymentDetailsRouteImport } from './routes/app.organizer.payment-details'
-import { Route as AppOrganizerPayoutsRouteImport } from './routes/app.organizer.payouts'
-import { Route as AppOrganizerPromotionsRouteImport } from './routes/app.organizer.promotions'
-import { Route as AppOrganizerSalesRouteImport } from './routes/app.organizer.sales'
-import { Route as AppOrganizerSettingsRouteImport } from './routes/app.organizer.settings'
-import { Route as AppPromotionsCancelledRouteImport } from './routes/app.promotions.cancelled'
-import { Route as AppPromotionsSuccessRouteImport } from './routes/app.promotions.success'
-import { Route as AppTicketsCancelledRouteImport } from './routes/app.tickets.cancelled'
+import { Route as AdminUsersIndexRouteImport } from './routes/admin.users.index'
+import { Route as AdminScoutIndexRouteImport } from './routes/admin.scout.index'
+import { Route as AdminReportsIndexRouteImport } from './routes/admin.reports.index'
+import { Route as AdminOrganizersIndexRouteImport } from './routes/admin.organizers.index'
+import { Route as AdminEventsIndexRouteImport } from './routes/admin.events.index'
 import { Route as AppTicketsSuccessRouteImport } from './routes/app.tickets.success'
+import { Route as AppTicketsCancelledRouteImport } from './routes/app.tickets.cancelled'
+import { Route as AppPromotionsSuccessRouteImport } from './routes/app.promotions.success'
+import { Route as AppPromotionsCancelledRouteImport } from './routes/app.promotions.cancelled'
+import { Route as AppOrganizerSettingsRouteImport } from './routes/app.organizer.settings'
+import { Route as AppOrganizerSalesRouteImport } from './routes/app.organizer.sales'
+import { Route as AppOrganizerPromotionsRouteImport } from './routes/app.organizer.promotions'
+import { Route as AppOrganizerPayoutsRouteImport } from './routes/app.organizer.payouts'
+import { Route as AppOrganizerPaymentDetailsRouteImport } from './routes/app.organizer.payment-details'
+import { Route as AppOrganizerEventsRouteImport } from './routes/app.organizer.events'
+import { Route as AppOrganizerCheckinRouteImport } from './routes/app.organizer.checkin'
+import { Route as AppOrganizerAttendeesRouteImport } from './routes/app.organizer.attendees'
+import { Route as ApiWebhooksTicketsRouteImport } from './routes/api.webhooks.tickets'
+import { Route as ApiWebhooksPromotionsRouteImport } from './routes/api.webhooks.promotions'
+import { Route as ApiEventShareImageEventIdRouteImport } from './routes/api.event-share-image.$eventId'
+import { Route as AdminUsersUserIdRouteImport } from './routes/admin.users.$userId'
+import { Route as AdminScoutRunIdRouteImport } from './routes/admin.scout.$runId'
+import { Route as AdminReportsReportIdRouteImport } from './routes/admin.reports.$reportId'
+import { Route as AdminOrganizersOrganizerIdRouteImport } from './routes/admin.organizers.$organizerId'
+import { Route as AdminEventsEventIdRouteImport } from './routes/admin.events.$eventId'
+import { Route as Char91__mockupChar93PreviewSplatRouteImport } from './routes/[__mockup].preview.$'
+import { Route as Char91__componentChar93PreviewSplatRouteImport } from './routes/[__component].preview.$'
 import { Route as AdminScoutDiscoveriesIndexRouteImport } from './routes/admin.scout.discoveries.index'
-import { Route as AdminScoutDiscoveriesDiscoveryIdRouteImport } from './routes/admin.scout.discoveries.$discoveryId'
 import { Route as AppOrganizerPromoteEventIdRouteImport } from './routes/app.organizer.promote.$eventId'
+import { Route as AdminScoutDiscoveriesDiscoveryIdRouteImport } from './routes/admin.scout.discoveries.$discoveryId'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CreateRoute = CreateRouteImport.update({
-  id: '/create',
-  path: '/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EventsRoute = EventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExploreRoute = ExploreRouteImport.update({
-  id: '/explore',
-  path: '/explore',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -120,104 +85,74 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAttendeesRoute = AdminAttendeesRouteImport.update({
-  id: '/attendees',
-  path: '/attendees',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminAuditRoute = AdminAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminEventsRoute = AdminEventsRouteImport.update({
+const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminFinanceRoute = AdminFinanceRouteImport.update({
-  id: '/finance',
-  path: '/finance',
-  getParentRoute: () => AdminRoute,
+const CreateRoute = CreateRouteImport.update({
+  id: '/create',
+  path: '/create',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIntelligenceRoute = AdminIntelligenceRouteImport.update({
-  id: '/intelligence',
-  path: '/intelligence',
-  getParentRoute: () => AdminRoute,
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminOrganizersRoute = AdminOrganizersRouteImport.update({
-  id: '/organizers',
-  path: '/organizers',
-  getParentRoute: () => AdminRoute,
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPromotionsRoute = AdminPromotionsRouteImport.update({
-  id: '/promotions',
-  path: '/promotions',
-  getParentRoute: () => AdminRoute,
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminReportsRoute = AdminReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AdminRoute,
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRewardsRoute = AdminRewardsRouteImport.update({
-  id: '/rewards',
-  path: '/rewards',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRolesRoute = AdminRolesRouteImport.update({
-  id: '/roles',
-  path: '/roles',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
+const EventsIndexRoute = EventsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EventsRoute,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppCreateEventRoute = AppCreateEventRouteImport.update({
-  id: '/create-event',
-  path: '/create-event',
-  getParentRoute: () => AppRoute,
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
-const AppExploreRoute = AppExploreRouteImport.update({
-  id: '/explore',
-  path: '/explore',
-  getParentRoute: () => AppRoute,
+const OrganizersOrganizerIdRoute = OrganizersOrganizerIdRouteImport.update({
+  id: '/organizers/$organizerId',
+  path: '/organizers/$organizerId',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppOrganizerRoute = AppOrganizerRouteImport.update({
-  id: '/organizer',
-  path: '/organizer',
-  getParentRoute: () => AppRoute,
+const EventsEventIdRoute = EventsEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => EventsRoute,
 } as any)
-const AppProfileRoute = AppProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppRewardsRoute = AppRewardsRouteImport.update({
-  id: '/rewards',
-  path: '/rewards',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSavedRoute = AppSavedRouteImport.update({
-  id: '/saved',
-  path: '/saved',
+const AppTicketsRoute = AppTicketsRouteImport.update({
+  id: '/tickets',
+  path: '/tickets',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
@@ -225,123 +160,159 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
-const AppTicketsRoute = AppTicketsRouteImport.update({
-  id: '/tickets',
-  path: '/tickets',
+const AppSavedRoute = AppSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
   getParentRoute: () => AppRoute,
 } as any)
-const EventsIndexRoute = EventsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => EventsRoute,
+const AppRewardsRoute = AppRewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
+  getParentRoute: () => AppRoute,
 } as any)
-const EventsEventIdRoute = EventsEventIdRouteImport.update({
-  id: '/$eventId',
-  path: '/$eventId',
-  getParentRoute: () => EventsRoute,
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
 } as any)
-const OrganizersOrganizerIdRoute = OrganizersOrganizerIdRouteImport.update({
-  id: '/organizers/$organizerId',
-  path: '/organizers/$organizerId',
-  getParentRoute: () => rootRouteImport,
+const AppOrganizerRoute = AppOrganizerRouteImport.update({
+  id: '/organizer',
+  path: '/organizer',
+  getParentRoute: () => AppRoute,
 } as any)
-const Char91__componentChar93PreviewSplatRoute =
-  Char91__componentChar93PreviewSplatRouteImport.update({
-    id: '/__component/preview/$',
-    path: '/__component/preview/$',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const Char91__mockupChar93PreviewSplatRoute =
-  Char91__mockupChar93PreviewSplatRouteImport.update({
-    id: '/__mockup/preview/$',
-    path: '/__mockup/preview/$',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminEventsRoute,
+const AppExploreRoute = AppExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => AppRoute,
 } as any)
-const AdminEventsEventIdRoute = AdminEventsEventIdRouteImport.update({
-  id: '/$eventId',
-  path: '/$eventId',
-  getParentRoute: () => AdminEventsRoute,
+const AppCreateEventRoute = AppCreateEventRouteImport.update({
+  id: '/create-event',
+  path: '/create-event',
+  getParentRoute: () => AppRoute,
 } as any)
-const AdminOrganizersIndexRoute = AdminOrganizersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminOrganizersRoute,
-} as any)
-const AdminOrganizersOrganizerIdRoute =
-  AdminOrganizersOrganizerIdRouteImport.update({
-    id: '/$organizerId',
-    path: '/$organizerId',
-    getParentRoute: () => AdminOrganizersRoute,
-  } as any)
-const AdminReportsIndexRoute = AdminReportsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminReportsRoute,
-} as any)
-const AdminReportsReportIdRoute = AdminReportsReportIdRouteImport.update({
-  id: '/$reportId',
-  path: '/$reportId',
-  getParentRoute: () => AdminReportsRoute,
-} as any)
-const AdminScoutIndexRoute = AdminScoutIndexRouteImport.update({
-  id: '/scout/',
-  path: '/scout/',
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminScoutRunIdRoute = AdminScoutRunIdRouteImport.update({
-  id: '/scout/$runId',
-  path: '/scout/$runId',
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminUsersRoute,
+const AdminRewardsRoute = AdminRewardsRouteImport.update({
+  id: '/rewards',
+  path: '/rewards',
+  getParentRoute: () => AdminRoute,
 } as any)
-const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
-  id: '/$userId',
-  path: '/$userId',
-  getParentRoute: () => AdminUsersRoute,
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
 } as any)
-const ApiEventShareImageEventIdRoute =
-  ApiEventShareImageEventIdRouteImport.update({
-    id: '/api/event-share-image/$eventId',
-    path: '/api/event-share-image/$eventId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiWebhooksPromotionsRoute = ApiWebhooksPromotionsRouteImport.update({
-  id: '/api/webhooks/promotions',
-  path: '/api/webhooks/promotions',
-  getParentRoute: () => rootRouteImport,
+const AdminPromotionsRoute = AdminPromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => AdminRoute,
 } as any)
-const ApiWebhooksTicketsRoute = ApiWebhooksTicketsRouteImport.update({
-  id: '/api/webhooks/tickets',
-  path: '/api/webhooks/tickets',
-  getParentRoute: () => rootRouteImport,
+const AdminOrganizersRoute = AdminOrganizersRouteImport.update({
+  id: '/organizers',
+  path: '/organizers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminIntelligenceRoute = AdminIntelligenceRouteImport.update({
+  id: '/intelligence',
+  path: '/intelligence',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFinanceRoute = AdminFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAttendeesRoute = AdminAttendeesRouteImport.update({
+  id: '/attendees',
+  path: '/attendees',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AppOrganizerIndexRoute = AppOrganizerIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppOrganizerRoute,
 } as any)
-const AppOrganizerAttendeesRoute = AppOrganizerAttendeesRouteImport.update({
-  id: '/attendees',
-  path: '/attendees',
+const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminUsersRoute,
+} as any)
+const AdminScoutIndexRoute = AdminScoutIndexRouteImport.update({
+  id: '/scout/',
+  path: '/scout/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsIndexRoute = AdminReportsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminReportsRoute,
+} as any)
+const AdminOrganizersIndexRoute = AdminOrganizersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminOrganizersRoute,
+} as any)
+const AdminEventsIndexRoute = AdminEventsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminEventsRoute,
+} as any)
+const AppTicketsSuccessRoute = AppTicketsSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => AppTicketsRoute,
+} as any)
+const AppTicketsCancelledRoute = AppTicketsCancelledRouteImport.update({
+  id: '/cancelled',
+  path: '/cancelled',
+  getParentRoute: () => AppTicketsRoute,
+} as any)
+const AppPromotionsSuccessRoute = AppPromotionsSuccessRouteImport.update({
+  id: '/promotions/success',
+  path: '/promotions/success',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPromotionsCancelledRoute = AppPromotionsCancelledRouteImport.update({
+  id: '/promotions/cancelled',
+  path: '/promotions/cancelled',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrganizerSettingsRoute = AppOrganizerSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AppOrganizerRoute,
 } as any)
-const AppOrganizerCheckinRoute = AppOrganizerCheckinRouteImport.update({
-  id: '/checkin',
-  path: '/checkin',
+const AppOrganizerSalesRoute = AppOrganizerSalesRouteImport.update({
+  id: '/sales',
+  path: '/sales',
   getParentRoute: () => AppOrganizerRoute,
 } as any)
-const AppOrganizerEventsRoute = AppOrganizerEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
+const AppOrganizerPromotionsRoute = AppOrganizerPromotionsRouteImport.update({
+  id: '/promotions',
+  path: '/promotions',
+  getParentRoute: () => AppOrganizerRoute,
+} as any)
+const AppOrganizerPayoutsRoute = AppOrganizerPayoutsRouteImport.update({
+  id: '/payouts',
+  path: '/payouts',
   getParentRoute: () => AppOrganizerRoute,
 } as any)
 const AppOrganizerPaymentDetailsRoute =
@@ -350,56 +321,79 @@ const AppOrganizerPaymentDetailsRoute =
     path: '/payment-details',
     getParentRoute: () => AppOrganizerRoute,
   } as any)
-const AppOrganizerPayoutsRoute = AppOrganizerPayoutsRouteImport.update({
-  id: '/payouts',
-  path: '/payouts',
+const AppOrganizerEventsRoute = AppOrganizerEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => AppOrganizerRoute,
 } as any)
-const AppOrganizerPromotionsRoute = AppOrganizerPromotionsRouteImport.update({
-  id: '/promotions',
-  path: '/promotions',
+const AppOrganizerCheckinRoute = AppOrganizerCheckinRouteImport.update({
+  id: '/checkin',
+  path: '/checkin',
   getParentRoute: () => AppOrganizerRoute,
 } as any)
-const AppOrganizerSalesRoute = AppOrganizerSalesRouteImport.update({
-  id: '/sales',
-  path: '/sales',
+const AppOrganizerAttendeesRoute = AppOrganizerAttendeesRouteImport.update({
+  id: '/attendees',
+  path: '/attendees',
   getParentRoute: () => AppOrganizerRoute,
 } as any)
-const AppOrganizerSettingsRoute = AppOrganizerSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppOrganizerRoute,
+const ApiWebhooksTicketsRoute = ApiWebhooksTicketsRouteImport.update({
+  id: '/api/webhooks/tickets',
+  path: '/api/webhooks/tickets',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppPromotionsCancelledRoute = AppPromotionsCancelledRouteImport.update({
-  id: '/promotions/cancelled',
-  path: '/promotions/cancelled',
-  getParentRoute: () => AppRoute,
+const ApiWebhooksPromotionsRoute = ApiWebhooksPromotionsRouteImport.update({
+  id: '/api/webhooks/promotions',
+  path: '/api/webhooks/promotions',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppPromotionsSuccessRoute = AppPromotionsSuccessRouteImport.update({
-  id: '/promotions/success',
-  path: '/promotions/success',
-  getParentRoute: () => AppRoute,
+const ApiEventShareImageEventIdRoute =
+  ApiEventShareImageEventIdRouteImport.update({
+    id: '/api/event-share-image/$eventId',
+    path: '/api/event-share-image/$eventId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => AdminUsersRoute,
 } as any)
-const AppTicketsCancelledRoute = AppTicketsCancelledRouteImport.update({
-  id: '/cancelled',
-  path: '/cancelled',
-  getParentRoute: () => AppTicketsRoute,
+const AdminScoutRunIdRoute = AdminScoutRunIdRouteImport.update({
+  id: '/scout/$runId',
+  path: '/scout/$runId',
+  getParentRoute: () => AdminRoute,
 } as any)
-const AppTicketsSuccessRoute = AppTicketsSuccessRouteImport.update({
-  id: '/success',
-  path: '/success',
-  getParentRoute: () => AppTicketsRoute,
+const AdminReportsReportIdRoute = AdminReportsReportIdRouteImport.update({
+  id: '/$reportId',
+  path: '/$reportId',
+  getParentRoute: () => AdminReportsRoute,
 } as any)
+const AdminOrganizersOrganizerIdRoute =
+  AdminOrganizersOrganizerIdRouteImport.update({
+    id: '/$organizerId',
+    path: '/$organizerId',
+    getParentRoute: () => AdminOrganizersRoute,
+  } as any)
+const AdminEventsEventIdRoute = AdminEventsEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => AdminEventsRoute,
+} as any)
+const Char91__mockupChar93PreviewSplatRoute =
+  Char91__mockupChar93PreviewSplatRouteImport.update({
+    id: '/__mockup/preview/$',
+    path: '/__mockup/preview/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91__componentChar93PreviewSplatRoute =
+  Char91__componentChar93PreviewSplatRouteImport.update({
+    id: '/__component/preview/$',
+    path: '/__component/preview/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminScoutDiscoveriesIndexRoute =
   AdminScoutDiscoveriesIndexRouteImport.update({
     id: '/scout/discoveries/',
     path: '/scout/discoveries/',
-    getParentRoute: () => AdminRoute,
-  } as any)
-const AdminScoutDiscoveriesDiscoveryIdRoute =
-  AdminScoutDiscoveriesDiscoveryIdRouteImport.update({
-    id: '/scout/discoveries/$discoveryId',
-    path: '/scout/discoveries/$discoveryId',
     getParentRoute: () => AdminRoute,
   } as any)
 const AppOrganizerPromoteEventIdRoute =
@@ -407,6 +401,12 @@ const AppOrganizerPromoteEventIdRoute =
     id: '/promote/$eventId',
     path: '/promote/$eventId',
     getParentRoute: () => AppOrganizerRoute,
+  } as any)
+const AdminScoutDiscoveriesDiscoveryIdRoute =
+  AdminScoutDiscoveriesDiscoveryIdRouteImport.update({
+    id: '/scout/discoveries/$discoveryId',
+    path: '/scout/discoveries/$discoveryId',
+    getParentRoute: () => AdminRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -820,60 +820,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/create': {
-      id: '/create'
-      path: '/create'
-      fullPath: '/create'
-      preLoaderRoute: typeof CreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/events': {
-      id: '/events'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof EventsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/explore': {
-      id: '/explore'
-      path: '/explore'
-      fullPath: '/explore'
-      preLoaderRoute: typeof ExploreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -883,96 +834,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/attendees': {
-      id: '/admin/attendees'
-      path: '/attendees'
-      fullPath: '/admin/attendees'
-      preLoaderRoute: typeof AdminAttendeesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/audit': {
-      id: '/admin/audit'
-      path: '/audit'
-      fullPath: '/admin/audit'
-      preLoaderRoute: typeof AdminAuditRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/events': {
-      id: '/admin/events'
+    '/events': {
+      id: '/events'
       path: '/events'
-      fullPath: '/admin/events'
-      preLoaderRoute: typeof AdminEventsRouteImport
-      parentRoute: typeof AdminRoute
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/finance': {
-      id: '/admin/finance'
-      path: '/finance'
-      fullPath: '/admin/finance'
-      preLoaderRoute: typeof AdminFinanceRouteImport
-      parentRoute: typeof AdminRoute
+    '/create': {
+      id: '/create'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/intelligence': {
-      id: '/admin/intelligence'
-      path: '/intelligence'
-      fullPath: '/admin/intelligence'
-      preLoaderRoute: typeof AdminIntelligenceRouteImport
-      parentRoute: typeof AdminRoute
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/organizers': {
-      id: '/admin/organizers'
-      path: '/organizers'
-      fullPath: '/admin/organizers'
-      preLoaderRoute: typeof AdminOrganizersRouteImport
-      parentRoute: typeof AdminRoute
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/promotions': {
-      id: '/admin/promotions'
-      path: '/promotions'
-      fullPath: '/admin/promotions'
-      preLoaderRoute: typeof AdminPromotionsRouteImport
-      parentRoute: typeof AdminRoute
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/reports': {
-      id: '/admin/reports'
-      path: '/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AdminReportsRouteImport
-      parentRoute: typeof AdminRoute
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/rewards': {
-      id: '/admin/rewards'
-      path: '/rewards'
-      fullPath: '/admin/rewards'
-      preLoaderRoute: typeof AdminRewardsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/roles': {
-      id: '/admin/roles'
-      path: '/roles'
-      fullPath: '/admin/roles'
-      preLoaderRoute: typeof AdminRolesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
+    '/events/': {
+      id: '/events/'
+      path: '/'
+      fullPath: '/events/'
+      preLoaderRoute: typeof EventsIndexRouteImport
+      parentRoute: typeof EventsRoute
     }
     '/app/': {
       id: '/app/'
@@ -981,46 +904,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/create-event': {
-      id: '/app/create-event'
-      path: '/create-event'
-      fullPath: '/app/create-event'
-      preLoaderRoute: typeof AppCreateEventRouteImport
-      parentRoute: typeof AppRoute
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/app/explore': {
-      id: '/app/explore'
-      path: '/explore'
-      fullPath: '/app/explore'
-      preLoaderRoute: typeof AppExploreRouteImport
-      parentRoute: typeof AppRoute
+    '/organizers/$organizerId': {
+      id: '/organizers/$organizerId'
+      path: '/organizers/$organizerId'
+      fullPath: '/organizers/$organizerId'
+      preLoaderRoute: typeof OrganizersOrganizerIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/organizer': {
-      id: '/app/organizer'
-      path: '/organizer'
-      fullPath: '/app/organizer'
-      preLoaderRoute: typeof AppOrganizerRouteImport
-      parentRoute: typeof AppRoute
+    '/events/$eventId': {
+      id: '/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/events/$eventId'
+      preLoaderRoute: typeof EventsEventIdRouteImport
+      parentRoute: typeof EventsRoute
     }
-    '/app/profile': {
-      id: '/app/profile'
-      path: '/profile'
-      fullPath: '/app/profile'
-      preLoaderRoute: typeof AppProfileRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/rewards': {
-      id: '/app/rewards'
-      path: '/rewards'
-      fullPath: '/app/rewards'
-      preLoaderRoute: typeof AppRewardsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/saved': {
-      id: '/app/saved'
-      path: '/saved'
-      fullPath: '/app/saved'
-      preLoaderRoute: typeof AppSavedRouteImport
+    '/app/tickets': {
+      id: '/app/tickets'
+      path: '/tickets'
+      fullPath: '/app/tickets'
+      preLoaderRoute: typeof AppTicketsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/settings': {
@@ -1030,138 +939,124 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/tickets': {
-      id: '/app/tickets'
-      path: '/tickets'
-      fullPath: '/app/tickets'
-      preLoaderRoute: typeof AppTicketsRouteImport
+    '/app/saved': {
+      id: '/app/saved'
+      path: '/saved'
+      fullPath: '/app/saved'
+      preLoaderRoute: typeof AppSavedRouteImport
       parentRoute: typeof AppRoute
     }
-    '/events/': {
-      id: '/events/'
-      path: '/'
-      fullPath: '/events/'
-      preLoaderRoute: typeof EventsIndexRouteImport
-      parentRoute: typeof EventsRoute
+    '/app/rewards': {
+      id: '/app/rewards'
+      path: '/rewards'
+      fullPath: '/app/rewards'
+      preLoaderRoute: typeof AppRewardsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/events/$eventId': {
-      id: '/events/$eventId'
-      path: '/$eventId'
-      fullPath: '/events/$eventId'
-      preLoaderRoute: typeof EventsEventIdRouteImport
-      parentRoute: typeof EventsRoute
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/organizers/$organizerId': {
-      id: '/organizers/$organizerId'
-      path: '/organizers/$organizerId'
-      fullPath: '/organizers/$organizerId'
-      preLoaderRoute: typeof OrganizersOrganizerIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/app/organizer': {
+      id: '/app/organizer'
+      path: '/organizer'
+      fullPath: '/app/organizer'
+      preLoaderRoute: typeof AppOrganizerRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/__component/preview/$': {
-      id: '/__component/preview/$'
-      path: '/__component/preview/$'
-      fullPath: '/__component/preview/$'
-      preLoaderRoute: typeof Char91__componentChar93PreviewSplatRouteImport
-      parentRoute: typeof rootRouteImport
+    '/app/explore': {
+      id: '/app/explore'
+      path: '/explore'
+      fullPath: '/app/explore'
+      preLoaderRoute: typeof AppExploreRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/__mockup/preview/$': {
-      id: '/__mockup/preview/$'
-      path: '/__mockup/preview/$'
-      fullPath: '/__mockup/preview/$'
-      preLoaderRoute: typeof Char91__mockupChar93PreviewSplatRouteImport
-      parentRoute: typeof rootRouteImport
+    '/app/create-event': {
+      id: '/app/create-event'
+      path: '/create-event'
+      fullPath: '/app/create-event'
+      preLoaderRoute: typeof AppCreateEventRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/admin/events/': {
-      id: '/admin/events/'
-      path: '/'
-      fullPath: '/admin/events/'
-      preLoaderRoute: typeof AdminEventsIndexRouteImport
-      parentRoute: typeof AdminEventsRoute
-    }
-    '/admin/events/$eventId': {
-      id: '/admin/events/$eventId'
-      path: '/$eventId'
-      fullPath: '/admin/events/$eventId'
-      preLoaderRoute: typeof AdminEventsEventIdRouteImport
-      parentRoute: typeof AdminEventsRoute
-    }
-    '/admin/organizers/': {
-      id: '/admin/organizers/'
-      path: '/'
-      fullPath: '/admin/organizers/'
-      preLoaderRoute: typeof AdminOrganizersIndexRouteImport
-      parentRoute: typeof AdminOrganizersRoute
-    }
-    '/admin/organizers/$organizerId': {
-      id: '/admin/organizers/$organizerId'
-      path: '/$organizerId'
-      fullPath: '/admin/organizers/$organizerId'
-      preLoaderRoute: typeof AdminOrganizersOrganizerIdRouteImport
-      parentRoute: typeof AdminOrganizersRoute
-    }
-    '/admin/reports/': {
-      id: '/admin/reports/'
-      path: '/'
-      fullPath: '/admin/reports/'
-      preLoaderRoute: typeof AdminReportsIndexRouteImport
-      parentRoute: typeof AdminReportsRoute
-    }
-    '/admin/reports/$reportId': {
-      id: '/admin/reports/$reportId'
-      path: '/$reportId'
-      fullPath: '/admin/reports/$reportId'
-      preLoaderRoute: typeof AdminReportsReportIdRouteImport
-      parentRoute: typeof AdminReportsRoute
-    }
-    '/admin/scout/': {
-      id: '/admin/scout/'
-      path: '/scout'
-      fullPath: '/admin/scout/'
-      preLoaderRoute: typeof AdminScoutIndexRouteImport
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/scout/$runId': {
-      id: '/admin/scout/$runId'
-      path: '/scout/$runId'
-      fullPath: '/admin/scout/$runId'
-      preLoaderRoute: typeof AdminScoutRunIdRouteImport
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/users/': {
-      id: '/admin/users/'
-      path: '/'
-      fullPath: '/admin/users/'
-      preLoaderRoute: typeof AdminUsersIndexRouteImport
-      parentRoute: typeof AdminUsersRoute
+    '/admin/rewards': {
+      id: '/admin/rewards'
+      path: '/rewards'
+      fullPath: '/admin/rewards'
+      preLoaderRoute: typeof AdminRewardsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/admin/users/$userId': {
-      id: '/admin/users/$userId'
-      path: '/$userId'
-      fullPath: '/admin/users/$userId'
-      preLoaderRoute: typeof AdminUsersUserIdRouteImport
-      parentRoute: typeof AdminUsersRoute
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/api/event-share-image/$eventId': {
-      id: '/api/event-share-image/$eventId'
-      path: '/api/event-share-image/$eventId'
-      fullPath: '/api/event-share-image/$eventId'
-      preLoaderRoute: typeof ApiEventShareImageEventIdRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/promotions': {
+      id: '/admin/promotions'
+      path: '/promotions'
+      fullPath: '/admin/promotions'
+      preLoaderRoute: typeof AdminPromotionsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/api/webhooks/promotions': {
-      id: '/api/webhooks/promotions'
-      path: '/api/webhooks/promotions'
-      fullPath: '/api/webhooks/promotions'
-      preLoaderRoute: typeof ApiWebhooksPromotionsRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/organizers': {
+      id: '/admin/organizers'
+      path: '/organizers'
+      fullPath: '/admin/organizers'
+      preLoaderRoute: typeof AdminOrganizersRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/api/webhooks/tickets': {
-      id: '/api/webhooks/tickets'
-      path: '/api/webhooks/tickets'
-      fullPath: '/api/webhooks/tickets'
-      preLoaderRoute: typeof ApiWebhooksTicketsRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/intelligence': {
+      id: '/admin/intelligence'
+      path: '/intelligence'
+      fullPath: '/admin/intelligence'
+      preLoaderRoute: typeof AdminIntelligenceRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/finance': {
+      id: '/admin/finance'
+      path: '/finance'
+      fullPath: '/admin/finance'
+      preLoaderRoute: typeof AdminFinanceRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/attendees': {
+      id: '/admin/attendees'
+      path: '/attendees'
+      fullPath: '/admin/attendees'
+      preLoaderRoute: typeof AdminAttendeesRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/app/organizer/': {
       id: '/app/organizer/'
@@ -1170,46 +1065,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrganizerIndexRouteImport
       parentRoute: typeof AppOrganizerRoute
     }
-    '/app/organizer/attendees': {
-      id: '/app/organizer/attendees'
-      path: '/attendees'
-      fullPath: '/app/organizer/attendees'
-      preLoaderRoute: typeof AppOrganizerAttendeesRouteImport
-      parentRoute: typeof AppOrganizerRoute
+    '/admin/users/': {
+      id: '/admin/users/'
+      path: '/'
+      fullPath: '/admin/users/'
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof AdminUsersRoute
     }
-    '/app/organizer/checkin': {
-      id: '/app/organizer/checkin'
-      path: '/checkin'
-      fullPath: '/app/organizer/checkin'
-      preLoaderRoute: typeof AppOrganizerCheckinRouteImport
-      parentRoute: typeof AppOrganizerRoute
+    '/admin/scout/': {
+      id: '/admin/scout/'
+      path: '/scout'
+      fullPath: '/admin/scout/'
+      preLoaderRoute: typeof AdminScoutIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/app/organizer/events': {
-      id: '/app/organizer/events'
-      path: '/events'
-      fullPath: '/app/organizer/events'
-      preLoaderRoute: typeof AppOrganizerEventsRouteImport
-      parentRoute: typeof AppOrganizerRoute
+    '/admin/reports/': {
+      id: '/admin/reports/'
+      path: '/'
+      fullPath: '/admin/reports/'
+      preLoaderRoute: typeof AdminReportsIndexRouteImport
+      parentRoute: typeof AdminReportsRoute
     }
-    '/app/organizer/payment-details': {
-      id: '/app/organizer/payment-details'
-      path: '/payment-details'
-      fullPath: '/app/organizer/payment-details'
-      preLoaderRoute: typeof AppOrganizerPaymentDetailsRouteImport
-      parentRoute: typeof AppOrganizerRoute
+    '/admin/organizers/': {
+      id: '/admin/organizers/'
+      path: '/'
+      fullPath: '/admin/organizers/'
+      preLoaderRoute: typeof AdminOrganizersIndexRouteImport
+      parentRoute: typeof AdminOrganizersRoute
     }
-    '/app/organizer/payouts': {
-      id: '/app/organizer/payouts'
-      path: '/payouts'
-      fullPath: '/app/organizer/payouts'
-      preLoaderRoute: typeof AppOrganizerPayoutsRouteImport
-      parentRoute: typeof AppOrganizerRoute
+    '/admin/events/': {
+      id: '/admin/events/'
+      path: '/'
+      fullPath: '/admin/events/'
+      preLoaderRoute: typeof AdminEventsIndexRouteImport
+      parentRoute: typeof AdminEventsRoute
     }
-    '/app/organizer/promotions': {
-      id: '/app/organizer/promotions'
-      path: '/promotions'
-      fullPath: '/app/organizer/promotions'
-      preLoaderRoute: typeof AppOrganizerPromotionsRouteImport
+    '/app/tickets/success': {
+      id: '/app/tickets/success'
+      path: '/success'
+      fullPath: '/app/tickets/success'
+      preLoaderRoute: typeof AppTicketsSuccessRouteImport
+      parentRoute: typeof AppTicketsRoute
+    }
+    '/app/tickets/cancelled': {
+      id: '/app/tickets/cancelled'
+      path: '/cancelled'
+      fullPath: '/app/tickets/cancelled'
+      preLoaderRoute: typeof AppTicketsCancelledRouteImport
+      parentRoute: typeof AppTicketsRoute
+    }
+    '/app/promotions/success': {
+      id: '/app/promotions/success'
+      path: '/promotions/success'
+      fullPath: '/app/promotions/success'
+      preLoaderRoute: typeof AppPromotionsSuccessRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/promotions/cancelled': {
+      id: '/app/promotions/cancelled'
+      path: '/promotions/cancelled'
+      fullPath: '/app/promotions/cancelled'
+      preLoaderRoute: typeof AppPromotionsCancelledRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/organizer/settings': {
+      id: '/app/organizer/settings'
+      path: '/settings'
+      fullPath: '/app/organizer/settings'
+      preLoaderRoute: typeof AppOrganizerSettingsRouteImport
       parentRoute: typeof AppOrganizerRoute
     }
     '/app/organizer/sales': {
@@ -1219,40 +1142,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrganizerSalesRouteImport
       parentRoute: typeof AppOrganizerRoute
     }
-    '/app/organizer/settings': {
-      id: '/app/organizer/settings'
-      path: '/settings'
-      fullPath: '/app/organizer/settings'
-      preLoaderRoute: typeof AppOrganizerSettingsRouteImport
+    '/app/organizer/promotions': {
+      id: '/app/organizer/promotions'
+      path: '/promotions'
+      fullPath: '/app/organizer/promotions'
+      preLoaderRoute: typeof AppOrganizerPromotionsRouteImport
       parentRoute: typeof AppOrganizerRoute
     }
-    '/app/promotions/cancelled': {
-      id: '/app/promotions/cancelled'
-      path: '/promotions/cancelled'
-      fullPath: '/app/promotions/cancelled'
-      preLoaderRoute: typeof AppPromotionsCancelledRouteImport
-      parentRoute: typeof AppRoute
+    '/app/organizer/payouts': {
+      id: '/app/organizer/payouts'
+      path: '/payouts'
+      fullPath: '/app/organizer/payouts'
+      preLoaderRoute: typeof AppOrganizerPayoutsRouteImport
+      parentRoute: typeof AppOrganizerRoute
     }
-    '/app/promotions/success': {
-      id: '/app/promotions/success'
-      path: '/promotions/success'
-      fullPath: '/app/promotions/success'
-      preLoaderRoute: typeof AppPromotionsSuccessRouteImport
-      parentRoute: typeof AppRoute
+    '/app/organizer/payment-details': {
+      id: '/app/organizer/payment-details'
+      path: '/payment-details'
+      fullPath: '/app/organizer/payment-details'
+      preLoaderRoute: typeof AppOrganizerPaymentDetailsRouteImport
+      parentRoute: typeof AppOrganizerRoute
     }
-    '/app/tickets/cancelled': {
-      id: '/app/tickets/cancelled'
-      path: '/cancelled'
-      fullPath: '/app/tickets/cancelled'
-      preLoaderRoute: typeof AppTicketsCancelledRouteImport
-      parentRoute: typeof AppTicketsRoute
+    '/app/organizer/events': {
+      id: '/app/organizer/events'
+      path: '/events'
+      fullPath: '/app/organizer/events'
+      preLoaderRoute: typeof AppOrganizerEventsRouteImport
+      parentRoute: typeof AppOrganizerRoute
     }
-    '/app/tickets/success': {
-      id: '/app/tickets/success'
-      path: '/success'
-      fullPath: '/app/tickets/success'
-      preLoaderRoute: typeof AppTicketsSuccessRouteImport
-      parentRoute: typeof AppTicketsRoute
+    '/app/organizer/checkin': {
+      id: '/app/organizer/checkin'
+      path: '/checkin'
+      fullPath: '/app/organizer/checkin'
+      preLoaderRoute: typeof AppOrganizerCheckinRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/app/organizer/attendees': {
+      id: '/app/organizer/attendees'
+      path: '/attendees'
+      fullPath: '/app/organizer/attendees'
+      preLoaderRoute: typeof AppOrganizerAttendeesRouteImport
+      parentRoute: typeof AppOrganizerRoute
+    }
+    '/api/webhooks/tickets': {
+      id: '/api/webhooks/tickets'
+      path: '/api/webhooks/tickets'
+      fullPath: '/api/webhooks/tickets'
+      preLoaderRoute: typeof ApiWebhooksTicketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/promotions': {
+      id: '/api/webhooks/promotions'
+      path: '/api/webhooks/promotions'
+      fullPath: '/api/webhooks/promotions'
+      preLoaderRoute: typeof ApiWebhooksPromotionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/event-share-image/$eventId': {
+      id: '/api/event-share-image/$eventId'
+      path: '/api/event-share-image/$eventId'
+      fullPath: '/api/event-share-image/$eventId'
+      preLoaderRoute: typeof ApiEventShareImageEventIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users/$userId': {
+      id: '/admin/users/$userId'
+      path: '/$userId'
+      fullPath: '/admin/users/$userId'
+      preLoaderRoute: typeof AdminUsersUserIdRouteImport
+      parentRoute: typeof AdminUsersRoute
+    }
+    '/admin/scout/$runId': {
+      id: '/admin/scout/$runId'
+      path: '/scout/$runId'
+      fullPath: '/admin/scout/$runId'
+      preLoaderRoute: typeof AdminScoutRunIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports/$reportId': {
+      id: '/admin/reports/$reportId'
+      path: '/$reportId'
+      fullPath: '/admin/reports/$reportId'
+      preLoaderRoute: typeof AdminReportsReportIdRouteImport
+      parentRoute: typeof AdminReportsRoute
+    }
+    '/admin/organizers/$organizerId': {
+      id: '/admin/organizers/$organizerId'
+      path: '/$organizerId'
+      fullPath: '/admin/organizers/$organizerId'
+      preLoaderRoute: typeof AdminOrganizersOrganizerIdRouteImport
+      parentRoute: typeof AdminOrganizersRoute
+    }
+    '/admin/events/$eventId': {
+      id: '/admin/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/admin/events/$eventId'
+      preLoaderRoute: typeof AdminEventsEventIdRouteImport
+      parentRoute: typeof AdminEventsRoute
+    }
+    '/__mockup/preview/$': {
+      id: '/__mockup/preview/$'
+      path: '/__mockup/preview/$'
+      fullPath: '/__mockup/preview/$'
+      preLoaderRoute: typeof Char91__mockupChar93PreviewSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/__component/preview/$': {
+      id: '/__component/preview/$'
+      path: '/__component/preview/$'
+      fullPath: '/__component/preview/$'
+      preLoaderRoute: typeof Char91__componentChar93PreviewSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/scout/discoveries/': {
       id: '/admin/scout/discoveries/'
@@ -1261,19 +1261,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminScoutDiscoveriesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/scout/discoveries/$discoveryId': {
-      id: '/admin/scout/discoveries/$discoveryId'
-      path: '/scout/discoveries/$discoveryId'
-      fullPath: '/admin/scout/discoveries/$discoveryId'
-      preLoaderRoute: typeof AdminScoutDiscoveriesDiscoveryIdRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/app/organizer/promote/$eventId': {
       id: '/app/organizer/promote/$eventId'
       path: '/promote/$eventId'
       fullPath: '/app/organizer/promote/$eventId'
       preLoaderRoute: typeof AppOrganizerPromoteEventIdRouteImport
       parentRoute: typeof AppOrganizerRoute
+    }
+    '/admin/scout/discoveries/$discoveryId': {
+      id: '/admin/scout/discoveries/$discoveryId'
+      path: '/scout/discoveries/$discoveryId'
+      fullPath: '/admin/scout/discoveries/$discoveryId'
+      preLoaderRoute: typeof AdminScoutDiscoveriesDiscoveryIdRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
