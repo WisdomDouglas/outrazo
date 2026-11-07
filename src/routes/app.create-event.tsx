@@ -462,8 +462,8 @@ function CreateEventPage() {
           void saveEvent("publish");
         }}
       >
-        <CopilotPanel accessToken={session?.access_token ?? null} onApply={applyCopilot} />
-        <FormSection step="01" icon={<FileText aria-hidden className="size-5" />} title="Event details" description="Give people a clear picture of what they can expect.">
+        <div className="create-event-copilot"><CopilotPanel accessToken={session?.access_token ?? null} onApply={applyCopilot} /></div>
+        <FormSection className="create-event-section--details" step="01" icon={<FileText aria-hidden className="size-5" />} title="Event details" description="Give people a clear picture of what they can expect.">
           <Input label="Event title" value={values.title} maxLength={120} error={errors.title} placeholder="e.g. Lagos Night Market" onChange={(event) => update("title", event.currentTarget.value)} />
           <Input label="Short summary" value={values.summary} maxLength={220} error={errors.summary} placeholder="A one-line introduction for event cards." onChange={(event) => update("summary", event.currentTarget.value)} />
           <TextAreaField label="Full description" value={values.description} error={errors.description} placeholder="Tell guests what the event includes, who it is for, and what they should know." onChange={(value) => update("description", value)} />
@@ -492,7 +492,7 @@ function CreateEventPage() {
           </div>
         </FormSection>
 
-        <FormSection step="02" icon={<ImagePlus aria-hidden className="size-5" />} title="Cover image" description="Choose a clear landscape image that helps guests recognize your event. JPG, PNG, or WebP up to 5 MB.">
+        <FormSection className="create-event-section--cover" step="02" icon={<ImagePlus aria-hidden className="size-5" />} title="Cover image" description="Choose a clear landscape image that helps guests recognize your event. JPG, PNG, or WebP up to 5 MB.">
           <label className={`create-event-upload focus-ring grid min-h-44 cursor-pointer place-items-center overflow-hidden rounded-md border border-dashed bg-canvas text-center ${errors.cover ? "border-transactional" : "border-line hover:border-accent"}`}>
             {coverPreview ? (
               <span className="create-event-cover-preview">
@@ -512,7 +512,7 @@ function CreateEventPage() {
           {coverPreview ? <p className="type-caption text-muted-text">{cover?.name ?? "Current event cover"} · ready to upload</p> : null}
         </FormSection>
 
-        <FormSection step="03" icon={<MapPin aria-hidden className="size-5" />} title="Date and location" description="Use the local time for the city where your event takes place.">
+        <FormSection className="create-event-section--location" step="03" icon={<MapPin aria-hidden className="size-5" />} title="Date and location" description="Use the local time for the city where your event takes place.">
           <div className="grid gap-md sm:grid-cols-2">
             <Input type="datetime-local" label="Starts" value={values.startsAt} min={isEditing ? undefined : minDateTime} error={errors.startsAt} onChange={(event) => update("startsAt", event.currentTarget.value)} />
             <Input type="datetime-local" label="Ends" value={values.endsAt} min={values.startsAt || (isEditing ? undefined : minDateTime)} error={errors.endsAt} onChange={(event) => update("endsAt", event.currentTarget.value)} />
@@ -526,7 +526,7 @@ function CreateEventPage() {
         </FormSection>
 
         {values.eventType === "paid" ? (
-          <FormSection step="04" icon={<Ticket aria-hidden className="size-5" />} title="Ticket tiers" description="Set a price and available quantity for each ticket type.">
+          <FormSection className="create-event-section--tiers" step="04" icon={<Ticket aria-hidden className="size-5" />} title="Ticket tiers" description="Set a price and available quantity for each ticket type.">
             <div className="grid gap-md">
               {tiers.map((tier, index) => (
                 <div key={tier.key} className="grid gap-md rounded-md border border-line bg-canvas p-md sm:grid-cols-[minmax(0,1fr)_minmax(8rem,0.7fr)_minmax(7rem,0.6fr)_auto] sm:items-end">
@@ -599,9 +599,9 @@ function CommissionHint() {
   );
 }
 
-function FormSection({ step, icon, title, description, children }: { step: string; icon: React.ReactNode; title: string; description: string; children: React.ReactNode }) {
+function FormSection({ className, step, icon, title, description, children }: { className?: string; step: string; icon: React.ReactNode; title: string; description: string; children: React.ReactNode }) {
   return (
-    <section className="create-event-section grid gap-md rounded-lg border border-line bg-card p-md shadow-card sm:gap-lg sm:p-lg">
+    <section className={`create-event-section grid gap-md rounded-lg border border-line bg-card p-md shadow-card sm:gap-lg sm:p-lg ${className ?? ""}`}>
       <div className="create-event-section-heading">
         <span className="create-event-section-mark" aria-hidden="true"><span>{step}</span>{icon}</span>
         <div>
